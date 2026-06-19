@@ -1,0 +1,16 @@
+{
+  "sub_theme": "高速光模块",
+  "companies": [
+    "300308",
+    "300502",
+    "300394",
+    "603083",
+    "002281",
+    "000988",
+    "300570",
+    "300548"
+  ],
+  "run_at": "2026-06-20T00:52:25",
+  "skip_guosen": true,
+  "evidence_path": "C:\\Projects\\03_Investment\\investment_system\\research\\evidence\\high_speed_optical_modules.yaml"
+}

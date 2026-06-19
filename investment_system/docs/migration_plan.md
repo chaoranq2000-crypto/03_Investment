@@ -32,8 +32,8 @@ investment_system/docs/inventory.md
 
 优先处理：
 
-- `akshare_lab/src/cache.py` 中缓存、TTL、限速逻辑。
-- `Investment Research/.codex/skills/*/scripts/get_data.py` 中国信 API 调用逻辑。
+- `investment_system/pipelines` 中新的 AKShare、BaoStock、国信 API 管道。
+- `investment_system/config/data_sources.example.toml` 中的数据源优先级、限速和缓存策略。
 
 目标：
 
@@ -45,8 +45,8 @@ investment_system/docs/inventory.md
 
 建议：
 
-- 保留 `Investment Research/reports` 作为现有报告库。
-- 新报告先继续输出到原目录，等模板稳定后再迁移。
+- 当前研究资料以 `A股科技前两主线调研文件包` 为输入。
+- 新报告统一沉淀到 `investment_system/research` 或后续正式报告目录。
 - 在 `investment_system/research/templates` 建立统一报告模板。
 
 ## 阶段 5：建立股票池和评分系统
@@ -63,14 +63,14 @@ investment_system/docs/inventory.md
 
 - 实时操作决策卡模板
 - 盘前候选操作池
-- 盘中触发条件表
+- 盘中实时行情与技术面触发条件表
 - 已执行操作记录
 - 失效/取消操作记录
 
 目标：
 
 - 研究报告给出观点。
-- 实时操作决策卡给出可执行动作。
+- 实时操作决策卡结合实时股价、技术面和仓位规则给出可执行动作。
 - 组合记录保存最终持仓与交易结果。
 
 ## 阶段 7：组合与复盘

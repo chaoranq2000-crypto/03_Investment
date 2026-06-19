@@ -1,0 +1,170 @@
+{
+  "run_at": "2026-06-19T18:24:14",
+  "symbol": "300308",
+  "proxy_env_note": "Proxy values are not copied into this report; check shell env separately if needed.",
+  "baostock": {
+    "provider": "baostock",
+    "symbol": "300308",
+    "market": "SZ",
+    "login": {
+      "error_code": "0",
+      "error_msg": "success"
+    },
+    "daily_status": {
+      "ok": true,
+      "rows": 32,
+      "error": null,
+      "message": null
+    },
+    "profit_status": {
+      "ok": true,
+      "rows": 5,
+      "errors": [],
+      "error": null
+    },
+    "daily_sample": [
+      {
+        "date": "2026-06-16",
+        "code": "sz.300308",
+        "open": "1240.0000",
+        "high": "1273.6800",
+        "low": "1232.4600",
+        "close": "1248.0900",
+        "preclose": "1245.0000",
+        "volume": "23282186",
+        "amount": "29091725555.5200",
+        "turn": "2.097600",
+        "pctChg": "0.248200"
+      },
+      {
+        "date": "2026-06-17",
+        "code": "sz.300308",
+        "open": "1228.0000",
+        "high": "1276.1300",
+        "low": "1220.0500",
+        "close": "1276.1100",
+        "preclose": "1248.0900",
+        "volume": "21756242",
+        "amount": "27272022889.1300",
+        "turn": "1.960100",
+        "pctChg": "2.245000"
+      },
+      {
+        "date": "2026-06-18",
+        "code": "sz.300308",
+        "open": "1270.0000",
+        "high": "1368.5000",
+        "low": "1268.7300",
+        "close": "1367.8800",
+        "preclose": "1276.1100",
+        "volume": "28551616",
+        "amount": "38176552698.7200",
+        "turn": "2.572400",
+        "pctChg": "7.191400"
+      }
+    ],
+    "profit_sample": [
+      {
+        "code": "sz.300308",
+        "pubDate": "2025-10-31",
+        "statDate": "2025-09-30",
+        "roeAvg": "0.313331",
+        "npMargin": "0.302731",
+        "gpMargin": "0.407411",
+        "netProfit": "7569731091.520000",
+        "epsTTM": "7.695633",
+        "MBRevenue": "",
+        "totalShare": "1111118334.00",
+        "liqaShare": "1105500482.00",
+        "year": "2025",
+        "quarter": "3"
+      },
+      {
+        "code": "sz.300308",
+        "pubDate": "2026-03-31",
+        "statDate": "2025-12-31",
+        "roeAvg": "0.441614",
+        "npMargin": "0.302818",
+        "gpMargin": "0.420356",
+        "netProfit": "11579754107.990000",
+        "epsTTM": "9.717466",
+        "MBRevenue": "38239935640.670000",
+        "totalShare": "1111118334.00",
+        "liqaShare": "1105499082.00",
+        "year": "2025",
+        "quarter": "4"
+      },
+      {
+        "code": "sz.300308",
+        "pubDate": "2026-04-17",
+        "statDate": "2026-03-31",
+        "roeAvg": "0.175495",
+        "npMargin": "0.323998",
+        "gpMargin": "0.460581",
+        "netProfit": "6316792027.020000",
+        "epsTTM": "13.453904",
+        "MBRevenue": "",
+        "totalShare": "1111118334.00",
+        "liqaShare": "1105499082.00",
+        "year": "2026",
+        "quarter": "1"
+      }
+    ]
+  },
+  "akshare": {
+    "provider": "akshare",
+    "symbol": "300308",
+    "version": "1.18.64",
+    "policy": {
+      "min_wait_seconds": 8.0,
+      "jitter_seconds": 4.0,
+      "retries": 1,
+      "note": "No full-market or high-frequency calls; diagnostics only."
+    },
+    "sina_trade_dates": {
+      "label": "tool_trade_date_hist_sina",
+      "ok": true,
+      "attempt": 1,
+      "slept_before_call_seconds": 9.894,
+      "data": {
+        "type": "DataFrame",
+        "shape": [
+          8797,
+          1
+        ],
+        "columns": [
+          "trade_date"
+        ],
+        "tail": [
+          {
+            "trade_date": "2026-12-29"
+          },
+          {
+            "trade_date": "2026-12-30"
+          },
+          {
+            "trade_date": "2026-12-31"
+          }
+        ]
+      }
+    },
+    "eastmoney_hist": {
+      "label": "stock_zh_a_hist_eastmoney",
+      "ok": false,
+      "attempts": [
+        {
+          "attempt": 1,
+          "slept_before_call_seconds": 11.476,
+          "error_type": "ProxyError",
+          "message": "HTTPSConnectionPool(host='push2his.eastmoney.com', port=443): Max retries exceeded with url: /api/qt/stock/kline/get?fields1=f1%2Cf2%2Cf3%2Cf4%2Cf5%2Cf6&fields2=f51%2Cf52%2Cf53%2Cf54%2Cf55%2Cf56%2Cf57%2Cf58%2Cf59%2Cf60%2Cf61%2Cf116&ut=7eea3edcaed734bea9cbfc24409ed989&klt=101&fqt=1&secid=0.300308&beg=20260505&end=20260619 (Caused by ProxyError('Unable to connect to proxy', RemoteDisconnected('Remote end closed connection without response')))"
+        },
+        {
+          "attempt": 2,
+          "slept_before_call_seconds": 0.0,
+          "error_type": "ProxyError",
+          "message": "HTTPSConnectionPool(host='push2his.eastmoney.com', port=443): Max retries exceeded with url: /api/qt/stock/kline/get?fields1=f1%2Cf2%2Cf3%2Cf4%2Cf5%2Cf6&fields2=f51%2Cf52%2Cf53%2Cf54%2Cf55%2Cf56%2Cf57%2Cf58%2Cf59%2Cf60%2Cf61%2Cf116&ut=7eea3edcaed734bea9cbfc24409ed989&klt=101&fqt=1&secid=0.300308&beg=20260505&end=20260619 (Caused by ProxyError('Unable to connect to proxy', RemoteDisconnected('Remote end closed connection without response')))"
+        }
+      ]
+    }
+  }
+}

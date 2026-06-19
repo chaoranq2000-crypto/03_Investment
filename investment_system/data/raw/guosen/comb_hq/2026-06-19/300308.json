@@ -1,0 +1,12 @@
+{
+  "result": [
+    {
+      "msg": "超过日限额:V2V-55****lWjTGZ",
+      "code": 197006
+    }
+  ],
+  "_guosen_meta": {
+    "key_env": "V2V-5508402acdceda1a7899e109a4299554-1330f14993d21e27a40f512e1648a675-019edb51-c19c-7046-8d82-0fa903034d3c-FS0mIxwBJi4uiBsUyRJfnI993SlWjTGZ",
+    "endpoint": "/gsnews/market/agentbot/queryCombHQ/1.0"
+  }
+}

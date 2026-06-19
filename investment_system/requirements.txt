@@ -1,0 +1,14 @@
+# Unified investment-system runtime.
+# Install into C:/Projects/03_Investment/.conda/investment-system, not global Python.
+
+pandas>=2.2.0
+requests>=2.31.0
+httpx>=0.27.0
+akshare>=1.15.0
+baostock>=0.8.9
+PyYAML>=6.0.0
+pyarrow>=15.0.0
+lxml>=5.0.0
+openpyxl>=3.1.0
+matplotlib>=3.8.0
+numpy>=1.26.0

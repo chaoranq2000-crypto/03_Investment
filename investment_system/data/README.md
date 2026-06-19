@@ -9,9 +9,4 @@ processed/    清洗后指标
 snapshots/    每日快照
 ```
 
-目前不迁移旧数据。现有数据仍在：
-
-- `akshare_lab/data`
-- `Investment Research/tmp/research_data`
-- `Investment Research/tmp/pdfs`
-
+当前旧环境和旧子项目目录已清理。新数据统一进入本目录，并按数据源、数据集和日期分区保存。

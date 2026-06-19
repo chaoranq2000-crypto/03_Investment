@@ -1,4 +1,5 @@
 # Python environments and caches
+.conda/
 .venv/
 venv/
 env/
@@ -17,6 +18,10 @@ htmlcov/
 .env
 .env.*
 !.env.example
+data_sources.local.toml
+memory.md
+SECRET.md
+.codex/skills/**/SECRET.md
 *.key
 *.pem
 *.p12
@@ -33,4 +38,3 @@ Thumbs.db
 *.out
 tmp/
 */tmp/
-

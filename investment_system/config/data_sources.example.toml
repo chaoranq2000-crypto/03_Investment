@@ -1,0 +1,57 @@
+# Unified data source registry.
+# Copy to data_sources.local.toml if you need local overrides.
+# Keep secrets in environment variables, not in this file.
+
+[runtime]
+default_timezone = "Asia/Shanghai"
+default_market = "A-share"
+cache_root = "investment_system/data/cache"
+raw_root = "investment_system/data/raw"
+processed_root = "investment_system/data/processed"
+
+[akshare]
+enabled = true
+provider = "akshare"
+requires_token = false
+python = "C:/Projects/03_Investment/.conda/investment-system/python.exe"
+module_check = "akshare"
+cache_policy = "batch_then_cache"
+default_ttl_seconds = 86400
+rate_limit_seconds = 2.0
+max_retries = 3
+notes = "Use for A-share spot, daily kline, financial statements, and low-frequency data. Avoid full-market realtime hard pulls. The unified Conda runtime is the only supported runtime."
+
+[guosen]
+enabled = true
+provider = "guosen"
+requires_token = true
+token_env = "GS_API_KEY"
+backup_token_env = "GS_API_KEY_BACKUP"
+python = "C:/Projects/03_Investment/.conda/investment-system/python.exe"
+local_adapter = "investment_system/pipelines/guosen"
+base_url = "https://dgzt.guosen.com.cn/skills"
+cache_policy = "query_then_snapshot"
+rate_limit_seconds = 1.0
+max_retries = 2
+notes = "Use for market quotes, historical quotes, fund flow, financial statements, ETF/fund and smart stock picking. Configure GS_API_KEY in investment_system/config/.env.local."
+
+[baostock]
+enabled = true
+provider = "baostock"
+requires_token = false
+python = "C:/Projects/03_Investment/.conda/investment-system/python.exe"
+module_check = "baostock"
+cache_policy = "login_query_logout_then_cache"
+default_ttl_seconds = 86400
+rate_limit_seconds = 1.0
+max_retries = 3
+notes = "Use for A-share historical kline, adjustment factors, stock basics, index constituents, and low-frequency fundamental datasets. BaoStock requires login/logout but no token."
+
+[priority]
+realtime_quote = ["guosen", "akshare"]
+daily_kline = ["baostock", "akshare", "guosen"]
+adjustment_factor = ["baostock", "akshare"]
+stock_basic = ["baostock", "akshare"]
+financial_statement = ["guosen", "baostock", "akshare"]
+fund_flow = ["guosen", "akshare"]
+stock_screening = ["guosen", "baostock", "akshare"]

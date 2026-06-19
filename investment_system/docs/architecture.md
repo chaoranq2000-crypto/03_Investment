@@ -22,9 +22,32 @@ investment_system/data/
 
 现有对应：
 
-- `akshare_lab/data/cache`
-- `Investment Research/tmp/research_data`
-- `Investment Research/tmp/pdfs`
+- `investment_system/data`
+- `A股科技前两主线调研文件包`
+
+### AKShare/BaoStock 数据使用原则
+
+这个原则来自早前 AKShare 方法论截图的核心思想：**把“拉数据”和“用数据”拆开**。
+
+禁止把策略循环建立在实时批量硬拉之上。AKShare 和 BaoStock 都更适合作为批处理数据源，而不是高频实时 API。日线、财务、基础资料、复权因子、指数成分等不常变数据，应在收盘后或固定批处理窗口统一拉取，并写入本地缓存；策略筛选、回测、研究报告和大部分技术面计算都只读本地数据。
+
+推荐数据流：
+
+```text
+收盘后批量拉取 -> 写入 Parquet/CSV 缓存 -> 指标加工 -> 策略/研究读取本地缓存
+```
+
+盘中只有实时操作决策需要最新行情时，才对重点标的做单点实时查询，并且必须加限速、重试和失败降级。不要盘中对全市场循环请求。
+
+缓存落地建议：
+
+```text
+data/raw/{source}/{dataset}/{date}.json
+data/cache/{source}/{dataset}/{date}.parquet
+data/processed/{dataset}/{date}.parquet
+```
+
+按日期分区写入，新增一天只写当天文件，旧文件不重写。读取时再按需要合并，这样可以避免增量更新时反复覆盖历史数据。
 
 ### B. 数据管道层
 
@@ -64,8 +87,8 @@ investment_system/research/
 
 现有对应：
 
-- `Investment Research/reports`
-- `Investment Research/tmp/research_data`
+- `A股科技前两主线调研文件包`
+- `investment_system/research`
 
 ### D. 策略与评分层
 
@@ -86,7 +109,7 @@ score = quality + growth + valuation + momentum + catalyst - risk_penalty
 职责：
 
 - 把研究结论和实时行情转化为可执行的买入、卖出、加仓、减仓、持有、观察动作。
-- 管理盘中触发条件、价格区间、仓位规则、失效条件和执行记录。
+- 管理实时股价、技术面信号、盘中触发条件、价格区间、仓位规则、失效条件和执行记录。
 - 区分“研究观点”和“操作指令”，避免因为看好公司而自动买入。
 
 建议目录：
@@ -106,7 +129,9 @@ investment_system/decisions/
 |---|---|
 | 标的 | 股票代码、名称、市场 |
 | 决策类型 | 买入、加仓、减仓、清仓、持有、观察 |
-| 实时触发条件 | 价格、涨跌幅、成交量、资金流、板块联动、公告事件 |
+| 实时行情输入 | 最新价、涨跌幅、成交额、换手率、盘口/分时状态 |
+| 技术面输入 | 均线、趋势、支撑压力、量能、突破/跌破、K 线形态 |
+| 实时触发条件 | 价格、涨跌幅、成交量、技术位、资金流、板块联动、公告事件 |
 | 研究依据 | 关联报告、财务指标、估值假设、催化剂 |
 | 操作区间 | 计划买入/卖出价格区间 |
 | 仓位规则 | 初始仓位、最大仓位、加减仓条件 |
@@ -132,15 +157,23 @@ investment_system/portfolio/
 └── reviews/
 ```
 
-组合层记录最终持仓和交易结果；实时操作决策层记录为什么此刻要动、动多少、什么条件下撤销。
+组合层记录最终持仓和交易结果；实时操作决策层记录实时股价与技术面如何触发动作、为什么此刻要动、动多少、什么条件下撤销。
+
+实时操作决策的最低输入建议：
+
+```text
+研究结论 + 当前价格 + 日内涨跌幅 + 成交量/成交额 + 均线位置 + 支撑压力 + 板块状态 + 组合仓位
+```
+
+其中 AKShare 或国信 API 只在重点标的上按需实时拉取，不做全市场高频硬拉。
 
 ## 2. 数据刷新频率
 
 | 数据类型 | 建议频率 | 来源 | 说明 |
 |---|---:|---|---|
-| 日 K 线 | 每日收盘后 | AKShare/国信 API | 不要盘中反复拉 |
-| 财务三表 | 每周或公告后 | AKShare/国信 API | 季报年报低频 |
-| 实时行情 | 盘中按需 | AKShare/国信 API | 单点请求，加限速重试 |
+| 日 K 线 | 每日收盘后 | BaoStock/AKShare/国信 API | 不要盘中反复拉 |
+| 财务三表 | 每周或公告后 | 国信 API/BaoStock/AKShare | 季报年报低频 |
+| 实时行情 | 盘中按需 | 国信 API/AKShare | 单点请求，加限速重试 |
 | 资金流 | 每日收盘后 | 国信 API | 可作为短线辅助 |
 | 公告/PDF | 事件触发 | PDF/MinerU | 进入证据库 |
 | 研究报告 | 人工触发 | 本地 Markdown | 进入研究层 |
@@ -148,7 +181,8 @@ investment_system/portfolio/
 
 ## 3. 环境原则
 
-- `akshare_lab` 普通任务用 `akshare_lab/.venv/Scripts/python.exe`。
-- `Investment Research` 普通任务用 `Investment Research/.venv/Scripts/python.exe`。
-- PDF MinerU 解析按 `Investment Research/AGENTS.md`，调用外部 MinerU 环境。
+- 普通 Python 任务统一使用项目根目录 Conda 环境：`C:\Projects\03_Investment\.conda\investment-system\python.exe`。
+- AKShare、BaoStock、国信 API 管道均通过统一 Conda 环境执行。
+- 旧 `.venv` 和旧子项目环境已删除，文档和配置不再依赖旧环境路径。
+- 如需 PDF/MinerU 解析，应在统一配置中重新登记外部 MinerU 环境入口。
 - 新建通用脚本前，优先判断它属于数据层、研究层、实时操作决策层还是组合层，避免继续散落在 `tmp`。

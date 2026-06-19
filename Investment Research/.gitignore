@@ -1,6 +1,0 @@
-.venv/
-.codex/skill-archives/
-memory.md
-.codex/skills/*/SECRET.md
-__pycache__/
-*.pyc
