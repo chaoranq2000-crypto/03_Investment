@@ -21,20 +21,6 @@ rate_limit_seconds = 2.0
 max_retries = 3
 notes = "Use for A-share spot, daily kline, financial statements, and low-frequency data. Avoid full-market realtime hard pulls. The unified Conda runtime is the only supported runtime."
 
-[guosen]
-enabled = true
-provider = "guosen"
-requires_token = true
-token_env = "GS_API_KEY"
-backup_token_env = "GS_API_KEY_BACKUP"
-python = "C:/Projects/03_Investment/.conda/investment-system/python.exe"
-local_adapter = "investment_system/pipelines/guosen"
-base_url = "https://dgzt.guosen.com.cn/skills"
-cache_policy = "query_then_snapshot"
-rate_limit_seconds = 1.0
-max_retries = 2
-notes = "Use for market quotes, historical quotes, fund flow, financial statements, ETF/fund and smart stock picking. Configure GS_API_KEY in investment_system/config/.env.local."
-
 [baostock]
 enabled = true
 provider = "baostock"
@@ -47,11 +33,25 @@ rate_limit_seconds = 1.0
 max_retries = 3
 notes = "Use for A-share historical kline, adjustment factors, stock basics, index constituents, and low-frequency fundamental datasets. BaoStock requires login/logout but no token."
 
+[tushare]
+enabled = true
+provider = "tushare"
+requires_token = true
+token_env = "TUSHARE_TOKEN"
+http_url_env = "TUSHARE_HTTP_URL"
+disable_proxy_env = "TUSHARE_DISABLE_PROXY"
+python = "C:/Projects/03_Investment/.conda/investment-system/python.exe"
+module_check = "tushare"
+cache_policy = "query_then_snapshot"
+rate_limit_seconds = 1.0
+max_retries = 2
+notes = "Use Tushare Pro through the configured HTTP bridge endpoint. Keep token in investment_system/config/.env.local."
+
 [priority]
-realtime_quote = ["guosen", "akshare"]
-daily_kline = ["baostock", "akshare", "guosen"]
-adjustment_factor = ["baostock", "akshare"]
-stock_basic = ["baostock", "akshare"]
-financial_statement = ["guosen", "baostock", "akshare"]
-fund_flow = ["guosen", "akshare"]
-stock_screening = ["guosen", "baostock", "akshare"]
+realtime_quote = ["akshare", "tushare"]
+daily_kline = ["baostock", "akshare", "tushare"]
+adjustment_factor = ["baostock", "akshare", "tushare"]
+stock_basic = ["baostock", "akshare", "tushare"]
+financial_statement = ["baostock", "akshare", "tushare"]
+fund_flow = ["akshare"]
+stock_screening = ["baostock", "akshare", "tushare"]

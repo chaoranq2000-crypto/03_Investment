@@ -1,0 +1,1148 @@
+# Sector Universe — tech_ai_semiconductor
+# Two-layer structure: research_groups (primary research batches) → sectors (final scoring units)
+# Priority key: P0=立即执行, P1=尽快执行, P2=计划中, P3=外围观察
+# Status key:
+#   indexed_existing_partial  — existing output indexed, needs verification
+#   seeded_unverified         — seeded from MD, not yet verified
+#   planned                  — not yet started
+#   observation_only         — peripheral observation only, no active research
+# scoring_enabled: true = eligible for scoring, false = observation only
+# Important: Do NOT mark seed documents as completed; all completed outputs
+# must pass evidence + source verification before upgrading to research-grade.
+
+universe_version: "1"
+created_date: "2026-06-20"
+source_documents:
+  - path: C:/Projects/03_Investment/主线目录.md
+    type: taxonomy_seed_document
+    role: primary taxonomy foundation
+  - path: 科技主线调研输出/01_AI算力硬件/01_高速光模块.md
+    type: sector_card_seed
+    role: existing output migrated
+  - path: 科技主线调研输出/01_AI算力硬件/01_光器件_FAU_精密光学.md
+    type: sector_card_seed
+    role: existing output migrated
+
+# ── Research Groups (Tier 1: primary research batches) ──────────────────────
+research_groups:
+
+  - group_id: ai_chips_compute
+    group_name: AI芯片/算力
+    group_order: 01
+    priority: P0
+    description: >
+      国产AI芯片/GPU/DCU/ASIC，A股核心标的性能与生态验证。
+      重点关注：是否量产、是否进入真实集群、客户是谁。
+    sector_ids:
+      - ai_chips_gpu_dcu_asic
+
+  - group_id: ai_server_infrastructure
+    group_name: AI服务器/基础设施
+    group_order: 02
+    priority: P1
+    description: >
+      AI服务器整机柜、超节点、交换机、AIDC/算力租赁、液冷温控、
+      数据中心电源/HVDC/UPS，属于AI资本开支最直接承接层。
+    sector_ids:
+      - ai_server_rack_supernode_switch
+      - aidc_data_center_compute_leasing
+      - liquid_cooling_thermal
+      - data_center_power_hvdc_ups
+
+  - group_id: optical_interconnect
+    group_name: 光通信/高速互连
+    group_order: 03
+    priority: P0
+    description: >
+      A股AI硬件中最核心、最全球化的方向。
+      CPO被描述为下一代高密度低功耗光互联方案，受AI集群扩张和
+      交换芯片带宽升级推动。
+    sector_ids:
+      - cpo_optical_module_silicon_photonics
+      - optical_chip_components
+      - fiber_cable_hollow_core_dci
+      - high_speed_copper_connector
+
+  - group_id: pcb_ccl_substrate
+    group_name: PCB/CCL/载板
+    group_order: 04
+    priority: P1
+    description: >
+      AI服务器、交换机、光模块、GPU板卡共同的底座。
+      资金逐步从AI硬件核心大票向上游材料延伸。
+    sector_ids:
+      - ai_server_pcb_high_speed_board
+      - ccl_high_frequency_materials
+      - ic_substrate_abf_glass_tgv
+
+  - group_id: semiconductor_equipment_materials
+    group_name: 半导体设备/材料
+    group_order: 05
+    priority: P1
+    description: >
+      国产替代最硬的方向，受AI先进制程、先进存储、本土晶圆厂
+      扩产等多重驱动，且具备国产化和需求扩张逻辑。
+    sector_ids:
+      - semiconductor_frontend_equipment
+      - semiconductor_metrology_test_equipment
+      - semiconductor_components_parts
+      - semiconductor_materials
+
+  - group_id: memory_packaging
+    group_name: 存储/先进封装
+    group_order: 06
+    priority: P1
+    description: >
+      AI服务器带动HBM、DDR5、企业级SSD需求。
+      先进封装是国产高端芯片突破口。
+    sector_ids:
+      - memory_hbm_ddr5
+      - advanced_packaging_chiplet_cowos_tsv
+
+  - group_id: semiconductor_design_manufacturing
+    group_name: 半导体设计/制造/EDA
+    group_order: 07
+    priority: P2
+    description: >
+      晶圆制造、特色工艺、EDA软件、芯片IP、设计服务、SoC/MCU。
+      端侧AI芯片是AI从云端走向终端的关键载体。
+    sector_ids:
+      - wafer_foundry_specialty_process
+      - eda_ip_design_service
+      - edge_ai_soc_mcu
+
+  - group_id: ai_application_data
+    group_name: AI应用/数据要素
+    group_order: 08
+    priority: P2
+    description: >
+      大模型/AIGC/Agent/办公软件、行业AI应用、数据要素/语料/
+      版权/数据安全。不属于半导体硬件，属于AI主线的应用端。
+    sector_ids:
+      - llm_aigc_agent_office
+      - industry_ai_applications
+      - data_elements_corpus_copyright_security
+
+  - group_id: ai_terminal_consumer_electronics
+    group_name: 端侧AI/消费电子
+    group_order: 09
+    priority: P2
+    description: >
+      AI PC、AI手机、AI眼镜、AI耳机等新一代AI硬件入口。
+      与SoC、存储、光学、声学、ODM高度相关。
+    sector_ids:
+      - ai_pc_phone_glasses_earbuds
+
+  - group_id: peripheral_observation
+    group_name: 外围科技观察
+    group_order: 10
+    priority: P3
+    description: >
+      6G/算力网络、卫星互联网、量子科技、信创/国产软件。
+      只作为观察池，不进入第一阶段核心评分。
+    sector_ids:
+      - sixg_compute_network
+      - satellite_internet
+      - quantum_technology
+      - xinchuang_domestic_software
+
+# ── Sectors (Tier 2: final scoring and sector-card units) ───────────────────
+sectors:
+
+  # ═══════════════════════════════════════════════════════
+  # group: ai_chips_compute
+  # ═══════════════════════════════════════════════════════
+
+  - sector_id: ai_chips_gpu_dcu_asic
+    sector_name: AI芯片/国产算力/GPU/DCU/ASIC
+    research_group_id: ai_chips_compute
+    group_order: 01
+    parent_chain: AI芯片/算力
+    priority: P0
+    legacy_sector_ids: []
+    legacy_theme_names:
+      - AI芯片/国产算力/GPU/DCU/ASIC
+    aliases: []
+    evidence_file_ids: []
+    include_concepts:
+      - 国产AI芯片/GPU/DCU
+      - 昇腾/国产生态
+      - AI加速卡/模组/板卡
+      - ASIC/定制芯片/IP
+    exclude_concepts:
+      - 通用CPU
+      - 消费级GPU
+    research_questions:
+      - 芯片是否量产？
+      - 是否进入真实集群？
+      - 客户是谁？推理/训练订单能否变成收入？
+      - 国产算力生态（昇腾）进展？
+    required_outputs:
+      - sector_card
+      - company_comparison
+      - company_financial_table
+      - score
+      - source_index
+      - missing_data_log
+    scoring_enabled: true
+    status: planned
+    source_note: 待启动研究
+    verification_requirements: {}
+
+  # ═══════════════════════════════════════════════════════
+  # group: ai_server_infrastructure
+  # ═══════════════════════════════════════════════════════
+
+  - sector_id: ai_server_rack_supernode_switch
+    sector_name: AI服务器/整机柜/超节点/交换机
+    research_group_id: ai_server_infrastructure
+    group_order: 02
+    parent_chain: AI服务器/基础设施
+    priority: P1
+    legacy_sector_ids: []
+    legacy_theme_names: []
+    aliases: []
+    evidence_file_ids: []
+    include_concepts:
+      - AI服务器整机
+      - 超节点/整机柜
+      - 交换机/网络设备
+      - OCP/ODCC服务器
+      - 国产算力集群建设
+    exclude_concepts:
+      - 通用x86服务器
+      - 传统IDC
+    research_questions:
+      - 整机柜国产化率？
+      - 交换机升级节奏？
+      - 头部厂商产能扩张节奏？
+    required_outputs:
+      - sector_card
+      - company_comparison
+      - company_financial_table
+      - score
+      - source_index
+      - missing_data_log
+    scoring_enabled: true
+    status: planned
+    source_note: 待启动研究
+    verification_requirements: {}
+
+  - sector_id: aidc_data_center_compute_leasing
+    sector_name: AIDC/数据中心/算力租赁
+    research_group_id: ai_server_infrastructure
+    group_order: 02
+    parent_chain: AI服务器/基础设施
+    priority: P1
+    legacy_sector_ids: []
+    legacy_theme_names: []
+    aliases: []
+    evidence_file_ids: []
+    include_concepts:
+      - AIDC/智算中心
+      - 算力租赁
+      - 数据中心工程/运维
+      - 云计算/IaaS
+    exclude_concepts:
+      - 传统IDC（非AI相关）
+    research_questions:
+      - 真实机柜资源有多少？
+      - GPU资源利用率？
+      - 客户合同质量？回款质量？
+    required_outputs:
+      - sector_card
+      - company_comparison
+      - score
+      - source_index
+      - missing_data_log
+    scoring_enabled: true
+    status: planned
+    source_note: 待启动研究
+    verification_requirements: {}
+    notes: >
+      风险提示：算力租赁最容易出现"有合同但无利润、有GPU但利用率低、
+      有概念但现金流差"的情况，需重点核实合同质量和回款。
+
+  - sector_id: liquid_cooling_thermal
+    sector_name: 液冷/温控/散热
+    research_group_id: ai_server_infrastructure
+    group_order: 02
+    parent_chain: AI服务器/基础设施
+    priority: P1
+    legacy_sector_ids: []
+    legacy_theme_names: []
+    aliases: []
+    evidence_file_ids: []
+    include_concepts:
+      - 液冷服务器（冷板式/浸没式）
+      - 数据中心温控
+      - 散热材料/结构件
+      - 泵阀/换热/冷却部件
+    exclude_concepts:
+      - 消费级散热
+    research_questions:
+      - 液冷渗透率提升节奏？
+      - 冷板/CDU等环节受益逻辑？
+    required_outputs:
+      - sector_card
+      - company_comparison
+      - score
+      - source_index
+      - missing_data_log
+    scoring_enabled: true
+    status: planned
+    source_note: 待启动研究
+    verification_requirements: {}
+
+  - sector_id: data_center_power_hvdc_ups
+    sector_name: 电源/UPS/HVDC/配电
+    research_group_id: ai_server_infrastructure
+    group_order: 02
+    parent_chain: AI服务器/基础设施
+    priority: P1
+    legacy_sector_ids: []
+    legacy_theme_names: []
+    aliases: []
+    evidence_file_ids: []
+    include_concepts:
+      - UPS/电源
+      - HVDC/高压直流
+      - BBU/储能备电
+      - 变压器/配电
+    exclude_concepts:
+      - 工业电源（非数据中心）
+    research_questions:
+      - 高功率机柜供电效率提升逻辑？
+      - 头部厂商订单可见性？
+    required_outputs:
+      - sector_card
+      - company_comparison
+      - score
+      - source_index
+      - missing_data_log
+    scoring_enabled: true
+    status: planned
+    source_note: 待启动研究
+    verification_requirements: {}
+
+  # ═══════════════════════════════════════════════════════
+  # group: optical_interconnect
+  # ═══════════════════════════════════════════════════════
+
+  - sector_id: cpo_optical_module_silicon_photonics
+    sector_name: 光模块/CPO/硅光
+    research_group_id: optical_interconnect
+    group_order: 03
+    parent_chain: 光通信/高速互连
+    priority: P0
+    # Legacy mapping for backward compatibility with existing evidence files and outputs
+    legacy_sector_ids:
+      - cpo_optical_module
+      - high_speed_optical_modules
+    legacy_theme_names:
+      - 高速光模块
+      - CPO/高速光模块
+      - 光模块/CPO/硅光
+      - 01_高速光模块
+    aliases:
+      - cpo_optical_module
+      - high_speed_optical_modules
+    evidence_file_ids:
+      - high_speed_optical_modules
+    include_concepts:
+      - 800G/1.6T/3.2T高速光模块
+      - CPO/NPO共封装光学
+      - 硅光芯片/硅光模块
+      - LPO线性直驱
+      - DCI/相干光
+    exclude_concepts:
+      - 电信光模块（非数通）
+      - 接入网光模块
+    research_questions:
+      - AI数据中心需求是否继续上修？
+      - 800G向1.6T切换是否带来ASP提升？
+      - CPO/LPO对可插拔模块的替代节奏？
+      - 龙头估值是否已透支2027年？
+    required_outputs:
+      - sector_card
+      - company_comparison
+      - company_financial_table
+      - score
+      - source_index
+      - missing_data_log
+    scoring_enabled: true
+    status: indexed_existing_partial
+    source_note: 初稿迁移自科技主线调研输出/01_AI算力硬件/01_高速光模块.md；需补全2026E/2027E一致预期来源、客户订单核实、估值历史分位。未按新评分标准打分，未补全source_id。
+    verification_requirements:
+      company_revenue_exposure_verified: false
+      customer_order_verified: false
+      pe_historical_percentile_verified: false
+      forecast_verified: false
+
+  - sector_id: optical_chip_components
+    sector_name: 光芯片/激光器/光器件
+    research_group_id: optical_interconnect
+    group_order: 03
+    parent_chain: 光通信/高速互连
+    priority: P0
+    # Legacy mapping for backward compatibility with existing evidence files and outputs
+    legacy_sector_ids:
+      - optical_components
+      - optical_components_fau_precision_optics
+    legacy_theme_names:
+      - 光器件/FAU/精密光学
+      - 光芯片/光器件
+      - 光芯片/激光器/光器件
+      - 01_光器件_FAU_精密光学
+    aliases:
+      - optical_components
+      - optical_components_fau_precision_optics
+    evidence_file_ids:
+      - optical_components_fau_precision_optics
+    include_concepts:
+      - EML/VCSEL/CW激光器
+      - FAU光纤阵列/MPO连接器
+      - 薄膜铌酸锂高速调制器
+      - 法拉第旋光片/隔离器
+      - 无源光器件/PLC/AWG芯片
+    exclude_concepts:
+      - 消费光学
+      - 车载镜头
+    research_questions:
+      - 上游器件弹性是否滞后于光模块整机？
+      - FAU/MPO价值量是否有明确提升逻辑？
+      - 薄膜铌酸锂量产节奏？
+      - CPO渗透对器件价值分配的影响？
+    required_outputs:
+      - sector_card
+      - company_comparison
+      - company_financial_table
+      - score
+      - source_index
+      - missing_data_log
+    scoring_enabled: true
+    status: indexed_existing_partial
+    source_note: 初稿迁移自科技主线调研输出/01_AI算力硬件/01_光器件_FAU_精密光学.md；需补全一致预期和估值历史分位。未按新评分标准打分，未补全source_id。
+    verification_requirements:
+      company_revenue_exposure_verified: false
+      customer_order_verified: false
+      pe_historical_percentile_verified: false
+      forecast_verified: false
+
+  - sector_id: fiber_cable_hollow_core_dci
+    sector_name: 光纤光缆/空芯光纤/DCI
+    research_group_id: optical_interconnect
+    group_order: 03
+    parent_chain: 光通信/高速互连
+    priority: P2
+    legacy_sector_ids: []
+    legacy_theme_names: []
+    aliases: []
+    evidence_file_ids: []
+    include_concepts:
+      - 光纤光缆（AIDC/DCI/运营商网络）
+      - 空芯光纤（低时延/高带宽新技术）
+      - 光通信设备/传输设备
+    exclude_concepts:
+      - 电力光缆
+    research_questions:
+      - 空芯光纤量产节奏？
+      - AIDC建设对光纤需求拉动？
+    required_outputs:
+      - sector_card
+      - company_comparison
+      - score
+      - source_index
+      - missing_data_log
+    scoring_enabled: true
+    status: planned
+    source_note: 待启动研究
+    verification_requirements: {}
+
+  - sector_id: high_speed_copper_connector
+    sector_name: 高速铜缆/DAC/AEC/连接器
+    research_group_id: optical_interconnect
+    group_order: 03
+    parent_chain: 光通信/高速互连
+    priority: P1
+    legacy_sector_ids: []
+    legacy_theme_names: []
+    aliases: []
+    evidence_file_ids: []
+    include_concepts:
+      - DAC直连电缆
+      - AEC有源电缆
+      - 高速背板/连接器
+      - 256T/512T交换机互联
+    exclude_concepts:
+      - 消费级连接器
+      - 汽车连接器
+    research_questions:
+      - 铜缆在短距离互联中对光模块的替代或补充节奏？
+      - 高速铜缆ASP提升空间？
+    required_outputs:
+      - sector_card
+      - company_comparison
+      - score
+      - source_index
+      - missing_data_log
+    scoring_enabled: true
+    status: planned
+    source_note: 待启动研究
+    verification_requirements: {}
+
+  # ═══════════════════════════════════════════════════════
+  # group: pcb_ccl_substrate
+  # ═══════════════════════════════════════════════════════
+
+  - sector_id: ai_server_pcb_high_speed_board
+    sector_name: AI服务器PCB/高速通信板
+    research_group_id: pcb_ccl_substrate
+    group_order: 04
+    parent_chain: PCB/CCL/载板
+    priority: P1
+    legacy_sector_ids: []
+    legacy_theme_names: []
+    aliases: []
+    evidence_file_ids: []
+    include_concepts:
+      - AI服务器PCB（高层数/高速/高可靠）
+      - 交换机PCB
+      - 光模块PCB
+      - HDI/FPC
+    exclude_concepts:
+      - 消费电子PCB（非AI）
+      - 汽车PCB
+    research_questions:
+      - AI服务器PCB层数/材料升级带来的价值量提升？
+      - 头部厂商产能扩张节奏？
+    required_outputs:
+      - sector_card
+      - company_comparison
+      - company_financial_table
+      - score
+      - source_index
+      - missing_data_log
+    scoring_enabled: true
+    status: planned
+    source_note: 待启动研究
+    verification_requirements: {}
+
+  - sector_id: ccl_high_frequency_materials
+    sector_name: CCL/高频高速材料/铜箔/树脂
+    research_group_id: pcb_ccl_substrate
+    group_order: 04
+    parent_chain: PCB/CCL/载板
+    priority: P1
+    legacy_sector_ids: []
+    legacy_theme_names: []
+    aliases: []
+    evidence_file_ids: []
+    include_concepts:
+      - 高频高速覆铜板
+      - 特种树脂/低介电材料
+      - 电子级玻纤布
+      - 铜箔
+      - 电磁屏蔽/导热材料
+    exclude_concepts:
+      - 普通CCL（非高频高速）
+    research_questions:
+      - CCL上游材料国产替代进度？
+      - 核心材料供需格局？
+    required_outputs:
+      - sector_card
+      - company_comparison
+      - score
+      - source_index
+      - missing_data_log
+    scoring_enabled: true
+    status: planned
+    source_note: 待启动研究
+    verification_requirements: {}
+
+  - sector_id: ic_substrate_abf_glass_tgv
+    sector_name: IC载板/ABF/玻璃基板/TGV
+    research_group_id: pcb_ccl_substrate
+    group_order: 04
+    parent_chain: PCB/CCL/载板
+    priority: P1
+    legacy_sector_ids: []
+    legacy_theme_names: []
+    aliases: []
+    evidence_file_ids: []
+    include_concepts:
+      - ABF载板（GPU/CPU/HBM封装）
+      - 封装基板
+      - 玻璃基板/TGV
+      - MLCC/被动元件
+    exclude_concepts:
+      - 普通PCB
+    research_questions:
+      - ABF载板供需格局？
+      - 玻璃基板量产节奏？
+    required_outputs:
+      - sector_card
+      - company_comparison
+      - score
+      - source_index
+      - missing_data_log
+    scoring_enabled: true
+    status: planned
+    source_note: 待启动研究
+    verification_requirements: {}
+
+  # ═══════════════════════════════════════════════════════
+  # group: semiconductor_equipment_materials
+  # ═══════════════════════════════════════════════════════
+
+  - sector_id: semiconductor_frontend_equipment
+    sector_name: 半导体前道设备
+    research_group_id: semiconductor_equipment_materials
+    group_order: 05
+    parent_chain: 半导体设备/材料
+    priority: P1
+    legacy_sector_ids: []
+    legacy_theme_names: []
+    aliases: []
+    evidence_file_ids: []
+    include_concepts:
+      - 刻蚀设备
+      - 薄膜沉积 CVD/ALD/PVD
+      - 清洗设备
+      - 涂胶显影
+      - CMP设备
+      - 热处理/炉管
+    exclude_concepts:
+      - 半导体材料
+      - 封测设备（后道）
+    research_questions:
+      - 国产设备在28nm/14nm/7nm节点的渗透率？
+      - 设备订单可见性？
+      - 与海外设备的差距？
+    required_outputs:
+      - sector_card
+      - company_comparison
+      - company_financial_table
+      - score
+      - source_index
+      - missing_data_log
+    scoring_enabled: true
+    status: planned
+    source_note: 待启动研究
+    verification_requirements: {}
+
+  - sector_id: semiconductor_metrology_test_equipment
+    sector_name: 半导体检测/量测/测试设备
+    research_group_id: semiconductor_equipment_materials
+    group_order: 05
+    parent_chain: 半导体设备/材料
+    priority: P1
+    legacy_sector_ids: []
+    legacy_theme_names: []
+    aliases: []
+    evidence_file_ids: []
+    include_concepts:
+      - 前道量测检测
+      - 后道测试设备
+      - 半导体AOI/缺陷检测
+      - 探针台/探针卡
+    exclude_concepts:
+      - 通用检测设备
+    research_questions:
+      - 制程复杂度提升下的量检测设备需求？
+      - 国产替代空间？
+    required_outputs:
+      - sector_card
+      - company_comparison
+      - score
+      - source_index
+      - missing_data_log
+    scoring_enabled: true
+    status: planned
+    source_note: 待启动研究
+    verification_requirements: {}
+
+  - sector_id: semiconductor_components_parts
+    sector_name: 半导体零部件
+    research_group_id: semiconductor_equipment_materials
+    group_order: 05
+    parent_chain: 半导体设备/材料
+    priority: P1
+    legacy_sector_ids: []
+    legacy_theme_names: []
+    aliases: []
+    evidence_file_ids: []
+    include_concepts:
+      - 腔体/结构件
+      - 阀门/管路/气体系统
+      - 静电卡盘/陶瓷件
+      - 真空/射频电源
+      - 金刚石刀具/切割耗材
+    exclude_concepts:
+      - 通用机械零部件
+    research_questions:
+      - 半导体设备零部件国产替代进度？
+      - 核心零部件供应链安全？
+    required_outputs:
+      - sector_card
+      - company_comparison
+      - score
+      - source_index
+      - missing_data_log
+    scoring_enabled: true
+    status: planned
+    source_note: 待启动研究
+    verification_requirements: {}
+
+  - sector_id: semiconductor_materials
+    sector_name: 半导体材料
+    research_group_id: semiconductor_equipment_materials
+    group_order: 05
+    parent_chain: 半导体设备/材料
+    priority: P1
+    legacy_sector_ids: []
+    legacy_theme_names: []
+    aliases: []
+    evidence_file_ids: []
+    include_concepts:
+      - 大硅片（12英寸）
+      - 光刻胶（KrF/ArF）
+      - 电子特气
+      - CMP材料（抛光液/垫）
+      - 湿电子化学品
+      - 靶材
+      - 前驱体/先进材料
+      - 封装材料（EMC/GMC/底填）
+      - 化合物半导体衬底（SiC/GaN/InP）
+    exclude_concepts:
+      - 半导体设备
+    research_questions:
+      - 关键材料国产化率？
+      - 28nm以上成熟制程材料替代进度？
+    required_outputs:
+      - sector_card
+      - company_comparison
+      - score
+      - source_index
+      - missing_data_log
+    scoring_enabled: true
+    status: planned
+    source_note: 待启动研究
+    verification_requirements: {}
+    notes: >
+      注意：磷化铟、锗、红磷等上游材料，题材弹性强，但多数公司需
+      进一步验证"真实产能、客户认证、收入占比"，否则容易停留在
+      主题炒作层。
+
+  # ═══════════════════════════════════════════════════════
+  # group: memory_packaging
+  # ═══════════════════════════════════════════════════════
+
+  - sector_id: memory_hbm_ddr5
+    sector_name: 存储芯片/HBM/DDR5
+    research_group_id: memory_packaging
+    group_order: 06
+    parent_chain: 存储/先进封装
+    priority: P1
+    legacy_sector_ids: []
+    legacy_theme_names: []
+    aliases: []
+    evidence_file_ids: []
+    include_concepts:
+      - DRAM/NAND/NOR存储芯片
+      - HBM接口/DDR5接口
+      - 存储模组/SSD
+      - HBM分销/代理
+    exclude_concepts:
+      - 传统嵌入式存储（非AI相关）
+    research_questions:
+      - HBM供需格局？
+      - 国内存储厂商进展？
+      - DDR5升级节奏？
+    required_outputs:
+      - sector_card
+      - company_comparison
+      - score
+      - source_index
+      - missing_data_log
+    scoring_enabled: true
+    status: planned
+    source_note: 待启动研究
+    verification_requirements: {}
+
+  - sector_id: advanced_packaging_chiplet_cowos_tsv
+    sector_name: 先进封装/Chiplet/CoWoS/TSV
+    research_group_id: memory_packaging
+    group_order: 06
+    parent_chain: 存储/先进封装
+    priority: P1
+    legacy_sector_ids: []
+    legacy_theme_names: []
+    aliases: []
+    evidence_file_ids: []
+    include_concepts:
+      - 封测龙头（AI芯片/存储/Chiplet）
+      - 2.5D/3D封装
+      - TSV/混合键合
+      - 封装测试服务
+      - 先进封装材料/设备
+    exclude_concepts:
+      - 传统封装（非先进制程）
+    research_questions:
+      - HBM需求与AI芯片绑定的持续性？
+      - 先进封装国产化进度？
+    required_outputs:
+      - sector_card
+      - company_comparison
+      - score
+      - source_index
+      - missing_data_log
+    scoring_enabled: true
+    status: planned
+    source_note: 待启动研究
+    verification_requirements: {}
+
+  # ═══════════════════════════════════════════════════════
+  # group: semiconductor_design_manufacturing
+  # ═══════════════════════════════════════════════════════
+
+  - sector_id: wafer_foundry_specialty_process
+    sector_name: 晶圆制造/特色工艺
+    research_group_id: semiconductor_design_manufacturing
+    group_order: 07
+    parent_chain: 半导体设计/制造/EDA
+    priority: P2
+    legacy_sector_ids: []
+    legacy_theme_names: []
+    aliases: []
+    evidence_file_ids: []
+    include_concepts:
+      - 晶圆代工
+      - 特色工艺（功率/模拟/车规/MCU）
+      - MEMS制造
+      - 功率半导体制造
+    exclude_concepts:
+      - 逻辑芯片代工（非成熟制程）
+    research_questions:
+      - 成熟制程产能利用率？
+      - 功率半导体需求与AI服务器电源的交叉逻辑？
+    required_outputs:
+      - sector_card
+      - company_comparison
+      - score
+      - source_index
+      - missing_data_log
+    scoring_enabled: true
+    status: planned
+    source_note: 待启动研究
+    verification_requirements: {}
+
+  - sector_id: eda_ip_design_service
+    sector_name: EDA/半导体IP/芯片设计服务
+    research_group_id: semiconductor_design_manufacturing
+    group_order: 07
+    parent_chain: 半导体设计/制造/EDA
+    priority: P2
+    legacy_sector_ids: []
+    legacy_theme_names: []
+    aliases: []
+    evidence_file_ids: []
+    include_concepts:
+      - EDA软件
+      - 芯片IP（RISC-V/接口IP/SoC设计平台）
+      - 设计服务
+      - 封测EDA/良率工具
+    exclude_concepts:
+      - 通用软件
+    research_questions:
+      - EDA国产化率？
+      - IP授权商业模式稳定性？
+    required_outputs:
+      - sector_card
+      - company_comparison
+      - score
+      - source_index
+      - missing_data_log
+    scoring_enabled: true
+    status: planned
+    source_note: 待启动研究
+    verification_requirements: {}
+
+  - sector_id: edge_ai_soc_mcu
+    sector_name: SoC/MCU/端侧AI芯片
+    research_group_id: semiconductor_design_manufacturing
+    group_order: 07
+    parent_chain: 半导体设计/制造/EDA
+    priority: P2
+    legacy_sector_ids: []
+    legacy_theme_names: []
+    aliases: []
+    evidence_file_ids: []
+    include_concepts:
+      - AIoT SoC
+      - 音频SoC/蓝牙SoC
+      - 视觉AI SoC
+      - MCU
+      - 模拟/电源芯片
+      - 射频/无线连接芯片
+    exclude_concepts:
+      - 服务器级GPU/CPU
+    research_questions:
+      - 端侧AI芯片渗透率？
+      - 核心标的？
+      - 瑞芯微、恒玄科技等公司的AIoT SoC进展？
+    required_outputs:
+      - sector_card
+      - company_comparison
+      - score
+      - source_index
+      - missing_data_log
+    scoring_enabled: true
+    status: planned
+    source_note: 待启动研究
+    verification_requirements: {}
+
+  # ═══════════════════════════════════════════════════════
+  # group: ai_application_data
+  # ═══════════════════════════════════════════════════════
+  # Note: These sectors belong to ai_application_data group, NOT AI算力硬件.
+  # They are separate from the hardware research groups.
+
+  - sector_id: llm_aigc_agent_office
+    sector_name: 大模型/AIGC/Agent/办公软件
+    research_group_id: ai_application_data
+    group_order: 08
+    parent_chain: AI应用/数据要素
+    priority: P2
+    legacy_sector_ids: []
+    legacy_theme_names: []
+    aliases: []
+    evidence_file_ids: []
+    include_concepts:
+      - 通用大模型
+      - AI办公
+      - AIGC内容（文本/图片/视频）
+      - 多模态AI
+      - Agent/企业软件
+    exclude_concepts:
+      - 基础算力
+      - 半导体硬件
+    research_questions:
+      - 哪些AI应用有付费逻辑？
+      - Agent落地节奏？
+    required_outputs:
+      - sector_card
+      - company_comparison
+      - score
+      - source_index
+      - missing_data_log
+    scoring_enabled: true
+    status: planned
+    source_note: 待启动研究
+    verification_requirements: {}
+
+  - sector_id: industry_ai_applications
+    sector_name: 行业AI应用
+    research_group_id: ai_application_data
+    group_order: 08
+    parent_chain: AI应用/数据要素
+    priority: P2
+    legacy_sector_ids: []
+    legacy_theme_names: []
+    aliases: []
+    evidence_file_ids: []
+    include_concepts:
+      - 金融AI
+      - 医疗AI
+      - 政务AI/城市治理
+      - 工业AI
+      - 教育AI
+    exclude_concepts:
+      - 通用AI基础设施
+    research_questions:
+      - 各行业AI渗透率差异？
+      - 付费客户群体？
+    required_outputs:
+      - sector_card
+      - company_comparison
+      - score
+      - source_index
+      - missing_data_log
+    scoring_enabled: true
+    status: planned
+    source_note: 待启动研究
+    verification_requirements: {}
+
+  - sector_id: data_elements_corpus_copyright_security
+    sector_name: 数据要素/语料/版权/数据安全
+    research_group_id: ai_application_data
+    group_order: 08
+    parent_chain: AI应用/数据要素
+    priority: P2
+    legacy_sector_ids: []
+    legacy_theme_names: []
+    aliases: []
+    evidence_file_ids: []
+    include_concepts:
+      - 训练语料/标注/垂直数据
+      - 数据交易/数据资产
+      - 版权/IP内容
+      - 数据安全
+    exclude_concepts:
+      - 硬件基础设施
+    research_questions:
+      - 数据要素市场化进度？
+      - 语料版权合规性？
+    required_outputs:
+      - sector_card
+      - company_comparison
+      - score
+      - source_index
+      - missing_data_log
+    scoring_enabled: true
+    status: planned
+    source_note: 待启动研究
+    verification_requirements: {}
+
+  # ═══════════════════════════════════════════════════════
+  # group: ai_terminal_consumer_electronics
+  # ═══════════════════════════════════════════════════════
+
+  - sector_id: ai_pc_phone_glasses_earbuds
+    sector_name: AI PC/AI手机/AI眼镜/AI耳机
+    research_group_id: ai_terminal_consumer_electronics
+    group_order: 09
+    parent_chain: 端侧AI/消费电子
+    priority: P2
+    legacy_sector_ids: []
+    legacy_theme_names: []
+    aliases: []
+    evidence_file_ids: []
+    include_concepts:
+      - AI PC/AI手机
+      - AI眼镜/AR眼镜
+      - AI耳机/AI音箱
+      - AI玩具/陪伴硬件
+      - 消费电子结构件
+    exclude_concepts:
+      - 服务器/数据中心
+      - 工业设备（非AI）
+    research_questions:
+      - 端侧AI渗透率？
+      - 核心标的（SoC/存储/光学/声学/ODM）？
+    required_outputs:
+      - sector_card
+      - company_comparison
+      - score
+      - source_index
+      - missing_data_log
+    scoring_enabled: true
+    status: planned
+    source_note: 待启动研究
+    verification_requirements: {}
+
+  # ═══════════════════════════════════════════════════════
+  # group: peripheral_observation
+  # ═══════════════════════════════════════════════════════
+  # These sectors are for observation only; they do NOT receive scoring.
+
+  - sector_id: sixg_compute_network
+    sector_name: 6G/算力网络
+    research_group_id: peripheral_observation
+    group_order: 10
+    parent_chain: 外围科技观察
+    priority: P3
+    legacy_sector_ids: []
+    legacy_theme_names: []
+    aliases: []
+    evidence_file_ids: []
+    include_concepts:
+      - 6G通信
+      - 算力网络
+      - 边缘智能
+    exclude_concepts:
+      - 半导体硬件（非通信相关）
+    research_questions:
+      - 6G标准化进展？
+    required_outputs:
+      - sector_card
+      - observation_note
+    scoring_enabled: false
+    status: observation_only
+    source_note: 外围观察，不进入第一阶段核心评分
+
+  - sector_id: satellite_internet
+    sector_name: 卫星互联网
+    research_group_id: peripheral_observation
+    group_order: 10
+    parent_chain: 外围科技观察
+    priority: P3
+    legacy_sector_ids: []
+    legacy_theme_names: []
+    aliases: []
+    evidence_file_ids: []
+    include_concepts:
+      - 卫星互联网
+      - 空天地算力网络
+    exclude_concepts:
+      - 地面通信（非卫星相关）
+    research_questions:
+      - 卫星互联网商业化进展？
+    required_outputs:
+      - sector_card
+      - observation_note
+    scoring_enabled: false
+    status: observation_only
+    source_note: 外围观察，不进入第一阶段核心评分
+
+  - sector_id: quantum_technology
+    sector_name: 量子科技
+    research_group_id: peripheral_observation
+    group_order: 10
+    parent_chain: 外围科技观察
+    priority: P3
+    legacy_sector_ids: []
+    legacy_theme_names: []
+    aliases: []
+    evidence_file_ids: []
+    include_concepts:
+      - 量子计算
+      - 量子通信
+      - 量子安全
+    exclude_concepts:
+      - 经典计算
+    research_questions:
+      - 量子科技商业化时间表？
+    required_outputs:
+      - sector_card
+      - observation_note
+    scoring_enabled: false
+    status: observation_only
+    source_note: 外围观察，不进入第一阶段核心评分
+
+  - sector_id: xinchuang_domestic_software
+    sector_name: 信创/国产软件
+    research_group_id: peripheral_observation
+    group_order: 10
+    parent_chain: 外围科技观察
+    priority: P3
+    legacy_sector_ids: []
+    legacy_theme_names: []
+    aliases: []
+    evidence_file_ids: []
+    include_concepts:
+      - 操作系统
+      - 数据库
+      - 中间件
+      - 国产AI底座软件
+    exclude_concepts:
+      - 硬件基础设施
+    research_questions:
+      - 信创政策持续性？
+      - 国产AI软件生态进展？
+    required_outputs:
+      - sector_card
+      - observation_note
+    scoring_enabled: false
+    status: observation_only
+    source_note: 外围观察，不进入第一阶段核心评分

@@ -1,7 +1,7 @@
 """Ingest data for the high-speed optical module research card.
 
 Sources follow investment_system/docs/data_source_configuration.md:
-- realtime quote, fund flow, financial statements: Guosen API
+- realtime quote, fund flow, financial statements: AKShare/Tushare or public evidence; Guosen skills are disabled by default
 - daily kline: BaoStock
 """
 from __future__ import annotations
@@ -315,17 +315,17 @@ def amount_avg(rows: list[dict[str, str]], periods: int = 20) -> str:
 
 def main() -> int:
     parser = argparse.ArgumentParser()
-    parser.add_argument("--skip-guosen", action="store_true", help="skip Guosen calls when endpoint is unstable")
+    parser.add_argument("--enable-guosen", action="store_true", help="re-enable legacy Guosen calls")
     parser.add_argument("--limit", type=int, default=0, help="limit company count for testing")
     parser.add_argument("--guosen-timeout", type=int, default=90, help="curl max-time for each Guosen request")
     parser.add_argument("--baostock-interval", type=float, default=2.0, help="seconds between BaoStock queries")
     args = parser.parse_args()
 
     load_dotenv(LOCAL_ENV)
-    if not args.skip_guosen and not os.environ.get("GS_API_KEY"):
+    if args.enable_guosen and not os.environ.get("GS_API_KEY"):
         raise RuntimeError("GS_API_KEY is not configured in environment or .env.local")
 
-    use_guosen = not args.skip_guosen
+    use_guosen = args.enable_guosen
 
     start_date = (date.today() - timedelta(days=220)).isoformat()
     companies = COMPANIES[: args.limit] if args.limit else COMPANIES
@@ -334,12 +334,12 @@ def main() -> int:
         "run_at": datetime.now().isoformat(timespec="seconds"),
         "date": TODAY,
         "companies": companies,
-        "skip_guosen": args.skip_guosen,
+        "skip_guosen": not args.enable_guosen,
         "source_priority": {
-            "realtime_quote": ["guosen", "akshare"],
-            "daily_kline": ["baostock", "akshare", "guosen"],
-            "financial_statement": ["guosen", "baostock", "akshare"],
-            "fund_flow": ["guosen", "akshare"],
+            "realtime_quote": ["akshare", "tushare"],
+            "daily_kline": ["baostock", "akshare", "tushare"],
+            "financial_statement": ["baostock", "akshare", "tushare"],
+            "fund_flow": ["akshare"],
         },
     }
     write_json(ROOT / "investment_system" / "data" / "raw" / "research_runs" / TODAY / "高速光模块_run_meta.json", run_meta)

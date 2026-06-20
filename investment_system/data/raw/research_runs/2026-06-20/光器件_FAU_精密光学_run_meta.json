@@ -1,0 +1,14 @@
+{
+  "sub_theme": "光器件/FAU/精密光学",
+  "companies": [
+    "300394",
+    "300570",
+    "688195",
+    "300620",
+    "688025",
+    "688127"
+  ],
+  "run_at": "2026-06-20T13:09:14",
+  "legacy_source_disabled": true,
+  "evidence_path": "C:\\Projects\\03_Investment\\investment_system\\research\\evidence\\optical_components_fau_precision_optics.yaml"
+}

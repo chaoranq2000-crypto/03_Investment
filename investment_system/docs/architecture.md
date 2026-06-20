@@ -2,11 +2,38 @@
 
 ## 1. 分层设计
 
+### 研究级报告生产链
+
+本项目的调研输出分为两级：
+
+- **pipeline-grade**：字段、CSV、来源索引和基础 Markdown 能生成，适合调试数据管道。
+- **research-grade**：正文可直接用于投研阅读，关键判断有可索引来源，缺口集中披露，不在正文散落“待核实”占位符。
+
+研究级报告的标准流程是：
+
+```text
+板块/细分方向定义
+-> 行情与财务接口采集
+-> 本地缓存和原始返回保存
+-> 接口缺口识别
+-> 联网补采年报/公告/互动易/研报/政策文件
+-> evidence YAML结构化
+-> 预测与估值归一化
+-> 深度报告生成
+-> pipeline-grade + research-grade双验收
+```
+
+接口拿不到的数据不能直接变成正文断言。必须进入以下三种状态之一：
+
+1. 从本地缓存或其他接口补齐，并在 `数据来源索引.csv` 中登记缓存路径。
+2. 联网搜索补齐，并登记可访问网页 URL、发布日期、来源名称和短摘录。
+3. 仍无法证实，写入 `缺失数据清单.md`，正文只描述“该项未证实”，不展开为事实判断。
+
 ### A. 数据层
 
 职责：
 
-- 从 AKShare、国信 API、PDF 公告、手工资料中获取数据。
+- 从 AKShare、BaoStock、Tushare、PDF 公告、手工资料中获取数据。
 - 使用本地缓存，避免重复请求和限频。
 - 区分原始数据、加工数据、最终分析结果。
 
@@ -73,6 +100,7 @@ investment_system/pipelines/
 
 - 管理行业、公司、主题、催化剂、竞争格局。
 - 保存研究笔记、证据链、估值假设和报告。
+- 保存联网补采的网页来源、PDF来源、本地缓存来源和人工核实来源。
 
 建议目录：
 
@@ -89,6 +117,8 @@ investment_system/research/
 
 - `A股科技前两主线调研文件包`
 - `investment_system/research`
+
+研究层的 durable source of truth 是 `investment_system/research/evidence/`。最终 Markdown 和 CSV 是生成物，不作为事实源手工维护。
 
 ### D. 策略与评分层
 
@@ -165,16 +195,16 @@ investment_system/portfolio/
 研究结论 + 当前价格 + 日内涨跌幅 + 成交量/成交额 + 均线位置 + 支撑压力 + 板块状态 + 组合仓位
 ```
 
-其中 AKShare 或国信 API 只在重点标的上按需实时拉取，不做全市场高频硬拉。
+其中 AKShare 或 Tushare 只在重点标的上按需实时拉取，不做全市场高频硬拉。
 
 ## 2. 数据刷新频率
 
 | 数据类型 | 建议频率 | 来源 | 说明 |
 |---|---:|---|---|
-| 日 K 线 | 每日收盘后 | BaoStock/AKShare/国信 API | 不要盘中反复拉 |
-| 财务三表 | 每周或公告后 | 国信 API/BaoStock/AKShare | 季报年报低频 |
-| 实时行情 | 盘中按需 | 国信 API/AKShare | 单点请求，加限速重试 |
-| 资金流 | 每日收盘后 | 国信 API | 可作为短线辅助 |
+| 日 K 线 | 每日收盘后 | BaoStock/AKShare/Tushare | 不要盘中反复拉 |
+| 财务三表 | 每周或公告后 | BaoStock/AKShare/Tushare/公司报告 | 季报年报低频 |
+| 实时行情 | 盘中按需 | AKShare/Tushare | 单点请求，加限速重试 |
+| 资金流 | 每日收盘后 | AKShare或公开来源 | 可作为短线辅助，取不到则记录缺口 |
 | 公告/PDF | 事件触发 | PDF/MinerU | 进入证据库 |
 | 研究报告 | 人工触发 | 本地 Markdown | 进入研究层 |
 | 操作决策 | 盘中/收盘后 | 行情+研究+风控 | 进入实时操作决策层 |
@@ -182,7 +212,14 @@ investment_system/portfolio/
 ## 3. 环境原则
 
 - 普通 Python 任务统一使用项目根目录 Conda 环境：`C:\Projects\03_Investment\.conda\investment-system\python.exe`。
-- AKShare、BaoStock、国信 API 管道均通过统一 Conda 环境执行。
+- AKShare、BaoStock、Tushare 管道均通过统一 Conda 环境执行。
 - 旧 `.venv` 和旧子项目环境已删除，文档和配置不再依赖旧环境路径。
 - 如需 PDF/MinerU 解析，应在统一配置中重新登记外部 MinerU 环境入口。
 - 新建通用脚本前，优先判断它属于数据层、研究层、实时操作决策层还是组合层，避免继续散落在 `tmp`。
+
+
+
+
+
+
+

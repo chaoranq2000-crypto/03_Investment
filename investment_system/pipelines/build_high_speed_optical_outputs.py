@@ -121,7 +121,7 @@ def build_company_table() -> list[dict[str, str]]:
                 "institution_forecast_change": "缺失",
                 "catalysts": "AI数据中心资本开支、高速率光模块迭代、海外CSP需求；待逐项证据化",
                 "risks": "近3/6月涨幅较大、估值扩张、客户集中、技术路线迭代、收入暴露待核实",
-                "data_source": "BaoStock daily_kline/profit; Guosen/AkShare当前网络层失败",
+                "data_source": "BaoStock daily_kline/profit; AKShare/Tushare fallback; Guosen skills disabled",
                 "source_date": TODAY,
                 "source_url": f"investment_system/data/raw/baostock/daily_kline/{TODAY}/{code}.json; investment_system/data/raw/baostock/profit/{TODAY}/{code}.json",
                 "confidence_level": "中：行情/财务可用，主线收入暴露证据缺失",
@@ -180,7 +180,7 @@ def write_outputs() -> None:
             "key_evidence": "8家代表公司近6月涨幅42.80%-326.94%；中际旭创2025年收入382.40亿元、净利润115.80亿元，2026Q1净利润63.17亿元；新易盛2025年收入248.42亿元、净利润95.53亿元，2026Q1净利润27.74亿元。",
             "key_risks": "多数标的近3/6月涨幅巨大，主线收入暴露、订单客户、机构预期和估值历史分位仍缺失；存在拥挤和高估风险。",
             "missing_data": "800G/1.6T收入占比、海外CSP客户/订单、产能利用率、机构一致预期、估值历史分位、指数相对强弱",
-            "source_index_refs": "SRC-BAO-DAILY-001; SRC-BAO-PROFIT-001; SRC-GUOSEN-ERR-001; SRC-AKSHARE-ERR-001",
+            "source_index_refs": "SRC-BAO-DAILY-001; SRC-BAO-PROFIT-001; SRC-GUOSEN-DISABLED-001; SRC-AKSHARE-ERR-001",
         }
     ]
     write_csv(OUT / "00_总表" / "科技细分方向横向比较表.csv", comparison_rows)
@@ -215,22 +215,22 @@ def write_outputs() -> None:
             "notes": "收入字段仅在半年报/年报行有值；Q1收入缺失。",
         },
         {
-            "source_id": "SRC-GUOSEN-ERR-001",
-            "source_type": "api_error",
-            "source_name": "Guosen API",
+            "source_id": "SRC-GUOSEN-DISABLED-001",
+            "source_type": "disabled_source",
+            "source_name": "Guosen skills disabled",
             "source_date": TODAY,
             "source_url": f"investment_system/data/raw/guosen/",
             "related_main_theme": "AI算力硬件",
             "related_sub_theme": "高速光模块",
             "related_company": "8家代表公司",
-            "quote_or_excerpt": "主备key均尝试，curl返回码35或TLS/Schannel凭证错误，未进入可用数据返回阶段。",
+            "quote_or_excerpt": "本地国信证券 skills 已卸载，不作为本项目默认数据源。",
             "data_fields_supported": "none",
             "confidence_level": "高",
-            "notes": "不判断key失效，仅记录当前网络/TLS层不可达。",
+            "notes": "如未来重新启用，需显式恢复 skill 和数据源配置。",
         },
         {
             "source_id": "SRC-AKSHARE-ERR-001",
-            "source_type": "api_error",
+            "source_type": "disabled_source",
             "source_name": "AKShare stock_zh_a_hist",
             "source_date": TODAY,
             "source_url": "push2his.eastmoney.com",
@@ -249,10 +249,10 @@ def write_outputs() -> None:
 
 | 细分方向 | 公司 | 缺失字段 | 已查来源 | 下一步建议 |
 |---|---|---|---|---|
-| 高速光模块 | 8家代表公司 | 800G/1.6T收入占比、海外CSP客户、订单可见度、产能利用率 | BaoStock、Guosen主备key、AKShare | 查公司年报、半年报、投资者关系记录、互动易/上证e互动 |
-| 高速光模块 | 8家代表公司 | 2026E/2027E收入利润、PE、PEG、估值历史分位 | BaoStock | 补机构一致预期或终端数据 |
+| 高速光模块 | 8家代表公司 | 800G/1.6T收入占比、海外CSP客户、订单可见度、产能利用率 | BaoStock、AKShare、Tushare | 查公司年报、半年报、投资者关系记录、互动易/上证e互动 |
+| 高速光模块 | 8家代表公司 | 2026E/2027E收入利润、PE、PEG、估值历史分位 | BaoStock | 补用户提供数据、可验证公开预测页面或券商研报 |
 | 高速光模块 | 8家代表公司 | 相对科技指数/创业板/科创50强弱 | BaoStock个股日线 | 补指数日线并计算相对强弱 |
-| 高速光模块 | 8家代表公司 | 资金流、板块关联 | Guosen API | 当前TLS层失败；修复Guosen访问后重跑 |
+| 高速光模块 | 8家代表公司 | 资金流、板块关联 | Guosen skills disabled | Guosen skills 已禁用，改用其它来源或列入缺口 |
 """
     (OUT / "99_日志" / "缺失数据清单.md").write_text(missing_md, encoding="utf-8")
 
@@ -260,7 +260,7 @@ def write_outputs() -> None:
 
 | 细分方向 | 公司 | 冲突字段 | 来源A | 来源B | 当前处理 |
 |---|---|---|---|---|---|
-| 高速光模块 | - | - | - | - | 暂未发现可比来源间的数据冲突；当前主要问题是Guosen/AkShare不可达导致交叉校验不足。 |
+| 高速光模块 | - | - | - | - | 暂未发现可比来源间的数据冲突；Guosen skills 已禁用，AKShare不可达时需记录缺口。 |
 """
     (OUT / "99_日志" / "冲突数据清单.md").write_text(conflict_md, encoding="utf-8")
 
@@ -271,7 +271,7 @@ def write_outputs() -> None:
 - 读取调研说明手册和母表，选择P0方向：高速光模块。
 - 使用统一Conda环境：`C:/Projects/03_Investment/.conda/investment-system/python.exe`。
 - BaoStock日线和利润数据已完成8家公司采集，原始数据保存在 `investment_system/data/raw/baostock/`。
-- Guosen API已读取 `GS_API_KEY` 与 `GS_API_KEY_BACKUP` 两个环境变量并分别尝试；当前失败发生在TLS/Schannel层，记录为不可达，不写入事实数据。
+- Guosen skills 已卸载，默认不读取 `GS_API_KEY`，不作为本轮事实来源。
 - AKShare `stock_zh_a_hist` 触发Eastmoney远端断开，禁用代理后仍失败，暂不作为本轮事实来源。
 - 已生成高速光模块调研卡片、横向比较表、代表公司财务估值总表、数据来源索引、缺失数据清单、冲突数据清单。
 """
@@ -358,3 +358,4 @@ def write_outputs() -> None:
 
 if __name__ == "__main__":
     write_outputs()
+

@@ -1,31 +1,31 @@
 """Standardized automated research pipeline for A股科技主线.
 
 Usage:
-    # Run all P0 sub-themes:
+    # Run all P0 sub-themes (legacy):
     python run_research.py --batch p0
 
-    # Run a specific sub-theme:
+    # Run a specific sub-theme (legacy):
     python run_research.py --sub-theme "高速光模块"
 
-    # Run with custom company list:
-    python run_research.py --sub-theme "光芯片" --companies 002281,300308
+    # Project-aware mode:
+    python run_research.py --project tech_ai_semiconductor --batch p0
+    python run_research.py --project tech_ai_semiconductor --sub-theme "高速光模块"
+    python run_research.py --project tech_ai_semiconductor --sector-id cpo_optical_module_silicon_photonics
 
     # Dry run (data sources only, no output files):
     python run_research.py --sub-theme "高速光模块" --dry-run
 
-    # Skip Guosen (when API is unstable):
-    python run_research.py --sub-theme "高速光模块" --skip-guosen
+    # Guosen skills are disabled by default:
+    python run_research.py --sub-theme "高速光模块"
 
-Output follows Codex调研说明手册规范:
-    科技主线调研输出/
+Output follows Codex调研说明手册规范 (legacy) or project output_spec.yaml (--project):
+    tech_ai_semiconductor project output root (科技主线调研输出/):
         00_总表/
             代表公司财务估值总表.csv    (append mode)
             科技细分方向横向比较表.csv (append mode)
             数据来源索引.csv           (append mode)
-        01_AI算力硬件/
-            NN_细分方向.md             (one card per sub-theme)
-        02_半导体国产替代/
-            NN_细分方向.md
+        {group_order}_{group_name}/    (e.g. 03_光通信_高速互连/)
+            {priority}_{sector_name_safe}.md   (e.g. P0_光模块_CPO_硅光.md)
         99_日志/
             缺失数据清单.md
             冲突数据清单.md
@@ -72,6 +72,37 @@ LOG_DIR = OUT_DIR / "99_日志"
 META_DIR = RAW_DIR / "research_runs" / TODAY
 
 
+# ── Project-aware runtime context ──────────────────────────────────────────────
+
+@dataclass
+class ResearchRuntimePaths:
+    """Injected path context for project-aware mode. Never touches globals."""
+    output_root: Path
+    total_tables_dir: Path
+    logs_dir: Path
+    raw_data_root: Path
+    source_index_path: Path
+    missing_data_log_path: Path
+    conflict_data_log_path: Path
+    research_log_path: Path
+
+    # sector-card resolver (set by project-aware runner)
+    _resolve_sector_card_path = None   # callable, set at runtime
+
+    def resolve_sector_card_path(self, sector_or_id):
+        if self._resolve_sector_card_path is None:
+            raise RuntimeError(
+                "resolve_sector_card_path not set in project-aware mode. "
+                "Ensure run_research.py is running in project-aware branch."
+            )
+        return self._resolve_sector_card_path(sector_or_id)
+
+
+# Project-aware globals — only set when --project is passed
+_project_config = None
+_runtime_paths: ResearchRuntimePaths | None = None
+
+
 # ---------------------------------------------------------------------------
 # Theme registry
 # ---------------------------------------------------------------------------
@@ -90,7 +121,46 @@ KNOWN_COMPANIES = {
         {"code": "300570", "market": "SZ", "set_code": 0, "name": "太辰光"},
         {"code": "300548", "market": "SZ", "set_code": 0, "name": "博创科技"},
     ],
+    "光器件/FAU/精密光学": [
+        {"code": "300394", "market": "SZ", "set_code": 0, "name": "天孚通信"},
+        {"code": "300570", "market": "SZ", "set_code": 0, "name": "太辰光"},
+        {"code": "688195", "market": "SH", "set_code": 1, "name": "腾景科技"},
+        {"code": "300620", "market": "SZ", "set_code": 0, "name": "光库科技"},
+        {"code": "688025", "market": "SH", "set_code": 1, "name": "杰普特"},
+        {"code": "688127", "market": "SH", "set_code": 1, "name": "蓝特光学"},
+    ],
 }
+
+
+def safe_output_name(value: str) -> str:
+    """Return a filesystem-safe display-name preserving Chinese text."""
+    return (
+        value.replace("/", "_")
+        .replace("\\", "_")
+        .replace(":", "_")
+        .replace("*", "_")
+        .replace("?", "_")
+        .replace('"', "_")
+        .replace("<", "_")
+        .replace(">", "_")
+        .replace("|", "_")
+    )
+
+
+_UNRESOLVED_TEMPLATE_PATTERN = object()  # sentinel
+
+def _check_path_safety(path_str: str) -> None:
+    """
+    Raise ValueError if path_str contains unresolved template placeholders.
+    Safety guard for project-aware mode — prevents {group_order}/{group_name} leaks.
+    """
+    for placeholder in ("{group_order}", "{group_name}", "{sector_name_safe}",
+                       "{priority}", "{group_id}", "{sector_id}"):
+        if placeholder in path_str:
+            raise ValueError(
+                f"Unresolved placeholder '{placeholder}' found in output path: {path_str}. "
+                f"Fix the path template in output_spec.yaml or sector_universe.yaml."
+            )
 
 
 def load_theme_registry() -> dict[str, dict]:
@@ -169,6 +239,27 @@ def annual_profit(rows: list[dict], year: str) -> dict:
     return matches[-1] if matches else {}
 
 
+def derive_revenue_yi_from_akshare_indicator(rows: list[dict], year: str = "2025") -> str:
+    """Derive revenue from AKShare indicators when direct revenue is absent.
+
+    AKShare financial indicators expose 主营业务利润 and 主营业务利润率. Revenue
+    can be inferred as main_business_profit / margin when both fields exist.
+    """
+    for row in rows:
+        if not str(row.get("日期", "")).startswith(f"{year}-12-31"):
+            continue
+        profit = row.get("主营业务利润(元)")
+        margin_pct = row.get("主营业务利润率(%)")
+        try:
+            profit_f = float(profit)
+            margin_f = float(margin_pct) / 100
+            if margin_f:
+                return f"{profit_f / margin_f / 1e8:.2f}"
+        except (TypeError, ValueError):
+            return ""
+    return ""
+
+
 def get_latest_profit(rows: list[dict]) -> dict:
     if not rows:
         return {}
@@ -223,8 +314,13 @@ SOURCE_FIELDS = [
 
 
 def ensure_dirs() -> None:
-    for d in [OUT_DIR, LOG_DIR, META_DIR, PROCESSED_DIR]:
-        Path(d).mkdir(parents=True, exist_ok=True)
+    if _runtime_paths is not None:
+        for d in [_runtime_paths.output_root, _runtime_paths.total_tables_dir,
+                  _runtime_paths.logs_dir, META_DIR, PROCESSED_DIR]:
+            Path(d).mkdir(parents=True, exist_ok=True)
+    else:
+        for d in [OUT_DIR, LOG_DIR, META_DIR, PROCESSED_DIR]:
+            Path(d).mkdir(parents=True, exist_ok=True)
 
 
 def append_csv(path: Path, fields: list[str], rows: list[dict]) -> None:
@@ -236,6 +332,35 @@ def append_csv(path: Path, fields: list[str], rows: list[dict]) -> None:
         if not file_exists:
             writer.writeheader()
         writer.writerows(rows)
+
+
+def read_raw_rows(path: Path) -> list[dict[str, str]]:
+    if not path.exists():
+        return []
+    try:
+        data = json.loads(path.read_text(encoding="utf-8"))
+        rows = data.get("rows", [])
+        if not isinstance(rows, list) or not rows:
+            return []
+        first = rows[0]
+        if isinstance(first, dict) and any(k.endswith("error") or k == "_error" for k in first):
+            return []
+        return rows
+    except (json.JSONDecodeError, OSError):
+        return []
+
+
+def json_safe_rows(rows: list[dict]) -> list[dict]:
+    safe_rows = []
+    for row in rows:
+        safe = {}
+        for key, value in row.items():
+            if hasattr(value, "isoformat"):
+                safe[key] = value.isoformat()
+            else:
+                safe[key] = value
+        safe_rows.append(safe)
+    return safe_rows
 
 
 def build_source_id(prefix: str) -> str:
@@ -364,7 +489,7 @@ def build_company_rows(
             "institution_forecast_change": "缺失",
             "catalysts": f"{sub_theme}主线催化持续；待逐项证据化",
             "risks": "主线收入暴露待核实；涨幅较大注意拥挤风险",
-            "data_source": "BaoStock; Tencent direct; Guosen",
+            "data_source": "BaoStock; Tencent direct; AKShare/Tushare fallback",
             "source_date": TODAY,
             "source_url": f"investment_system/data/raw/baostock/daily_kline/{TODAY}/{code}.json; investment_system/data/raw/baostock/profit/{TODAY}/{code}.json",
             "confidence_level": "中：行情/财务可用，主线收入暴露待核实",
@@ -447,16 +572,16 @@ def build_research_card(
 
     def fmt_list(vals, fmt="{:.2f}%") -> str:
         if not vals:
-            return "缺失"
+            return "未取得可比样本，列入数据缺口"
         return f"{min(vals):.2f}% 至 {max(vals):.2f}%"
 
     def fmt_avg(vals) -> str:
         if not vals:
-            return "缺失"
+            return "未取得可比样本，列入数据缺口"
         return f"{min(vals):.2f}亿元至{max(vals):.2f}亿元"
 
     company_lines = "\n".join(
-        f"| {c['name']} | {c['code']} | {chain_position} | 缺失；待核实 | BaoStock+Tencent+Guosen | 行情/财务可用，主线收入暴露待核实 |"
+        f"| {c['name']} | {c['code']} | {chain_position} | 未证实，列入数据缺口 | BaoStock/Tencent/AKShare/Tushare或联网证据 | 行情/财务先行，业务暴露需来源补强 |"
         for c in companies
     )
 
@@ -479,10 +604,10 @@ def build_research_card(
 {logic_text}
 
 ## 3. 上中下游位置
-- 上游：待细化
+- 上游：需结合年报、公告和产业链证据细化
 - 中游：{chain_position}
 - 下游：云厂商/AI数据中心
-- 与其他主线交叉：待补充
+- 与其他主线交叉：需结合细分方向母表和证据链补强
 
 ## 4. 代表公司清单
 | 公司 | 代码 | 产业链位置 | 主线收入暴露 | 证据来源 | 备注 |
@@ -491,29 +616,29 @@ def build_research_card(
 
 ## 5. 业绩兑现情况
 - 已兑现收入：见 `代表公司财务估值总表.csv`。
-- 已有订单/客户/定点：缺失，待查公告/投资者关系/互动易。
-- 产能进展：缺失，待查公告。
-- 2026E/2027E业绩预期：缺失，需补机构一致预期。
+- 已有订单/客户/定点：未证实，进入数据缺口和联网证据补采。
+- 产能进展：未证实，进入数据缺口和公告补采。
+- 2026E/2027E业绩预期：未证实，进入预测归一化流程。
 - 关键证据：BaoStock利润数据；来源索引见 `数据来源索引.csv`。
 
 ## 6. 估值水平
 - PE TTM：见总表。
-- 2026E/2027E PE：缺失。
-- PEG/PS：缺失。
-- 估值历史分位：缺失。
-- 与同行对比：初步看涨幅分化，待补历史分位。
+- 2026E/2027E PE：未证实，需由 forecast-normalizer 归一化。
+- PEG/PS：PS见总表，PEG需在预测利润补齐后计算。
+- 估值历史分位：未接入终端工具，进入数据缺口。
+- 与同行对比：初步看涨幅分化，需补历史分位后更新。
 
 ## 7. 行情与资金认可度
 - 近1月涨幅：{fmt_list(all_1m)}
 - 近3月涨幅：{fmt_list(all_3m)}
 - 近6月涨幅：{fmt_list(all_6m)}
 - 成交额变化：20日均值 {fmt_avg(all_avg)}
-- 是否跑赢科技指数/创业板/科创50：缺失，需补指数日线。
+- 是否跑赢科技指数/创业板/科创50：需补指数日线或缓存后更新。
 - 拥挤度：{score_direction(list(daily_data.values())[0] if daily_data else [], 120)[1] if daily_data else '数据不足'}
 
 ## 8. 未来催化
 - 产业催化：AI基础设施资本开支、高速率产品迭代、海外CSP需求。
-- 政策催化：缺失，待补。
+- 政策催化：需由 evidence-miner 补政策文件来源。
 - 公司催化：订单公告、产能释放、定期报告。
 - 财报催化：2026中报/三季报是否继续验证高增长。
 
@@ -533,6 +658,14 @@ def build_research_card(
 | 资金认可度 | 4 | 成交额显著放大 |
 | 催化强度 | 4 | AI基础设施催化持续 |
 | 综合评分 | 待定 | 待补机构预期和收入暴露后更新 |
+
+## 11. 数据缺口
+| 数据项 | 当前状态 | 获取方式 |
+|---|---|---|
+| 业务收入暴露 | 缺失 | 年报、公告、互动易、上证e互动或公司官网资料 |
+| 客户/订单/定点 | 缺失 | 公告、投资者关系记录、互动平台、券商研报 |
+| 2026E/2027E预测 | 缺失 | 用户提供数据、可验证公开预测页面或券商研报，标明来源类型 |
+| 历史估值分位 | 缺失 | 终端工具或可索引网页数据 |
 
 **数据来源**: {'; '.join(source_ids)}
 **生成时间**: {datetime.now().isoformat(timespec='seconds')}
@@ -573,6 +706,16 @@ class DataTracker:
         self.sources.append(source)
 
     def save(self):
+        # Use project-aware paths if set, otherwise fall back to legacy globals
+        if _runtime_paths is not None:
+            log_dir = _runtime_paths.logs_dir
+            out_dir = _runtime_paths.output_root
+            src_dir = _runtime_paths.total_tables_dir
+        else:
+            log_dir = LOG_DIR
+            out_dir = OUT_DIR
+            src_dir = out_dir / "00_总表"
+
         # Missing data
         missing_md = "# 缺失数据清单\n\n"
         if self.missing:
@@ -582,7 +725,7 @@ class DataTracker:
         else:
             missing_md += "本轮调研暂未发现系统性缺失数据。\n"
 
-        (LOG_DIR / "缺失数据清单.md").write_text(missing_md, encoding="utf-8")
+        (log_dir / "缺失数据清单.md").write_text(missing_md, encoding="utf-8")
 
         # Conflicts
         conflict_md = "# 冲突数据清单\n\n"
@@ -593,20 +736,20 @@ class DataTracker:
         else:
             conflict_md += "暂未发现跨来源数据冲突。\n"
 
-        (LOG_DIR / "冲突数据清单.md").write_text(conflict_md, encoding="utf-8")
+        (log_dir / "冲突数据清单.md").write_text(conflict_md, encoding="utf-8")
 
         # Sources
         if self.sources:
-            append_csv(OUT_DIR / "00_总表" / "数据来源索引.csv", SOURCE_FIELDS, self.sources)
+            append_csv(src_dir / "数据来源索引.csv", SOURCE_FIELDS, self.sources)
 
         # Log
-        log_path = LOG_DIR / "调研日志.md"
+        log_path = log_dir / "调研日志.md"
         existing = log_path.read_text(encoding="utf-8") if log_path.exists() else ""
         new_entry = f"\n## {datetime.now().isoformat(timespec='seconds')}\n\n"
         new_entry += f"- 完成细分方向调研。\n"
         new_entry += f"- 缺失数据条目: {len(self.missing)}\n"
         new_entry += f"- 数据来源: {[s['source_id'] for s in self.sources[:5]]}...\n"
-        (LOG_DIR / "调研日志.md").write_text(existing + new_entry, encoding="utf-8")
+        (log_dir / "调研日志.md").write_text(existing + new_entry, encoding="utf-8")
 
 
 # ---------------------------------------------------------------------------
@@ -619,9 +762,11 @@ def run_sub_theme(
     main_theme: str,
     chain_position: str,
     tracker: DataTracker,
-    skip_guosen: bool = False,
+    skip_guosen: bool = True,
     dry_run: bool = False,
     industry_logic: str = "",
+    prefer_tencent_daily: bool = False,
+    sector_id: str | None = None,
 ) -> dict:
     """Run full research pipeline for one sub-theme. Returns summary."""
     print(f"\n{'='*60}")
@@ -643,47 +788,95 @@ def run_sub_theme(
         "evidence_path": evidence.get("_evidence_path", ""),
     }
     META_DIR.mkdir(parents=True, exist_ok=True)
-    (META_DIR / f"{sub_theme}_run_meta.json").write_text(
+    (META_DIR / f"{safe_output_name(sub_theme)}_run_meta.json").write_text(
         json.dumps(run_meta, ensure_ascii=False, indent=2), encoding="utf-8"
     )
 
     # Collect data
     daily_data: dict[str, list[dict]] = {}
     profit_data: dict[str, list[dict]] = {}
+    financial_fallbacks: dict[str, dict[str, str]] = {}
     guosen_health = False
 
     with ResearchClient(skip_guosen=skip_guosen, baostock_interval=2.0) as client:
+        tencent_limiter = HumanRateLimiter(min_seconds=5.0, jitter=2.0)
         for c in companies:
             code, market, name = c["code"], c["market"], c["name"]
             print(f"  [{name}] Fetching data...")
 
             # Daily kline
-            drows = client.get_daily_kline(code, market)
-            if drows and "_error" not in drows[0]:
+            daily_path = RAW_DIR / "baostock" / "daily_kline" / TODAY / f"{code}.json"
+            drows = read_raw_rows(daily_path)
+            if drows:
+                print(f"    daily: cache ({len(drows)} rows)")
                 daily_data[code] = drows
-                (RAW_DIR / "baostock" / "daily_kline" / TODAY / f"{code}.json").parent.mkdir(parents=True, exist_ok=True)
-                (RAW_DIR / "baostock" / "daily_kline" / TODAY / f"{code}.json").write_text(
-                    json.dumps({"source": "research_client", "rows": drows}, ensure_ascii=False),
-                    encoding="utf-8",
-                )
             else:
-                # Tencent fallback
-                sym = f"{'sh' if market == 'SH' else 'sz'}{code}"
-                drows = tencent_bar_direct(sym)
+                daily_source = "research_client"
+                if prefer_tencent_daily:
+                    tencent_limiter.wait()
+                    sym = f"{'sh' if market == 'SH' else 'sz'}{code}"
+                    drows = tencent_bar_direct(sym)
+                    if not drows or "_error" in drows[0]:
+                        print("    daily: Tencent direct failed, falling back to rate-limited AKShare")
+                        drows = client.get_akshare_daily_bar(sym)
+                        daily_source = "akshare_daily_bar"
+                    else:
+                        daily_source = "tencent_direct"
+                else:
+                    drows = client.get_daily_kline(code, market)
                 if drows and "_error" not in drows[0]:
                     daily_data[code] = drows
+                    daily_path.parent.mkdir(parents=True, exist_ok=True)
+                    daily_path.write_text(
+                        json.dumps({"source": daily_source, "rows": json_safe_rows(drows)}, ensure_ascii=False),
+                        encoding="utf-8",
+                    )
+                elif not prefer_tencent_daily:
+                    # Tencent fallback when BaoStock returns an error.
+                    sym = f"{'sh' if market == 'SH' else 'sz'}{code}"
+                    drows = tencent_bar_direct(sym)
+                    if drows and "_error" not in drows[0]:
+                        daily_data[code] = drows
+                        daily_path.parent.mkdir(parents=True, exist_ok=True)
+                        daily_path.write_text(
+                            json.dumps({"source": "tencent_direct", "rows": json_safe_rows(drows)}, ensure_ascii=False),
+                            encoding="utf-8",
+                        )
 
             # Profit
-            prows = client.get_profit(code, market, [2024, 2025, 2026])
+            profit_path = RAW_DIR / "baostock" / "profit" / TODAY / f"{code}.json"
+            prows = read_raw_rows(profit_path)
+            if prows:
+                print(f"    profit: cache ({len(prows)} rows)")
+                profit_data[code] = prows
+            else:
+                prows = client.get_profit(code, market, [2024, 2025, 2026])
             if prows and "_error" not in prows[0]:
                 profit_data[code] = prows
-                (RAW_DIR / "baostock" / "profit" / TODAY / f"{code}.json").parent.mkdir(parents=True, exist_ok=True)
-                (RAW_DIR / "baostock" / "profit" / TODAY / f"{code}.json").write_text(
+                profit_path.parent.mkdir(parents=True, exist_ok=True)
+                profit_path.write_text(
                     json.dumps({"source": "research_client", "rows": prows}, ensure_ascii=False),
                     encoding="utf-8",
                 )
+                row_2025 = annual_profit(prows, "2025")
+                if not row_2025.get("MBRevenue"):
+                    print("    financial: BaoStock annual revenue absent, trying rate-limited AKShare indicator")
+                    indicator_rows = client.get_akshare_financial_indicator(code)
+                    indicator_path = RAW_DIR / "akshare" / "financial_indicator" / TODAY / f"{code}.json"
+                    indicator_path.parent.mkdir(parents=True, exist_ok=True)
+                    indicator_path.write_text(
+                        json.dumps({"source": "akshare_financial_indicator", "rows": json_safe_rows(indicator_rows)}, ensure_ascii=False),
+                        encoding="utf-8",
+                    )
+                    revenue_2025 = derive_revenue_yi_from_akshare_indicator(indicator_rows, "2025")
+                    if revenue_2025:
+                        financial_fallbacks[code] = {
+                            "revenue_2025": revenue_2025,
+                            "data_source_append": "AKShare财务指标(收入推导)",
+                            "source_url_append": f"investment_system/data/raw/akshare/financial_indicator/{TODAY}/{code}.json",
+                        }
 
-            # Guosen (optional)
+            # Guosen is disabled by default; only run if explicitly re-enabled.
             if not skip_guosen:
                 try:
                     hq = client.get_comb_hq([code], [c["set_code"]])
@@ -711,6 +904,12 @@ def run_sub_theme(
         companies, daily_data, profit_data, sub_theme, main_theme, chain_position, []
     )
     company_rows = apply_company_overrides(company_rows, evidence)
+    for row in company_rows:
+        fallback = financial_fallbacks.get(row.get("stock_code", ""))
+        if fallback and row.get("revenue_2025") == "缺失":
+            row["revenue_2025"] = fallback["revenue_2025"]
+            row["data_source"] = f"{row.get('data_source', '')}; {fallback['data_source_append']}"
+            row["source_url"] = f"{row.get('source_url', '')}; {fallback['source_url_append']}"
     if not evidence:
         for src in new_sources:
             tracker.add_source(src)
@@ -732,35 +931,68 @@ def run_sub_theme(
         print("  [DRY RUN] Skipping file writes.")
         return {"sub_theme": sub_theme, "companies_done": len(companies), "dry_run": True}
 
-    # Write outputs
-    append_csv(OUT_DIR / "00_总表" / "代表公司财务估值总表.csv", COMPANY_TABLE_FIELDS, company_rows)
-    append_csv(OUT_DIR / "00_总表" / "科技细分方向横向比较表.csv", COMPARISON_FIELDS, [comparison_row])
+    # ── Resolve output paths ──────────────────────────────────────────────────
+    if _runtime_paths is not None:
+        # Project-aware mode: use loader helper APIs
+        if sector_id:
+            try:
+                card_path = _runtime_paths.resolve_sector_card_path(sector_id)
+                _check_path_safety(str(card_path))
+                card_dir = card_path.parent
+            except (KeyError, ValueError, RuntimeError) as exc:
+                print(f"  [WARNING] Could not resolve sector card path for sector_id='{sector_id}': {exc}")
+                print(f"  [WARNING] Skipping sector card output for '{sub_theme}'.")
+                card_path = None
+                card_dir = None
+        else:
+            card_path = None
+            card_dir = None
+            print(f"  [WARNING] Project-aware mode: no sector_id for '{sub_theme}', skipping card output.")
+
+        out_dir = _runtime_paths.output_root
+        tt_dir = _runtime_paths.total_tables_dir
+        lg_dir = _runtime_paths.logs_dir
+        path_mode = "project-aware"
+    else:
+        # Legacy mode: use hard-coded globals (original behavior)
+        _legacy_prefix = "01_" if "AI" in main_theme else "02_"
+        card_dir = OUT_DIR / (_legacy_prefix + main_theme)
+        out_dir = OUT_DIR
+        tt_dir = out_dir / "00_总表"
+        lg_dir = LOG_DIR
+        path_mode = "legacy"
+
+    # ── Write outputs ─────────────────────────────────────────────────────────
+    append_csv(tt_dir / "代表公司财务估值总表.csv", COMPANY_TABLE_FIELDS, company_rows)
+    append_csv(tt_dir / "科技细分方向横向比较表.csv", COMPARISON_FIELDS, [comparison_row])
     curated_sources = evidence_source_rows(evidence)
     if curated_sources:
-        append_csv(OUT_DIR / "00_总表" / "数据来源索引.csv", SOURCE_FIELDS, curated_sources)
+        append_csv(tt_dir / "数据来源索引.csv", SOURCE_FIELDS, curated_sources)
 
-    # Theme card
-    theme_dir = OUT_DIR / (f"01_{main_theme}" if "AI" in main_theme else f"02_{main_theme}")
-    theme_dir.mkdir(parents=True, exist_ok=True)
-    card_path = theme_dir / f"01_{sub_theme}.md"
-    card_path.write_text(card_md, encoding="utf-8")
+    # Sector card
+    if card_path is not None:
+        card_dir.mkdir(parents=True, exist_ok=True)
+        card_path.write_text(card_md, encoding="utf-8")
+        print(f"  Wrote [{path_mode}]: {card_path.relative_to(ROOT)}")
+
     if evidence:
-        write_evidence_logs(evidence, LOG_DIR)
+        write_evidence_logs(evidence, lg_dir)
 
-    print(f"  Wrote: {card_path.relative_to(ROOT)}")
-    print(f"  Appended: 代表公司财务估值总表.csv ({len(company_rows)} rows)")
-    print(f"  Appended: 科技细分方向横向比较表.csv (1 row)")
+    print(f"  Appended [{path_mode}]: 代表公司财务估值总表.csv ({len(company_rows)} rows)")
+    print(f"  Appended [{path_mode}]: 科技细分方向横向比较表.csv (1 row)")
     if curated_sources:
-        print(f"  Appended: 数据来源索引.csv ({len(curated_sources)} curated rows)")
-    print(f"  Guosen health: {'OK' if guosen_health else 'FAIL/SKIP'}")
+        print(f"  Appended [{path_mode}]: 数据来源索引.csv ({len(curated_sources)} curated rows)")
+    print(f"  Guosen health: {'OK' if guosen_health else 'DISABLED/SKIP'}")
 
     return {
         "sub_theme": sub_theme,
+        "sector_id": sector_id,
         "companies": len(companies),
         "daily_data": {c: len(r) for c, r in daily_data.items()},
         "profit_data": {c: len(r) for c, r in profit_data.items()},
         "guosen_health": guosen_health,
-        "card_path": str(card_path.relative_to(ROOT)),
+        "card_path": str(card_path.relative_to(ROOT)) if card_path else "(skipped: unresolved)",
+        "path_mode": path_mode,
     }
 
 
@@ -770,55 +1002,182 @@ def run_sub_theme(
 
 def main() -> int:
     parser = argparse.ArgumentParser(description="Standardized A股科技主线调研")
-    parser.add_argument("--sub-theme", type=str, help="Run a specific sub-theme by name")
-    parser.add_argument("--batch", type=str, choices=["p0", "p1", "p2", "all"], help="Run all sub-themes in a batch")
-    parser.add_argument("--companies", type=str, help="Comma-separated codes override (e.g. 300308,300502)")
-    parser.add_argument("--skip-guosen", action="store_true", help="Skip Guosen API calls")
-    parser.add_argument("--dry-run", action="store_true", help="Fetch data but don't write outputs")
+    parser.add_argument("--project", type=str,
+                        help="Project ID (e.g. tech_ai_semiconductor). Activates project-aware mode.")
+    parser.add_argument("--sub-theme", type=str,
+                        help="Run a specific sub-theme by name (legacy mode, or mixed with --project)")
+    parser.add_argument("--sector-id", type=str,
+                        help="Canonical sector_id to run (project-aware only). Resolves via legacy_sector_map.")
+    parser.add_argument("--batch", type=str, choices=["p0", "p1", "p2", "all"],
+                        help="Run all sub-themes in a batch")
+    parser.add_argument("--companies", type=str,
+                        help="Comma-separated codes override (e.g. 300308,300502)")
+    parser.add_argument("--enable-guosen", action="store_true",
+                        help="Re-enable legacy Guosen API calls")
+    parser.add_argument("--dry-run", action="store_true",
+                        help="Fetch data but don't write outputs")
+    parser.add_argument("--prefer-tencent-daily", action="store_true",
+                        help="Use Tencent direct for daily K-line before BaoStock")
     args = parser.parse_args()
+
+    global _project_config, _runtime_paths
+
+    # ── Project-aware init ─────────────────────────────────────────────────
+    if args.project:
+        from investment_system.pipelines.sector_research.load_project import (
+            load_project,
+            resolve_sector_card_path as _lp_resolve_sector_card_path,
+            resolve_output_paths as _lp_resolve_output_paths,
+            get_sector as _lp_get_sector,
+        )
+
+        try:
+            _project_config = load_project(args.project, silent=False, strict=False)
+            paths = _lp_resolve_output_paths(_project_config)
+
+            _runtime_paths = ResearchRuntimePaths(
+                output_root=Path(paths["output_root"]),
+                total_tables_dir=Path(paths["total_tables_dir"]),
+                logs_dir=Path(paths["logs_dir"]),
+                raw_data_root=Path(paths["raw_data_root"]),
+                source_index_path=Path(paths["source_index_path"]),
+                missing_data_log_path=Path(paths["missing_data_log_path"]),
+                conflict_data_log_path=Path(paths["conflict_data_log_path"]),
+                research_log_path=Path(paths["research_log_path"]),
+            )
+            _runtime_paths._resolve_sector_card_path = lambda sid: _lp_resolve_sector_card_path(
+                _project_config, sid
+            )
+
+            print(f"[PROJECT-AWARE] Project: {_project_config.project_name} ({args.project})")
+            print(f"[PROJECT-AWARE] Output root: {_runtime_paths.output_root}")
+            print(f"[PROJECT-AWARE] total_tables: {_runtime_paths.total_tables_dir}")
+            print(f"[PROJECT-AWARE] logs: {_runtime_paths.logs_dir}")
+
+            # Warn if output_root doesn't exist (don't create aggressively)
+            if not _runtime_paths.output_root.exists():
+                print(f"[WARNING] Output root does not exist: {_runtime_paths.output_root}")
+                print(f"[WARNING] Outputs will be written there (mkdir will be called on first write).")
+
+        except Exception as exc:
+            print(f"[ERROR] Failed to load project '{args.project}': {exc}")
+            print("[ERROR] Falling back to legacy mode.")
+            _project_config = None
+            _runtime_paths = None
+    else:
+        _project_config = None
+        _runtime_paths = None
+        print("[LEGACY MODE] No --project specified, using hard-coded paths.")
 
     load_env()
     tracker = DataTracker()
     results = []
 
-    if args.sub_theme:
-        # Single sub-theme
-        companies = KNOWN_COMPANIES.get(args.sub_theme, [])
-        if args.companies:
-            # Override with codes (name unknown, use code as placeholder)
-            codes = args.companies.split(",")
-            companies = [{"code": c, "market": "SZ", "set_code": 0, "name": c} for c in codes]
-        if not companies:
-            print(f"Unknown sub-theme '{args.sub_theme}' with no known companies. Use --batch or specify --companies.")
+    # ── Single sub-theme / sector-id ──────────────────────────────────────
+    if args.sub_theme or args.sector_id:
+        if args.sector_id and _project_config:
+            # Project-aware sector-id mode
+            try:
+                sector = _lp_get_sector(_project_config, args.sector_id)
+                sub_theme = sector.get("sector_name", args.sector_id)
+                canonical_id = sector.get("sector_id", args.sector_id)
+                main_theme = sector.get("parent_chain", "AI算力硬件")
+                chain_position = sector.get("chain_position", "待确认")
+                industry_logic = sector.get("industry_logic", "")
+
+                # Get companies from stock_universe via get_stocks_for_sector
+                from investment_system.pipelines.sector_research.load_project import (
+                    get_stocks_for_sector,
+                )
+                sector_stocks = get_stocks_for_sector(_project_config, canonical_id, include_pending=False)
+                if not sector_stocks:
+                    # Fall back to legacy KNOWN_COMPANIES if no stocks found
+                    print(f"[WARNING] No stocks found for sector_id='{canonical_id}' in stock_universe. "
+                          f"Falling back to KNOWN_COMPANIES.")
+                    companies = KNOWN_COMPANIES.get(sub_theme, [])
+                else:
+                    companies = []
+                    for s in sector_stocks:
+                        code = s.get("code", "")
+                        if not code or code in ("pending", "待查"):
+                            continue
+                        market = "SZ" if code.startswith(("0", "3")) else "SH"
+                        companies.append({
+                            "code": code,
+                            "market": market,
+                            "set_code": s.get("set_code", 0),
+                            "name": s.get("name", code),
+                        })
+
+            except KeyError as exc:
+                print(f"[ERROR] Cannot resolve sector_id='{args.sector_id}': {exc}")
+                return 1
+        elif args.sub_theme:
+            # Legacy sub-theme mode
+            sub_theme = args.sub_theme
+            canonical_id = args.sector_id  # may be None
+            companies = KNOWN_COMPANIES.get(sub_theme, [])
+            theme_meta = load_theme_registry().get(sub_theme, {})
+            main_theme = theme_meta.get("main_theme", "AI算力硬件")
+            chain_position = theme_meta.get("chain_position", "待确认")
+            industry_logic = theme_meta.get("industry_logic", "")
+
+            if not companies:
+                print(f"Unknown sub-theme '{sub_theme}' with no known companies.")
+                return 1
+        else:
+            print("[ERROR] --sector-id requires --project")
             return 1
 
-        theme_meta = load_theme_registry().get(args.sub_theme, {})
+        if args.companies:
+            codes = args.companies.split(",")
+            companies = [{"code": c, "market": "SZ", "set_code": 0, "name": c} for c in codes]
+
         r = run_sub_theme(
-            args.sub_theme,
+            sub_theme,
             companies,
-            theme_meta.get("main_theme", "AI算力硬件"),
-            theme_meta.get("chain_position", "待确认"),
+            main_theme,
+            chain_position,
             tracker,
-            skip_guosen=args.skip_guosen,
+            skip_guosen=not args.enable_guosen,
             dry_run=args.dry_run,
-            industry_logic=theme_meta.get("industry_logic", ""),
+            industry_logic=industry_logic,
+            prefer_tencent_daily=args.prefer_tencent_daily,
+            sector_id=canonical_id,
         )
         results.append(r)
 
+    # ── Batch mode ─────────────────────────────────────────────────────────
     elif args.batch:
-        # Batch mode: run all known sub-themes
         registry = load_theme_registry()
         for sub_theme, companies in KNOWN_COMPANIES.items():
             theme_meta = registry.get(sub_theme, {})
+
+            # In project-aware mode, try to resolve sector_id from legacy alias
+            canonical_id = None
+            if _project_config is not None:
+                try:
+                    sector = _lp_get_sector(_project_config, sub_theme)
+                    canonical_id = sector.get("sector_id", None)
+                except KeyError:
+                    canonical_id = None  # not in sector_universe, will be skipped below
+
+                if canonical_id is None:
+                    print(f"  [WARNING] Project-aware: '{sub_theme}' has no canonical sector_id "
+                          f"(not in sector_universe.yaml), skipping card output.")
+                    # Still run but without sector_id → card output skipped
+
             try:
                 r = run_sub_theme(
                     sub_theme, companies,
                     theme_meta.get("main_theme", "AI算力硬件"),
                     theme_meta.get("chain_position", "待确认"),
                     tracker,
-                    skip_guosen=args.skip_guosen,
+                    skip_guosen=not args.enable_guosen,
                     dry_run=args.dry_run,
                     industry_logic=theme_meta.get("industry_logic", ""),
+                    prefer_tencent_daily=args.prefer_tencent_daily,
+                    sector_id=canonical_id,
                 )
                 results.append(r)
             except Exception as exc:
@@ -832,16 +1191,24 @@ def main() -> int:
     if tracker.missing or tracker.conflicts or tracker.sources:
         tracker.save()
 
-    # Summary
+    # ── Summary ───────────────────────────────────────────────────────────
     print(f"\n{'='*60}")
     print(" RESEARCH RUN COMPLETE")
     print(f"{'='*60}")
     for r in results:
         status = "OK" if "error" not in r else f"ERROR: {r.get('error')}"
         companies_done = r.get("companies", "?")
-        print(f"  {r['sub_theme']}: {status} ({companies_done} companies)")
+        mode = r.get("path_mode", "?")
+        card = r.get("card_path", "?")
+        print(f"  [{mode}] {r['sub_theme']}: {status} ({companies_done} companies)")
+        print(f"          card: {card}")
 
-    print(f"\nAll outputs in: {OUT_DIR.relative_to(ROOT)}")
+    out_dir = (_runtime_paths.output_root if _runtime_paths else OUT_DIR)
+    print(f"\nAll outputs in: {out_dir.relative_to(ROOT)}")
+
+    # Reset global state
+    _project_config = None
+    _runtime_paths = None
     return 0
 
 

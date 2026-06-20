@@ -1,4 +1,5 @@
 sub_theme: 高速光模块
+grade: research
 description: Curated evidence migrated from the manually enriched high-speed optical module output.
 company_overrides:
   '300308':
@@ -192,23 +193,23 @@ source_rows:
   data_fields_supported: latest_price,pct_change_1m,pct_change_3m,pct_change_6m,turnover_value_20d_avg
   confidence_level: 高
   notes: 最新交易日为2026-06-18；2026-06-19为当前日期但未取得当日收盘数据。
-- source_id: SRC-GUOSEN-ERR-001
-  source_type: api_error
-  source_name: Guosen API
+- source_id: SRC-LEGACY-DISABLED-001
+  source_type: disabled_source
+  source_name: Legacy disabled interface
   source_date: '2026-06-19'
-  source_url: investment_system/data/raw/guosen/
+  source_url: ''
   related_main_theme: AI算力硬件
   related_sub_theme: 高速光模块
   related_company: 8家代表公司
-  quote_or_excerpt: 主备key均尝试，curl返回码35或TLS/Schannel凭证错误，未进入可用数据返回阶段。
+  quote_or_excerpt: 历史接口记录已移除，不作为本项目事实来源。
   data_fields_supported: none
   confidence_level: 高
-  notes: 不判断key失效，仅记录当前网络/TLS层不可达。
+  notes: 当前统一数据源使用 BaoStock、Tencent direct、AKShare、Tushare、公告和公开可验证来源。
 - source_id: SRC-AKSHARE-ERR-001
   source_type: api_error
   source_name: AKShare stock_zh_a_hist
   source_date: '2026-06-19'
-  source_url: push2his.eastmoney.com
+  source_url: investment_system/data/raw/diagnostics/2026-06-19/data_sources_runtime.json; endpoint=push2his.eastmoney.com
   related_main_theme: AI算力硬件
   related_sub_theme: 高速光模块
   related_company: 中际旭创
@@ -461,7 +462,7 @@ logs:
 
     |---|---|---|
 
-    | 各公司PE/PB精确历史分位 | 定性高估，需Wind精确查询 | Wind历史估值工具 |
+    | 各公司PE/PB精确历史分位 | 定性高估，需可验证公开来源或用户提供数据 | 公开估值页面、券商研报或用户提供数据 |
 
     | 太辰光Q1负增长原因 | 待核实 | 互动易/业绩说明会 |
 
@@ -469,7 +470,7 @@ logs:
   冲突数据清单.md: '# 冲突数据清单
 
 
-    暂未发现跨来源数据冲突；Guosen TLS/Schannel不可达和AKShare Eastmoney端点不稳定已作为数据源状态记录。'
+    暂未发现跨来源数据冲突；AKShare Eastmoney端点不稳定已作为数据源状态记录，历史接口不作为事实来源。'
 card_markdown: '# 高速光模块
 
 

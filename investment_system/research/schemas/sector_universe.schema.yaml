@@ -1,0 +1,93 @@
+# Sector Universe Schema — JSON Schema for sector_universe.yaml
+# Version: 1
+
+$schema: "http://json-schema.org/draft-07/schema#"
+title: SectorUniverse
+description: Schema for sector universe definition
+
+type: object
+required:
+  - sectors
+
+properties:
+  sectors:
+    type: array
+    minItems: 1
+    items:
+      type: object
+      required:
+        - sector_id
+        - sector_name
+        - priority
+        - status
+      properties:
+        sector_id:
+          type: string
+          pattern: "^[a-z0-9_]+$"
+          description: Unique lowercase alphanumeric ID
+
+        sector_name:
+          type: string
+          description: Human-readable sector name
+
+        parent_chain:
+          type: string
+          description: Parent chain (AI算力硬件 or 半导体国产替代)
+
+        priority:
+          type: string
+          enum: [P0, P1, P2]
+          description: Research priority
+
+        include_concepts:
+          type: array
+          items: { type: string }
+          description: Concepts to include
+
+        exclude_concepts:
+          type: array
+          items: { type: string }
+          description: Concepts to exclude
+
+        research_questions:
+          type: array
+          items: { type: string }
+          description: Key research questions for this sector
+
+        required_outputs:
+          type: array
+          items:
+            type: string
+            enum:
+              - sector_card
+              - company_comparison
+              - company_financial_table
+              - score
+              - source_index
+              - missing_data_log
+              - conflict_log
+          description: Required output types
+
+        status:
+          type: string
+          enum:
+            - completed
+            - research
+            - seeded_unverified
+            - draft
+            - planned
+          description: >
+            Research status. Important: do NOT set status=completed
+            for seed documents. They must pass evidence + source verification first.
+
+        source_note:
+          type: string
+          description: Where this sector definition came from
+
+        evidence_grade:
+          type: string
+          enum: [pipeline, research]
+
+        verification_requirements:
+          type: object
+          description: Key fields that need verification

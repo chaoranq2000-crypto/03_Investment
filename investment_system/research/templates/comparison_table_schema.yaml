@@ -1,0 +1,200 @@
+# Comparison Table Schema — tech_ai_semiconductor
+# Field definitions for 科技细分方向横向比较表.csv
+# All numeric scores are in range [0, 10].
+# All score fields must have a paired _reason field.
+
+schema_version: "1"
+
+fields:
+  # ── Identification ──────────────────────────────────────────────────────────
+  - field: sector_id
+    type: string
+    required: true
+    description: Unique sector identifier from sector_universe.yaml
+
+  - field: sector_name
+    type: string
+    required: true
+    description: Display name of the sub-sector
+
+  - field: parent_chain
+    type: string
+    required: true
+    description: Parent chain name (AI算力硬件 or 半导体国产替代)
+
+  - field: chain_position
+    type: string
+    required: true
+    description: Up/mid/down stream position in the supply chain
+
+  - field: core_logic
+    type: string
+    required: true
+    description: One-paragraph summary of the core industry investment logic
+
+  # ── Stocks ─────────────────────────────────────────────────────────────────
+  - field: leader_stocks
+    type: string
+    description: Comma-separated leader stock names
+
+  - field: elastic_stocks
+    type: string
+    description: Comma-separated high-elasticity stock names
+
+  - field: stock_count
+    type: integer
+    description: Total number of stocks in this sector's universe
+
+  # ── Scores (all range 0-10) ────────────────────────────────────────────────
+  # Note: higher score = better for prosperity, earnings, valuation, trading comfort,
+  #        catalyst, purity. For risk_control, higher score = lower risk.
+  # For trading_comfort: 10 = comfortable (low run-up), 0 = extremely crowded.
+
+  - field: prosperity_score
+    type: float
+    range: [0, 10]
+    required: true
+
+  - field: prosperity_reason
+    type: string
+    required: true
+    description: Evidence-based explanation for prosperity score
+
+  - field: earnings_certainty_score
+    type: float
+    range: [0, 10]
+    required: true
+
+  - field: earnings_certainty_reason
+    type: string
+    required: true
+
+  - field: valuation_score
+    type: float
+    range: [0, 10]
+    required: true
+    description: >
+      Higher = better value (low valuation relative to growth).
+      Rule: if PE>200x → max 3; if PEG>2 → max 3.
+
+  - field: valuation_reason
+    type: string
+    required: true
+
+  - field: trading_comfort_score
+    type: float
+    range: [0, 10]
+    required: true
+    description: >
+      Higher = more comfortable (low crowding).
+      Rule: if 6m return >200% → max 3; if >300% → max 2.
+
+  - field: trading_comfort_reason
+    type: string
+    required: true
+
+  - field: catalyst_score
+    type: float
+    range: [0, 10]
+    required: true
+
+  - field: catalyst_reason
+    type: string
+    required: true
+
+  - field: purity_score
+    type: float
+    range: [0, 10]
+    required: true
+
+  - field: purity_reason
+    type: string
+    required: true
+
+  - field: risk_control_score
+    type: float
+    range: [0, 10]
+    required: true
+    description: >
+      Higher = lower risk. Rule: if falsification signal present → max 2.
+
+  - field: risk_control_reason
+    type: string
+    required: true
+
+  # ── Aggregated Scores ──────────────────────────────────────────────────────
+  - field: total_score
+    type: float
+    range: [0, 10]
+    required: true
+    description: Weighted sum of all 7 dimensions (max 10.0)
+
+  - field: total_score_calculation
+    type: string
+    description: >
+      Human-readable calculation breakdown.
+      Example: "0.20*8 + 0.20*7 + 0.20*4 + 0.15*3 + 0.10*8 + 0.10*8 + 0.05*4 = 6.45"
+
+  # ── Rating ─────────────────────────────────────────────────────────────────
+  - field: action_rating
+    type: string
+    required: true
+    enum: [A, B, C, D, E]
+    description: >
+      A = 优先建仓 (≥7.5), B = 逻辑强但等回调 (≥7.0),
+      C = 低位但需验证 (≥6.0), D = 只买龙头 (≥5.5), E = 暂不参与 (<5.5)
+
+  - field: rating_reason
+    type: string
+    required: true
+
+  - field: suggested_action
+    type: string
+    required: true
+    description: Recommended next step for this sector
+
+  # ── Evidence ────────────────────────────────────────────────────────────────
+  - field: key_evidence
+    type: string
+    description: Comma-separated list of key evidence supporting this sector
+
+  - field: key_risk
+    type: string
+    description: Comma-separated list of key risks
+
+  - field: missing_data_flags
+    type: string
+    description: Comma-separated list of missing data items (e.g. "PE历史分位,一致预期")
+
+  - field: source_ids
+    type: string
+    description: Comma-separated source_ids used for this row
+
+  # ── Meta ───────────────────────────────────────────────────────────────────
+  - field: confidence_level
+    type: string
+    enum: [高, 中高, 中, 中低, 低]
+
+  - field: status
+    type: string
+    enum: [completed, seeded_unverified, planned, in_progress]
+    description: Research status of this sector
+
+  - field: priority
+    type: string
+    enum: [P0, P1, P2]
+
+  - field: generated_date
+    type: string
+    format: ISO8601 date
+
+  - field: generated_by
+    type: string
+    description: Source script or agent (e.g. research-writer skill)
+
+# Validation rules:
+# 1. All 7 _score fields must be present
+# 2. All 7 _reason fields must be non-empty
+# 3. total_score must match computed weighted sum
+# 4. action_rating must be consistent with total_score thresholds
+# 5. missing_data_flags should not be empty for research-grade outputs

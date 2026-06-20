@@ -5,7 +5,8 @@
 优先方向：
 
 1. AKShare 缓存层标准化。
-2. 国信 API 数据标准化。
+2. Tushare、BaoStock、AKShare 数据标准化。
 3. 统一证券代码、市场、日期、单位字段。
 4. 输出 Parquet 或 CSV，供研究和组合模块读取。
+
 

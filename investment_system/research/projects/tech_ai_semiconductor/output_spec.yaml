@@ -1,0 +1,417 @@
+# Output Specification — tech_ai_semiconductor
+# Defines the file layout and field schemas for all generated outputs
+# This keeps the existing output directory layout as the default,
+# ensuring backward compatibility with existing pipeline scripts.
+
+output_spec_version: "1"
+
+# ── Directory Structure ───────────────────────────────────────────────────────
+# Structured format — loader reads these fields directly.
+# WARNING: These field names must match what load_project.py reads.
+directories:
+  root:
+    path: C:/Projects/03_Investment/科技主线调研输出
+    description: Project root output directory (backward compatible with existing pipeline)
+
+  total_tables:
+    path: 00_总表
+    description: Aggregated comparison tables and source indexes
+    files:
+      - name: 代表公司财务估值总表.csv
+        description: All companies' financial and valuation data
+        mode: append  # append by sector_id + stock_code key
+      - name: 科技细分方向横向比较表.csv
+        description: Cross-sector comparison (one row per sector)
+        mode: append  # append by sector_id
+      - name: 数据来源索引.csv
+        description: All data sources with source_id
+        mode: append  # append by source_id
+
+  sector_cards:
+    path_template: "{group_order}_{group_name}"
+    description: >
+      Sector research cards grouped by research_group.
+      Placeholders resolved from sector_universe.yaml research_groups.
+    filename_pattern: "{priority}_{sector_name_safe}.md"
+    # Example: 01_高速光模块.md, 02_光器件_FAU_精密光学.md
+
+  raw_data:
+    path: 00_原始数据
+    path_template: "00_原始数据/{sector_name_safe}"
+    description: Raw API/cache responses for each sector
+    mode: preserve  # do not overwrite existing cache
+
+  evidence:
+    path: ../../research/evidence
+    description: Structured evidence YAML files
+    # Path is relative to project root: ../../research/evidence
+    # = C:/Projects/03_Investment/investment_system/research/evidence/
+
+  logs:
+    path: 99_日志
+    description: Run logs, missing data logs, conflict logs
+    files:
+      - name: 调研日志.md
+        description: Chronological run log
+        mode: append
+      - name: 缺失数据清单.md
+        description: Missing data tracking
+        mode: overwrite
+      - name: 冲突数据清单.md
+        description: Cross-source data conflict tracking
+        mode: overwrite
+
+  seed_documents:
+    path: "."
+    description: Seed documents copied by user for research expansion
+
+# ── Sector Card Markdown Structure ──────────────────────────────────────────
+# Each sector card .md file must contain these sections (in order):
+sector_card_sections:
+  - section_id: conclusion
+    title: 1. 一句话结论
+    required: true
+    description: One-sentence summary of the sector's investment thesis
+  - section_id: industry_logic
+    title: 2. 产业逻辑
+    required: true
+    description: Core industry dynamics, technology trends, policy context
+  - section_id: stock_pool
+    title: 3. 股票池
+    required: true
+    description: Table of representative companies with sector exposure
+  - section_id: fundamentals
+    title: 4. 基本面验证
+    required: true
+    description: Revenue, profit, margin verification from annual reports/announcements
+  - section_id: valuation
+    title: 5. 估值
+    required: true
+    description: PE, PEG, PS, historical percentile, peer comparison
+  - section_id: trading
+    title: 6. 交易热度
+    required: true
+    description: Price momentum, turnover, relative strength vs index, crowding
+  - section_id: catalysts
+    title: 7. 催化剂
+    required: true
+    description: Near-term and medium-term catalysts with timing
+  - section_id: risks
+    title: 8. 风险与证伪信号
+    required: true
+    description: Key risks and falsification signals
+  - section_id: falsification_check
+    title: 9. 反证检查
+    required: true
+    description: What would need to happen for this thesis to be wrong
+  - section_id: scoring
+    title: 10. 打分
+    required: true
+    description: Seven-dimension scores with reasons
+  - section_id: rating
+    title: 11. 最终评级
+    required: true
+    description: A/B/C/D/E rating with recommended action
+  - section_id: missing_data
+    title: 12. 缺失数据
+    required: true
+    description: Fields still missing with suggested acquisition paths
+  - section_id: source_index
+    title: 13. 来源索引
+    required: true
+    description: Reference to source_index CSV entries by source_id
+
+# ── Company Financial Table Fields ─────────────────────────────────────────
+company_table_fields:
+  - field: stock_code
+    type: string
+    required: true
+    description: Stock code with market suffix (e.g. 300308.SZ)
+  - field: company_name
+    type: string
+    required: true
+  - field: sector_id
+    type: string
+    required: true
+    description: References sector_universe.yaml sector_id
+  - field: sector_name
+    type: string
+    required: true
+  - field: chain_position
+    type: string
+    required: true
+    description: Up/mid/down stream position
+  - field: market_cap
+    type: string
+    description: In 亿元, or 缺失
+  - field: latest_price
+    type: string
+    description: Latest closing price, or 缺失
+  - field: pct_change_1m
+    type: string
+    description: 1-month return, e.g. +12.34%
+  - field: pct_change_3m
+    type: string
+    description: 3-month return
+  - field: pct_change_6m
+    type: string
+    description: 6-month return
+  - field: turnover_value_20d_avg
+    type: string
+    description: 20-day average turnover in 亿元
+  - field: relative_strength_vs_index
+    type: string
+    description: Stock return vs index return, e.g. +20.5% vs +10.2%
+  - field: revenue_2024
+    type: string
+    description: Revenue 2024 in 亿元
+  - field: revenue_2025
+    type: string
+    description: Revenue 2025 in 亿元
+  - field: revenue_2026E
+    type: string
+    description: Revenue 2026E estimate in 亿元, or 缺失
+  - field: revenue_2027E
+    type: string
+  - field: net_profit_2024
+    type: string
+  - field: net_profit_2025
+    type: string
+  - field: net_profit_2026E
+    type: string
+  - field: net_profit_2027E
+    type: string
+  - field: gross_margin_latest
+    type: string
+    description: Latest gross margin, e.g. 42.35%
+  - field: net_margin_latest
+    type: string
+  - field: pe_ttm
+    type: string
+    description: PE trailing twelve months
+  - field: pe_2026E
+    type: string
+  - field: pe_2027E
+    type: string
+  - field: ps_ttm
+    type: string
+  - field: peg_2026E
+    type: string
+  - field: main_theme_revenue_exposure
+    type: string
+    description: Revenue exposure to this sector (%), or 缺失
+  - field: order_or_customer_evidence
+    type: string
+    description: Customer/order evidence, or 缺失
+  - field: capacity_progress
+    type: string
+  - field: product_stage
+    type: string
+  - field: institution_forecast_change
+    type: string
+    description: Forecast revision summary
+  - field: catalysts
+    type: string
+  - field: risks
+    type: string
+  - field: data_source
+    type: string
+    description: Source names (comma-separated)
+  - field: source_date
+    type: string
+    description: Data date in YYYY-MM-DD format
+  - field: source_url
+    type: string
+    description: Local cache path or URL(s) for this row
+  - field: confidence_level
+    type: string
+    description: 高/中高/中/中低/低
+
+# ── Sector Comparison Table Fields ──────────────────────────────────────────
+comparison_table_fields:
+  - field: sector_id
+    type: string
+    required: true
+  - field: sector_name
+    type: string
+    required: true
+  - field: parent_chain
+    type: string
+    required: true
+  - field: chain_position
+    type: string
+    required: true
+  - field: core_logic
+    type: string
+    required: true
+    description: One-paragraph industry logic summary
+  - field: leader_stocks
+    type: string
+    description: Comma-separated leader stock names
+  - field: elastic_stocks
+    type: string
+  - field: prosperity_score
+    type: float
+    range: [0, 10]
+  - field: prosperity_reason
+    type: string
+  - field: earnings_certainty_score
+    type: float
+    range: [0, 10]
+  - field: earnings_certainty_reason
+    type: string
+  - field: valuation_score
+    type: float
+    range: [0, 10]
+  - field: valuation_reason
+    type: string
+  - field: trading_comfort_score
+    type: float
+    range: [0, 10]
+  - field: trading_comfort_reason
+    type: string
+  - field: catalyst_score
+    type: float
+    range: [0, 10]
+  - field: catalyst_reason
+    type: string
+  - field: purity_score
+    type: float
+    range: [0, 10]
+  - field: purity_reason
+    type: string
+  - field: risk_control_score
+    type: float
+    range: [0, 10]
+  - field: risk_control_reason
+    type: string
+  - field: total_score
+    type: float
+    range: [0, 10]
+    description: Weighted sum of all dimensions
+  - field: action_rating
+    type: string
+    enum: [A, B, C, D, E]
+  - field: rating_reason
+    type: string
+  - field: suggested_action
+    type: string
+    description: Recommended next step
+  - field: key_evidence
+    type: string
+  - field: key_risk
+    type: string
+  - field: missing_data_flags
+    type: string
+    description: Comma-separated list of missing data items
+  - field: source_ids
+    type: string
+    description: Comma-separated source_ids supporting this row
+  - field: confidence_level
+    type: string
+  - field: generated_at
+    type: string
+    description: ISO datetime
+
+# ── Source Index Fields ──────────────────────────────────────────────────────
+source_index_fields:
+  - field: source_id
+    type: string
+    required: true
+    pattern: "^SRC-[A-Z0-9]+-\\d+$"
+    description: Unique identifier, e.g. SRC-BAO-300308-20260619185911
+  - field: subject_type
+    type: string
+    required: true
+    enum: [company, sector, market, policy]
+  - field: subject_id
+    type: string
+    required: true
+    description: Stock code or sector_id
+  - field: subject_name
+    type: string
+    required: true
+  - field: sector_id
+    type: string
+    description: Associated sector_id from sector_universe.yaml
+  - field: claim_supported
+    type: string
+    description: Short claim this source supports
+  - field: source_type
+    type: string
+    required: true
+    enum:
+      - annual_report
+      - interim_report
+      - quarterly_report
+      - announcement
+      - investor_relations
+      - exchange_qa
+      - broker_report
+      - policy_file
+      - database
+      - direct_api
+      - user_provided
+      - verifiable_public_page
+      - other
+  - field: source_title
+    type: string
+    required: true
+  - field: source_date
+    type: string
+    required: true
+    description: Publication date in YYYY-MM-DD
+  - field: url_or_path
+    type: string
+    required: true
+    description: Full URL or local cache path
+  - field: extracted_fields
+    type: string
+    description: Comma-separated field names this source provides
+  - field: confidence
+    type: string
+    required: true
+    enum: [高, 中高, 中, 中低, 低]
+  - field: notes
+    type: string
+    description: Any caveats or limitations
+
+# ── Missing Data Log Format ──────────────────────────────────────────────────
+missing_data_fields:
+  - field: sector_id
+  - field: sector_name
+  - field: company_code
+  - field: company_name
+  - field: missing_field
+  - field: current_value
+  - field: suggested_acquisition_path
+    enum:
+      - 年报/半年报
+      - 公告
+      - 互动易/上证e互动
+      - 投资者关系记录
+      - 券商研报
+      - Wind/iFind/同花顺一致预期
+      - 用户提供数据
+      - 可验证公开估值页面
+      - 终端历史估值工具
+  - field: priority
+    enum: [high, medium, low]
+  - field: status
+    enum: [missing, in_progress, verified]
+  - field: source_id
+    description: Associated source_id after acquisition
+
+# ── Conflict Log Format ──────────────────────────────────────────────────────
+conflict_data_fields:
+  - field: sector_id
+  - field: company_code
+  - field: field_name
+  - field: value_from_source_a
+  - field: source_a
+  - field: value_from_source_b
+  - field: source_b
+  - field: handling
+  - field: resolution_note
+  - field: source_id_a
+  - field: source_id_b

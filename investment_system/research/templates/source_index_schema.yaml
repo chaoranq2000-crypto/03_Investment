@@ -1,0 +1,141 @@
+# Source Index Schema — tech_ai_semiconductor
+# Field definitions for 数据来源索引.csv
+# Every key conclusion in a research report must have a corresponding source_id.
+
+schema_version: "1"
+
+fields:
+  - field: source_id
+    type: string
+    required: true
+    pattern: "^SRC-[A-Z0-9]+-\\d+$"
+    description: >
+      Unique identifier. Convention: SRC-{PROVIDER}-{SUBJECT}-{DATE8}{HHMMSS}
+      Examples:
+        SRC-BAO-300308-20260619     (BaoStock, 300308, date)
+        SRC-CNINFO-300394-20260407   (CNINFO annual report)
+        SRC-BROKER-GUOSEN-20260619   (Guosen broker report)
+        SRC-POLICY-MIITTT-20260610   (Ministry policy doc)
+
+  - field: subject_type
+    type: string
+    required: true
+    enum: [company, sector, market, policy, index]
+    description: What the source is about
+
+  - field: subject_id
+    type: string
+    required: true
+    description: Stock code, sector_id, or policy identifier
+
+  - field: subject_name
+    type: string
+    required: true
+    description: Company name, sector name, or policy name
+
+  - field: sector_ids
+    type: string
+    description: Comma-separated sector_ids this source supports
+
+  - field: claim_supported
+    type: string
+    description: Short phrase of the claim this source supports
+    example: "中际旭创2025年净利润115.80亿元，同比+109%"
+
+  - field: source_type
+    type: string
+    required: true
+    enum:
+      - annual_report        # 年报
+      - interim_report       # 半年报
+      - quarterly_report     # 季报
+      - announcement         # 公告
+      - investor_relations   # 投资者关系记录
+      - exchange_qa          # 交易所问询/回答
+      - broker_report        # 券商研报
+      - policy_file          # 政府/监管文件
+      - database            # BaoStock/AKShare/Tushare
+      - direct_api           # Tencent direct HTTP
+      - verifiable_public_page # 可验证的公开网页
+      - user_provided        # 用户提供
+      - cninfo_pdf           # CNINFO PDF年报
+      - news                 # 新闻报道（低置信）
+      - other
+
+  - field: source_title
+    type: string
+    required: true
+    description: Full title of the source
+    example: "中际旭创2025年年度报告"
+
+  - field: source_date
+    type: string
+    required: true
+    format: YYYY-MM-DD
+    description: Publication date
+
+  - field: url_or_path
+    type: string
+    required: true
+    description: >
+      Full URL or local cache path.
+      Format: for local: investment_system/data/raw/baostock/daily_kline/2026-06-19/300308.json
+             for URL: https://www.cninfo.com.cn/...
+
+  - field: extracted_fields
+    type: string
+    description: >
+      Comma-separated field names this source provides.
+      Example: "revenue_2025,net_profit_2025,gross_margin"
+
+  - field: data_fields_supported
+    type: string
+    description: >
+      Alias for extracted_fields. Both fields may appear.
+      Comma-separated field names.
+
+  - field: confidence
+    type: string
+    required: true
+    enum: [高, 中高, 中, 中低, 低]
+    description: Confidence level of this source
+
+  - field: notes
+    type: string
+    description: Any caveats, limitations, or additional context
+
+  # ── Optional fields for quality tracking ─────────────────────────────────────
+  - field: access_status
+    type: string
+    enum: [accessible, blocked, rate_limited, deprecated]
+    default: accessible
+
+  - field: retrieved_date
+    type: string
+    format: YYYY-MM-DD
+    description: Date when this source was retrieved/verified
+
+  - field: last_verified_date
+    type: string
+    format: YYYY-MM-DD
+    description: Last date this source was confirmed accessible
+
+# Source type confidence defaults:
+# annual_report        → 高
+# quarterly_report    → 高
+# broker_report        → 中高
+# database             → 高
+# direct_api           → 高
+# policy_file          → 高
+# investor_relations   → 中高
+# exchange_qa          → 中高
+# cninfo_pdf           → 高
+# announcement         → 高
+# verifiable_public_page → 中
+# user_provided        → 低（需标注）
+# news                 → 低
+
+# Unacceptable source types for key conclusions:
+# - social_media
+# - forum_posts
+# - unverified_rumors

@@ -112,6 +112,23 @@ def main() -> int:
     else:
         print(status("BaoStock", True, "disabled"))
 
+    print()
+
+    tushare = config.get("tushare", {})
+    if tushare.get("enabled", False):
+        token_env = tushare.get("token_env", "TUSHARE_TOKEN")
+        http_url_env = tushare.get("http_url_env", "TUSHARE_HTTP_URL")
+        disable_proxy_env = tushare.get("disable_proxy_env", "TUSHARE_DISABLE_PROXY")
+        tushare_python = tushare.get("python", "")
+        tushare_module = tushare.get("module_check", "tushare")
+        print(status(f"{token_env} env", bool(os.environ.get(token_env))))
+        print(status(f"{http_url_env} env", bool(os.environ.get(http_url_env)), os.environ.get(http_url_env, "")))
+        print(status(f"{disable_proxy_env} env", bool(os.environ.get(disable_proxy_env)), os.environ.get(disable_proxy_env, "")))
+        print(status("Tushare python path", Path(tushare_python).exists(), tushare_python))
+        print(status("Tushare module in configured python", python_has_module(tushare_python, tushare_module)))
+    else:
+        print(status("Tushare", True, "disabled"))
+
     return 0
 
 

@@ -616,6 +616,12 @@ class ResearchClient:
             return self._ak.financial_indicator(code)
         return [{"_error": "akshare_not_init"}]
 
+    def get_akshare_daily_bar(self, symbol: str) -> list[dict]:
+        """Rate-limited AKShare daily K-line fallback."""
+        if self._ak:
+            return self._ak.daily_bar(symbol)
+        return [{"_error": "akshare_not_init"}]
+
     def get_akshare_individual_fund_flow(self, stock: str) -> list[dict]:
         """Individual stock fund flow via AKShare."""
         if self._ak:

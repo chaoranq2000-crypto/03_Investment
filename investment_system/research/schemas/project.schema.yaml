@@ -1,0 +1,126 @@
+# Project Schema — JSON Schema for project.yaml validation
+# Version: 1
+
+$schema: "http://json-schema.org/draft-07/schema#"
+title: SectorResearchProject
+description: Schema for a sector research project configuration
+
+type: object
+required:
+  - project_id
+  - project_name
+  - research_type
+  - market
+  - output
+
+properties:
+  project_id:
+    type: string
+    pattern: "^[a-z0-9_]+$"
+    description: Unique lowercase alphanumeric ID (e.g. tech_ai_semiconductor)
+
+  project_name:
+    type: string
+    description: Human-readable project name
+
+  research_type:
+    type: string
+    enum: [sector_research, stock_research, theme_research, custom]
+    description: Type of research
+
+  market:
+    type: string
+    description: Target market (e.g. A股, 港股, 美股)
+
+  version:
+    type: string
+    description: Config version
+
+  created_date:
+    type: string
+    format: date
+    description: Creation date
+
+  output:
+    type: object
+    required: [root]
+    properties:
+      root:
+        type: string
+        description: Root output directory path
+      sector_cards_dir:
+        type: string
+      total_tables_dir:
+        type: string
+      logs_dir:
+        type: string
+      raw_data_dir:
+        type: string
+      evidence_dir:
+        type: string
+
+  scope:
+    type: object
+    properties:
+      include:
+        type: array
+        items: { type: string }
+      exclude:
+        type: array
+        items: { type: string }
+
+  runtime:
+    type: object
+    properties:
+      python:
+        type: string
+        description: Path to Python executable
+      conda_env:
+        type: string
+      pythonpath_add:
+        type: array
+        items: { type: string }
+
+  data_source_priority:
+    type: object
+    description: Priority order for each data type
+
+  quality:
+    type: object
+    required:
+      - grade_target
+      - require_sources
+      - allow_placeholders
+    properties:
+      grade_target:
+        type: string
+        enum: [pipeline-grade, research-grade]
+      require_sources:
+        type: boolean
+      allow_placeholders:
+        type: boolean
+      require_source_id_for_key_conclusions:
+        type: boolean
+      require_reason_for_scores:
+        type: boolean
+      stale_days:
+        type: object
+        properties:
+          market_data: { type: integer }
+          financial_data: { type: integer }
+          news_or_announcements: { type: integer }
+      confidence_levels_allowed:
+        type: array
+        items: { type: string }
+      seed_document_status:
+        type: array
+        items: { type: string }
+
+  provenance:
+    type: object
+    description: Source of universe definitions
+
+# Cross-field constraints:
+# 1. project_id must match the directory name
+# 2. output.root must be an absolute path or relative to workspace root
+# 3. scope.exclude must not contain items from scope.include

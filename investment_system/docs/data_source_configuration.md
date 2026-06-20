@@ -1,6 +1,6 @@
 # 统一数据源配置
 
-目标是把 AKShare、国信证券 API 和 BaoStock 放到同一个配置入口，避免每个子项目各自维护路径、token 和调用规则。
+目标是把 AKShare、BaoStock 和 Tushare 放到同一个配置入口，避免每个子项目各自维护路径、token 和调用规则。
 
 ## 配置文件
 
@@ -35,39 +35,56 @@ investment_system/config/.env.local
 | 数据源 | 角色 | 是否需要 token | 建议用途 |
 |---|---|---:|---|
 | AKShare | 免费数据采集与缓存 | 否 | A 股快照、K 线、财务低频数据、实验验证 |
-| 国信证券 API | 实时行情与投研接口 | 是 | 实时行情、资金流、财务三表、智能选股 |
 | BaoStock | 免费 A 股历史与基础数据 | 否 | 历史 K 线、复权因子、股票基础资料、指数成分、低频基本面 |
+| Tushare Pro | 付费/积分制数据接口，经本地配置的 HTTP 中转地址访问 | 是 | 交易日历、基础资料、行情与财务补充数据 |
 
 ## 推荐优先级
 
 | 任务 | 优先级 |
 |---|---|
-| 实时行情 | 国信 API -> AKShare |
-| 日 K 线 | BaoStock -> AKShare -> 国信 API |
-| 复权因子 | BaoStock -> AKShare |
-| 股票基础资料 | BaoStock -> AKShare |
-| 财务三表 | 国信 API -> BaoStock -> AKShare |
-| 资金流 | 国信 API -> AKShare |
-| 股票筛选 | 国信 API -> BaoStock -> AKShare |
+| 实时行情 | AKShare -> Tushare |
+| 日 K 线 | BaoStock -> AKShare -> Tushare |
+| 复权因子 | BaoStock -> AKShare -> Tushare |
+| 股票基础资料 | BaoStock -> AKShare -> Tushare |
+| 财务三表 | BaoStock -> AKShare -> Tushare -> 公司报告 |
+| 资金流 | AKShare，或作为缺口记录后补采 |
+| 股票筛选 | BaoStock -> AKShare -> Tushare |
+
+## 接口失败后的补采规则
+
+当 BaoStock、Tencent direct、AKShare、Tushare 都无法获得某项关键数据时，允许联网搜索补采，但不能绕过来源登记。
+
+联网补采优先级：
+
+1. 公司公告、年报、半年报、季报。
+2. 投资者关系活动记录、业绩说明会。
+3. 互动易、上证e互动、交易所问答。
+4. 政府政策文件。
+5. 可验证的同花顺/Choice类公开页面、券商研报摘要；不要假设有 Wind 或 iFind 数据库接口。
+6. 权威媒体和产业媒体。
+
+联网补采结果必须写入 `investment_system/research/evidence/`，并在 `数据来源索引.csv` 中保留可索引 `source_url`。如果网页不稳定，应同时保存本地缓存路径。
+
+禁止把没有 URL、本地路径或原文摘录的数据写成确定事实。
 
 ## 环境变量
 
 PowerShell 示例：
 
 ```powershell
-$env:GS_API_KEY="your_guosen_key"
-$env:GS_API_KEY_BACKUP="your_backup_guosen_key"
+$env:TUSHARE_TOKEN="your_tushare_token"
+$env:TUSHARE_HTTP_URL="http://8.163.90.143:8686/"
+$env:TUSHARE_DISABLE_PROXY="1"
 ```
 
 或者把真实值写入本地 `.env.local`，然后由脚本加载。
 
-当前兼容旧项目：
+当前配置：
 
-- 国信 API key 统一从环境变量或 `investment_system/config/.env.local` 读取。
-- 如主 key 触发限额，可切换到 `GS_API_KEY_BACKUP`。
+- Tushare token 和 HTTP 中转地址统一从环境变量或 `investment_system/config/.env.local` 读取。
+- `TUSHARE_DISABLE_PROXY=1` 时会在 Tushare client 初始化前清理 `HTTP_PROXY`、`HTTPS_PROXY`、`http_proxy`、`https_proxy`、`ALL_PROXY` 和 `all_proxy`。
 - 旧 memory 文件已不再作为依赖。
-- 新体系不复制国信 key 明文，避免出现多份密钥。
-- Tushare 已从当前统一环境和配置中移除。
+- Tushare 已重新加入统一环境；正式调用建议通过 `investment_system/pipelines/tushare_client.py` 创建 client。
 
 ## Python 环境原则
 
@@ -85,7 +102,7 @@ C:\Projects\03_Investment\.conda\investment-system\python.exe
 A股科技前两主线调研文件包
 ```
 
-旧虚拟环境和旧子项目环境已删除。国信 API 后续通过 `investment_system/pipelines/guosen` 重新封装，执行 Python 统一使用项目根目录 Conda 环境。
+旧虚拟环境和旧子项目环境已删除。执行 Python 统一使用项目根目录 Conda 环境。
 
 激活方式：
 
@@ -97,6 +114,7 @@ conda activate "C:\Projects\03_Investment\.conda\investment-system"
 
 ```powershell
 & "C:\Projects\03_Investment\.conda\investment-system\python.exe" investment_system\scripts\check_data_sources.py
+& "C:\Projects\03_Investment\.conda\investment-system\python.exe" investment_system\pipelines\tushare_client.py --ping
 ```
 
 
@@ -113,4 +131,4 @@ conda activate "C:\Projects\03_Investment\.conda\investment-system"
 - 配置文件是否存在。
 - 环境变量是否已设置。
 - AKShare/BaoStock 模块是否可导入。
-- 国信 API 适配目录是否存在。
+- Tushare 模块、token、中转 HTTP 地址和代理清理开关是否已配置。

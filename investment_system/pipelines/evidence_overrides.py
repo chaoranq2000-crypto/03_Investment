@@ -20,6 +20,7 @@ EVIDENCE_DIR = ROOT / "investment_system" / "research" / "evidence"
 
 THEME_EVIDENCE_FILES = {
     "高速光模块": "high_speed_optical_modules.yaml",
+    "光器件/FAU/精密光学": "optical_components_fau_precision_optics.yaml",
 }
 
 
@@ -71,7 +72,9 @@ def write_evidence_logs(evidence: dict[str, Any], log_dir: Path) -> None:
 
 
 def card_markdown(evidence: dict[str, Any]) -> str:
-    """Return curated card markdown, if present."""
+    """Return curated card markdown only when evidence is research-grade."""
+    if str(evidence.get("grade", "")).lower() != "research":
+        return ""
     text = evidence.get("card_markdown")
     return str(text).rstrip() + "\n" if text else ""
 
@@ -128,13 +131,14 @@ def export_current_outputs_to_evidence(
 
     evidence = {
         "sub_theme": "高速光模块",
+        "grade": "research",
         "description": "Curated evidence migrated from the manually enriched high-speed optical module output.",
         "company_overrides": company_overrides,
         "comparison_override": comparison_rows[0] if comparison_rows else {},
         "source_rows": source_rows,
         "logs": {
-            "缺失数据清单.md": "# 缺失数据清单\n\n## 已自动补充\n\n高速光模块主要缺失字段已迁移到结构化 evidence 层，并由 run_research.py 自动合并。\n\n## 仍需工具核查\n\n| 数据项 | 当前状态 | 获取方式 |\n|---|---|---|\n| 各公司PE/PB精确历史分位 | 定性高估，需Wind精确查询 | Wind历史估值工具 |\n| 太辰光Q1负增长原因 | 待核实 | 互动易/业绩说明会 |\n| CPO/OCS对可插拔光模块替代节奏 | 定性风险，需跟踪 | 头部CSP公告/研报 |",
-            "冲突数据清单.md": "# 冲突数据清单\n\n暂未发现跨来源数据冲突；Guosen TLS/Schannel不可达和AKShare Eastmoney端点不稳定已作为数据源状态记录。",
+            "缺失数据清单.md": "# 缺失数据清单\n\n## 已自动补充\n\n高速光模块主要缺失字段已迁移到结构化 evidence 层，并由 run_research.py 自动合并。\n\n## 仍需工具核查\n\n| 数据项 | 当前状态 | 获取方式 |\n|---|---|---|\n| 各公司PE/PB精确历史分位 | 定性高估，需可验证公开来源或用户提供数据 | 公开估值页面、券商研报或用户提供数据 |\n| 太辰光Q1负增长原因 | 待核实 | 互动易/业绩说明会 |\n| CPO/OCS对可插拔光模块替代节奏 | 定性风险，需跟踪 | 头部CSP公告/研报 |",
+            "冲突数据清单.md": "# 冲突数据清单\n\n暂未发现跨来源数据冲突；AKShare Eastmoney端点不稳定已作为数据源状态记录，Guosen skills 已禁用。",
         },
         "card_markdown": card_path.read_text(encoding="utf-8"),
     }
@@ -142,3 +146,6 @@ def export_current_outputs_to_evidence(
     evidence_path.parent.mkdir(parents=True, exist_ok=True)
     with evidence_path.open("w", encoding="utf-8") as f:
         yaml.safe_dump(evidence, f, allow_unicode=True, sort_keys=False, width=120)
+
+
+
