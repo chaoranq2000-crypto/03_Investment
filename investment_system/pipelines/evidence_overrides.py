@@ -1,10 +1,15 @@
-"""Evidence override layer for standardized theme research outputs.
+"""Legacy-only evidence override layer for standardized theme research outputs.
 
 The automated data collectors are deliberately conservative: they only fill
 fields that can be computed from market/financial databases. Business exposure,
 customer binding, capacity progress, forecasts, and policy evidence are stored
 as curated theme evidence under ``investment_system/research/evidence`` and
 merged into the generated outputs here.
+
+Project-aware evidence binding must use
+``sector_research.load_project.resolve_evidence_files_for_sector()`` with
+``run_manifest.yaml`` and ``sector_universe.yaml``. This module keeps the legacy
+theme-name adapter alive for old runs only.
 """
 from __future__ import annotations
 
@@ -17,6 +22,7 @@ import yaml
 
 ROOT = Path(__file__).resolve().parents[2]
 EVIDENCE_DIR = ROOT / "investment_system" / "research" / "evidence"
+LEGACY_ONLY_EVIDENCE_REGISTRY = True
 
 THEME_EVIDENCE_FILES = {
     "高速光模块": "high_speed_optical_modules.yaml",
@@ -25,7 +31,7 @@ THEME_EVIDENCE_FILES = {
 
 
 def load_theme_evidence(sub_theme: str) -> dict[str, Any]:
-    """Load curated evidence for a sub-theme, if available."""
+    """Load curated evidence for a legacy sub-theme, if available."""
     file_name = THEME_EVIDENCE_FILES.get(sub_theme)
     if not file_name:
         return {}

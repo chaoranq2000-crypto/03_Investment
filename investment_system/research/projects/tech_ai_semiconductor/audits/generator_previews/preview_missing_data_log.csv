@@ -1,0 +1,2 @@
+﻿project_id,output_type,sector_id,stock_code,missing_field,severity,reason,source_ids,notes,stock_name,current_value,suggested_acquisition_path,source_id,evidence_id,evidence_ids,status
+tech_ai_semiconductor,company_table,cpo_optical_module_silicon_photonics,300308.SZ,financials,preview,formal_data_not_collected_in_dry_run_generate,SRC-BAO-DAILY-001,PREVIEW_ONLY_DO_NOT_USE_FOR_RESEARCH,中际旭创,missing,production_gate_collect_or_cache,SRC-BAO-DAILY-001,EV-HSOM-COMPANY-300308-001,EV-HSOM-COMPANY-300308-001,preview

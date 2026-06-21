@@ -1,0 +1,170 @@
+schema_name: canonical_evidence_yaml
+schema_version: "1.0"
+description: >
+  Canonical project-aware evidence schema for sector research. Evidence files
+  remain index-only unless separately promoted by a later evidence-quality phase.
+
+required_top_level_fields:
+  - schema_version
+  - evidence_file_id
+  - status
+  - project_ids
+  - canonical_sector_ids
+  - source_index
+  - evidence_items
+
+top_level_fields:
+  schema_version:
+    type: string
+    required: true
+    description: Evidence schema version. Current value is "1.0".
+  evidence_file_id:
+    type: string
+    required: true
+    description: Stable evidence file id matching run_manifest.yaml and sector_universe.yaml.
+  status:
+    type: string
+    required: true
+    enum:
+      - indexed_existing_evidence
+      - migrated_legacy_evidence
+      - schema_normalized
+      - pending_source_verification
+    description: Must not be completed/research-grade by default.
+  project_ids:
+    type: list[string]
+    required: true
+  canonical_sector_ids:
+    type: list[string]
+    required: true
+    description: Canonical sector_id values from sector_universe.yaml.
+  legacy_sector_ids:
+    type: list[string]
+    required: false
+    description: Legacy ids retained for migration compatibility only.
+
+source_index:
+  type: list[object]
+  required: true
+  id_field: source_id
+  fields:
+    source_id:
+      type: string
+      required: true
+      stability: deterministic
+    source_type:
+      type: string
+      required: true
+      examples:
+        - annual_report
+        - database
+        - database_fallback
+        - direct_api
+        - broker_report
+        - policy_file
+        - curated_evidence_bundle
+        - disabled_source
+        - api_error
+        - other
+    title:
+      type: string
+      required: true
+    publisher:
+      type: string
+      required: false
+    date:
+      type: string
+      required: false
+      format: YYYY-MM-DD
+    url:
+      type: string
+      required: false
+    path:
+      type: string
+      required: false
+    accessed_at:
+      type: string
+      required: false
+      format: YYYY-MM-DD
+    reliability:
+      type: string
+      required: false
+      enum: [高, 中高, 中, 中低, 低, unknown]
+    notes:
+      type: string
+      required: false
+
+evidence_items:
+  type: list[object]
+  required: true
+  id_field: evidence_id
+  fields:
+    evidence_id:
+      type: string
+      required: true
+      stability: deterministic
+    source_id:
+      type: string
+      required: true
+      references: source_index.source_id
+    project_id:
+      type: string
+      required: true
+    sector_id:
+      type: string
+      required: true
+      references: sector_universe.sectors[].sector_id
+    subject_type:
+      type: string
+      required: true
+      enum: [company, sector, market, policy, source_bundle]
+    subject_id:
+      type: string
+      required: true
+    subject_name:
+      type: string
+      required: true
+    claim:
+      type: string
+      required: true
+    evidence_type:
+      type: string
+      required: true
+    metrics_supported:
+      type: list[string]
+      required: false
+    time_scope:
+      type: string
+      required: false
+    confidence:
+      type: string
+      required: true
+      enum: [高, 中高, 中, 中低, 低, unknown]
+    used_for:
+      type: list[string]
+      required: false
+      examples:
+        - sector_card
+        - company_table
+        - comparison_table
+        - source_index
+        - missing_data_log
+        - conflict_log
+        - scoring_reason
+    not_allowed_for:
+      type: list[string]
+      required: false
+      examples:
+        - investment_conclusion
+        - position_sizing
+        - final_rating
+    notes:
+      type: string
+      required: false
+
+legacy:
+  type: object
+  required: false
+  description: >
+    Preserves old theme names, old field names, old grading labels, and notes on
+    legacy-only structures that remain at top level for backward compatibility.

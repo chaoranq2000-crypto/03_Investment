@@ -1,0 +1,2 @@
+﻿project_id,output_type,sector_id,stock_code,field,conflicting_values,source_ids,severity,resolution_status,notes,stock_name,resolution_note,handling,evidence_ids
+tech_ai_semiconductor,company_table,cpo_optical_module_silicon_photonics,300308.SZ,preview_conflict_field,none_in_preview,SRC-BAO-DAILY-001,preview,preview_no_conflict,PREVIEW_ONLY_DO_NOT_USE_FOR_RESEARCH,中际旭创,PREVIEW_ONLY_DO_NOT_USE_FOR_RESEARCH,preview_only,EV-HSOM-COMPANY-300308-001

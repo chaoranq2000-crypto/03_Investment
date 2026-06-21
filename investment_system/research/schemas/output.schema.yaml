@@ -1,0 +1,308 @@
+schema_name: canonical_output_contract
+schema_version: "1.0"
+description: >
+  Project-aware output contract for sector research. This schema defines stable
+  identifiers, required fields, deprecated legacy fields, and source/evidence
+  expectations for generated artifacts.
+
+primary_key_policy:
+  allowed_project_aware_keys:
+    - project_id
+    - sector_id
+    - stock_code
+    - source_id
+    - evidence_id
+  forbidden_project_aware_keys:
+    - main_theme
+    - sub_theme
+    - legacy_theme_name
+  notes: >
+    main_theme/sub_theme may appear only as legacy or display fields. They must
+    not be used as project-aware primary keys.
+
+empty_value_policy:
+  allowed_placeholders:
+    - ""
+    - missing
+    - pending
+    - not_applicable
+  notes: >
+    Missing values must be explicit and should be captured in missing_data_log
+    before research-grade output generation.
+
+output_types:
+  sector_card:
+    output_kind: markdown
+    primary_key: [project_id, sector_id]
+    required_fields:
+      - project_id
+      - sector_id
+      - sector_name
+      - research_group_id
+      - priority
+      - status
+      - generated_at
+      - source_ids
+    optional_fields:
+      - evidence_ids
+      - missing_fields
+      - conflict_flags
+    legacy_display_fields:
+      - main_theme
+      - sub_theme
+    deprecated_fields: []
+    source_evidence_requirements:
+      source_ids_required: true
+      evidence_ids_required_for_research_grade: true
+    field_aliases:
+      sub_theme: sector_name
+      main_theme: parent_chain
+
+  company_table:
+    output_kind: csv
+    primary_key: [project_id, sector_id, stock_code]
+    required_fields:
+      - project_id
+      - sector_id
+      - sector_name
+      - research_group_id
+      - stock_code
+      - stock_name
+      - market
+      - role
+      - exposure_type
+      - coverage_status
+      - data_status
+      - financial_period
+      - source_ids
+    optional_fields:
+      - revenue
+      - net_profit
+      - gross_margin
+      - pe_ttm
+      - pe_2026e
+      - pe_2027e
+      - peg
+      - evidence_ids
+      - missing_fields
+      - conflict_flags
+      - notes
+    legacy_display_fields:
+      - company_name
+      - chain_position
+      - main_theme_revenue_exposure
+    deprecated_fields:
+      - main_theme
+      - sub_theme
+    source_evidence_requirements:
+      source_ids_required: true
+      evidence_ids_required_for_research_grade: true
+    field_aliases:
+      company_name: stock_name
+      pe_2026E: pe_2026e
+      pe_2027E: pe_2027e
+      peg_2026E: peg
+
+  sector_comparison_table:
+    output_kind: csv
+    primary_key: [project_id, sector_id]
+    required_fields:
+      - project_id
+      - sector_id
+      - sector_name
+      - research_group_id
+      - parent_chain
+      - chain_position
+      - core_logic
+      - source_ids
+      - generated_at
+    optional_fields:
+      - leader_stocks
+      - elastic_stocks
+      - prosperity_score
+      - prosperity_reason
+      - earnings_certainty_score
+      - earnings_certainty_reason
+      - valuation_score
+      - valuation_reason
+      - trading_comfort_score
+      - trading_comfort_reason
+      - catalyst_score
+      - catalyst_reason
+      - purity_score
+      - purity_reason
+      - risk_control_score
+      - risk_control_reason
+      - total_score
+      - action_rating
+      - rating_reason
+      - suggested_action
+      - missing_data_flags
+      - key_evidence
+      - key_risk
+      - evidence_ids
+      - confidence_level
+    legacy_display_fields:
+      - main_theme
+      - sub_theme
+      - representative_companies
+    deprecated_fields:
+      - industry_logic_summary
+      - source_index_refs
+    source_evidence_requirements:
+      source_ids_required: true
+      evidence_ids_required_for_research_grade: true
+    field_aliases:
+      industry_logic_summary: core_logic
+      source_index_refs: source_ids
+
+  source_index:
+    output_kind: csv
+    primary_key: [project_id, source_id]
+    required_fields:
+      - project_id
+      - source_id
+      - subject_type
+      - subject_id
+      - subject_name
+      - sector_id
+      - claim_supported
+      - source_type
+      - source_title
+      - source_date
+      - url_or_path
+      - confidence
+    optional_fields:
+      - evidence_ids
+      - extracted_fields
+      - notes
+      - access_status
+      - retrieved_date
+    legacy_display_fields:
+      - source_name
+      - related_main_theme
+      - related_sub_theme
+      - related_company
+      - quote_or_excerpt
+      - confidence_level
+    deprecated_fields:
+      - source_url
+    source_evidence_requirements:
+      source_id_required: true
+    field_aliases:
+      source_name: source_title
+      source_url: url_or_path
+      confidence_level: confidence
+      data_fields_supported: extracted_fields
+
+  missing_data_log:
+    output_kind: markdown_or_csv
+    primary_key: [project_id, sector_id, stock_code, missing_field]
+    required_fields:
+      - project_id
+      - output_type
+      - sector_id
+      - stock_code
+      - missing_field
+      - severity
+      - reason
+      - source_ids
+      - notes
+    optional_fields:
+      - stock_name
+      - current_value
+      - suggested_acquisition_path
+      - source_id
+      - evidence_id
+      - evidence_ids
+      - status
+    legacy_display_fields:
+      - company_name
+      - sub_theme
+    deprecated_fields: []
+    source_evidence_requirements:
+      source_id_required_when_resolved: true
+    field_aliases:
+      company_code: stock_code
+      company_name: stock_name
+      priority: severity
+
+  conflict_data_log:
+    output_kind: markdown_or_csv
+    primary_key: [project_id, sector_id, stock_code, field]
+    required_fields:
+      - project_id
+      - output_type
+      - sector_id
+      - stock_code
+      - field
+      - conflicting_values
+      - source_ids
+      - severity
+      - resolution_status
+      - notes
+    optional_fields:
+      - stock_name
+      - resolution_note
+      - handling
+      - evidence_ids
+    legacy_display_fields:
+      - company_name
+      - sub_theme
+    deprecated_fields:
+      - value_from_source_a
+      - value_from_source_b
+      - source_a
+      - source_b
+    source_evidence_requirements:
+      source_ids_required: true
+    field_aliases:
+      company_code: stock_code
+      field_name: field
+      source_id_a: source_ids
+      source_id_b: source_ids
+
+  score_table:
+    output_kind: csv_or_embedded_table
+    primary_key: [project_id, sector_id]
+    required_fields:
+      - project_id
+      - sector_id
+      - sector_name
+      - prosperity_score
+      - prosperity_reason
+      - earnings_certainty_score
+      - earnings_certainty_reason
+      - valuation_score
+      - valuation_reason
+      - trading_comfort_score
+      - trading_comfort_reason
+      - catalyst_score
+      - catalyst_reason
+      - purity_score
+      - purity_reason
+      - risk_control_score
+      - risk_control_reason
+      - total_score
+      - rating
+      - rating_reason
+      - source_ids
+      - evidence_ids
+      - data_status
+      - notes
+    optional_fields:
+      - score_version
+      - generated_at
+    legacy_display_fields:
+      - performance_stage_score
+      - industry_prosperity_score
+      - upside_score
+      - bubble_safety_score
+      - fund_recognition_score
+    deprecated_fields: []
+    source_evidence_requirements:
+      every_score_has_reason: true
+      evidence_ids_required_for_research_grade: true
+    field_aliases:
+      industry_prosperity_score: prosperity_score
+      bubble_safety_score: trading_comfort_score

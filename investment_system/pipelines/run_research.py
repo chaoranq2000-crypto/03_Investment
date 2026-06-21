@@ -1,22 +1,17 @@
 """Standardized automated research pipeline for A股科技主线.
 
 Usage:
-    # Run all P0 sub-themes (legacy):
+    # Project-aware mode (RECOMMENDED):
+    python run_research.py --project tech_ai_semiconductor --sector-id cpo_optical_module_silicon_photonics
+    python run_research.py --project tech_ai_semiconductor --sector-id high_speed_optical_modules  # legacy alias OK
+    python run_research.py --project tech_ai_semiconductor --batch p0
+
+    # Legacy mode:
+    python run_research.py --sub-theme "高速光模块"
     python run_research.py --batch p0
 
-    # Run a specific sub-theme (legacy):
-    python run_research.py --sub-theme "高速光模块"
-
-    # Project-aware mode:
-    python run_research.py --project tech_ai_semiconductor --batch p0
-    python run_research.py --project tech_ai_semiconductor --sub-theme "高速光模块"
-    python run_research.py --project tech_ai_semiconductor --sector-id cpo_optical_module_silicon_photonics
-
-    # Dry run (data sources only, no output files):
-    python run_research.py --sub-theme "高速光模块" --dry-run
-
-    # Guosen skills are disabled by default:
-    python run_research.py --sub-theme "高速光模块"
+    # Dry-run resolve (no data, no file writes):
+    python run_research.py --project tech_ai_semiconductor --sector-id cpo_optical_module_silicon_photonics --dry-run-resolve
 
 Output follows Codex调研说明手册规范 (legacy) or project output_spec.yaml (--project):
     tech_ai_semiconductor project output root (科技主线调研输出/):
@@ -45,9 +40,11 @@ from datetime import date, datetime, timedelta
 from pathlib import Path
 from typing import Any, Optional
 
-# Add scripts/ to path for research_client import
-ROOT = Path(__file__).resolve().parents[2]  # pipeliens/ -> investment_system/ -> project/  => ROOT = C:\Projects\03_Investment
-sys.path.insert(0, str(ROOT / "investment_system" / "scripts"))  # research_client.py lives here
+# Add investment_system/ to path so evidence_overrides and sector_research loaders resolve
+# pipelines/ → investment_system/ → project/  => ROOT = C:\Projects\03_Investment
+ROOT = Path(__file__).resolve().parents[2]
+sys.path.insert(0, str(ROOT / "investment_system"))       # for evidence_overrides (pipelines/)
+sys.path.insert(0, str(ROOT / "investment_system" / "scripts"))  # for research_client
 
 from research_client import (
     ResearchClient,
@@ -55,7 +52,7 @@ from research_client import (
     load_env,
     HumanRateLimiter,
 )
-from evidence_overrides import (
+from investment_system.pipelines.evidence_overrides import (
     apply_company_overrides,
     apply_comparison_override,
     card_markdown,
@@ -70,6 +67,215 @@ RAW_DIR = ROOT / "investment_system" / "data" / "raw"
 PROCESSED_DIR = ROOT / "investment_system" / "data" / "processed" / "theme_research" / TODAY
 LOG_DIR = OUT_DIR / "99_日志"
 META_DIR = RAW_DIR / "research_runs" / TODAY
+
+
+# ── Project-aware SectorContext ───────────────────────────────────────────────
+
+@dataclass
+class SectorContext:
+    """Project-aware sector resolution result. Internal canonical form."""
+    sector_id: str
+    sector_name: str
+    research_group_id: str
+    group_name: str
+    group_order: str
+    priority: str
+    chain_position: str
+    parent_chain: str
+    industry_logic: str
+    scoring_enabled: bool
+    aliases: list[str]
+    legacy_sector_ids: list[str]
+    legacy_theme_names: list[str]
+    input_raw: str           # what the user actually typed
+    was_legacy_alias: bool   # True if input was resolved via legacy alias
+    # Canonical sector_id — always equals sector_id after construction
+    canonical_sector_id: str = field(init=False)
+
+    def __post_init__(self):
+        self.canonical_sector_id = self.sector_id
+
+
+def safe_output_name(value: str) -> str:
+    """Return a filesystem-safe display-name preserving Chinese text."""
+    return (
+        value.replace("/", "_")
+        .replace("\\", "_")
+        .replace(":", "_")
+        .replace("*", "_")
+        .replace("?", "_")
+        .replace('"', "_")
+        .replace("<", "_")
+        .replace(">", "_")
+        .replace("|", "_")
+    )
+
+
+def resolve_sector_context(
+    config: Any,
+    sector_id_or_legacy: str,
+    loader_module: Any,
+) -> SectorContext:
+    """
+    Resolve a sector identifier (canonical or legacy) into a SectorContext.
+
+    In project-aware mode, this is the ONLY entry point for sector resolution.
+    Supports: canonical sector_id, legacy_sector_ids[], aliases[],
+    legacy_theme_names[].
+
+    Args:
+        config: loaded ProjectConfig from load_project()
+        sector_id_or_legacy: raw input from CLI (may be canonical or legacy)
+        loader_module: the load_project module (for get_sector, research_groups)
+
+    Returns:
+        SectorContext with all fields populated
+
+    Raises:
+        KeyError: if sector cannot be resolved
+    """
+    sectors = config.raw.get("sectors", [])
+    research_groups = config.raw.get("research_groups", [])
+    valid_ids = {s.get("sector_id") for s in sectors}
+    legacy_map = config.raw.get("legacy_sector_map", {})
+
+    # Build a quick lookup: legacy alias -> sector dict
+    resolved_id = sector_id_or_legacy
+    was_legacy = False
+
+    if sector_id_or_legacy in valid_ids:
+        pass  # canonical, no change
+    elif sector_id_or_legacy in legacy_map:
+        resolved_id = legacy_map[sector_id_or_legacy]
+        was_legacy = True
+    else:
+        raise KeyError(
+            f"Cannot resolve sector '{sector_id_or_legacy}'. "
+            f"Not found as canonical sector_id. "
+            f"Valid canonical IDs: {sorted(valid_ids)}"
+        )
+
+    # Find the sector dict
+    sector_dict = None
+    for s in sectors:
+        if s.get("sector_id") == resolved_id:
+            sector_dict = s
+            break
+
+    if sector_dict is None:
+        raise KeyError(
+            f"Resolved to '{resolved_id}' but sector not found. "
+            f"This should not happen — legacy_map may be stale."
+        )
+
+    # Find the research group
+    rg_id = sector_dict.get("research_group_id", "")
+    group_dict = None
+    for g in research_groups:
+        if g.get("group_id") == rg_id:
+            group_dict = g
+            break
+
+    group_name = group_dict.get("group_name", "") if group_dict else ""
+    group_order = str(sector_dict.get("group_order", "99"))
+
+    return SectorContext(
+        sector_id=resolved_id,
+        sector_name=sector_dict.get("sector_name", resolved_id),
+        research_group_id=rg_id,
+        group_name=group_name,
+        group_order=group_order,
+        priority=sector_dict.get("priority", "P9"),
+        chain_position=sector_dict.get("chain_position", "待确认"),
+        parent_chain=sector_dict.get("parent_chain", "AI算力硬件"),
+        industry_logic=sector_dict.get("industry_logic", ""),
+        scoring_enabled=sector_dict.get("scoring_enabled", False),
+        aliases=list(sector_dict.get("aliases", [])),
+        legacy_sector_ids=list(sector_dict.get("legacy_sector_ids", [])),
+        legacy_theme_names=list(sector_dict.get("legacy_theme_names", [])),
+        input_raw=sector_id_or_legacy,
+        was_legacy_alias=was_legacy,
+    )
+
+
+def list_project_sectors_by_priority(
+    config: Any,
+    priority_filter: str | None,
+    loader_module: Any,
+) -> list[SectorContext]:
+    """
+    Return all sectors for the project, optionally filtered by priority.
+    Used by batch mode to iterate sectors from sector_universe instead of KNOWN_COMPANIES.
+    """
+    sectors = config.raw.get("sectors", [])
+    result = []
+    for s in sectors:
+        sid = s.get("sector_id", "")
+        if not sid:
+            continue
+        p = s.get("priority", "P9")
+        if priority_filter and priority_filter not in ("all", "p0", "p1", "p2"):
+            pass
+        # Map batch label to priority
+        priority_map = {"p0": "P0", "p1": "P1", "p2": "P2", "all": None}
+        target = priority_map.get(priority_filter)
+        if target and p != target:
+            continue
+        ctx = resolve_sector_context(config, sid, loader_module)
+        result.append(ctx)
+    return result
+
+
+def compute_coverage_status(ctx: SectorContext, stock_count: int) -> dict[str, Any]:
+    """Return project-aware stock coverage status without collecting data."""
+    if ctx.research_group_id == "peripheral_observation":
+        return {
+            "status": "exempt",
+            "required": 0,
+            "warning": "",
+        }
+
+    if ctx.priority in ("P0", "P1"):
+        required = 5
+        rule_label = f"{ctx.priority} sector"
+    elif ctx.scoring_enabled:
+        required = 3
+        rule_label = f"{ctx.priority} scoring_enabled sector"
+    else:
+        required = 0
+        rule_label = "non-scoring sector"
+
+    if stock_count == 0:
+        if required:
+            return {
+                "status": "missing",
+                "required": required,
+                "warning": (
+                    f"{rule_label} requires at least {required} listed stocks, "
+                    f"currently 0."
+                ),
+            }
+        return {
+            "status": "missing",
+            "required": 0,
+            "warning": "No listed stocks found; coverage threshold is not enforced for this sector.",
+        }
+
+    if required and stock_count < required:
+        return {
+            "status": "thin",
+            "required": required,
+            "warning": (
+                f"{rule_label} requires at least {required} listed stocks, "
+                f"currently {stock_count}."
+            ),
+        }
+
+    return {
+        "status": "ok",
+        "required": required,
+        "warning": "",
+    }
 
 
 # ── Project-aware runtime context ──────────────────────────────────────────────
@@ -104,12 +310,14 @@ _runtime_paths: ResearchRuntimePaths | None = None
 
 
 # ---------------------------------------------------------------------------
-# Theme registry
+# Theme registry (LEGACY ONLY — kept for backward compat)
 # ---------------------------------------------------------------------------
 
 THEME_REGISTRY_CSV = ROOT / "A股科技前两主线调研文件包" / "01_调研板块细分方向列表" / "A股科技前两主线_板块细分方向母表.csv"
 
 # Inline P0 companies for each sub-theme that have been researched
+# NOTE: This is only used in LEGACY MODE. In project-aware mode,
+# companies come from stock_universe.yaml via get_stocks_for_sector().
 KNOWN_COMPANIES = {
     "高速光模块": [
         {"code": "300308", "market": "SZ", "set_code": 0, "name": "中际旭创"},
@@ -132,21 +340,6 @@ KNOWN_COMPANIES = {
 }
 
 
-def safe_output_name(value: str) -> str:
-    """Return a filesystem-safe display-name preserving Chinese text."""
-    return (
-        value.replace("/", "_")
-        .replace("\\", "_")
-        .replace(":", "_")
-        .replace("*", "_")
-        .replace("?", "_")
-        .replace('"', "_")
-        .replace("<", "_")
-        .replace(">", "_")
-        .replace("|", "_")
-    )
-
-
 _UNRESOLVED_TEMPLATE_PATTERN = object()  # sentinel
 
 def _check_path_safety(path_str: str) -> None:
@@ -164,7 +357,7 @@ def _check_path_safety(path_str: str) -> None:
 
 
 def load_theme_registry() -> dict[str, dict]:
-    """Load sub-theme definitions from the mother table CSV.
+    """Load sub-theme definitions from the mother table CSV. (LEGACY ONLY)
 
     CSV header: main_theme, sub_theme, chain_position, second_level, third_level,
     research_priority, cross_theme_overlap, industry_logic, key_metrics_to_collect,
@@ -240,11 +433,7 @@ def annual_profit(rows: list[dict], year: str) -> dict:
 
 
 def derive_revenue_yi_from_akshare_indicator(rows: list[dict], year: str = "2025") -> str:
-    """Derive revenue from AKShare indicators when direct revenue is absent.
-
-    AKShare financial indicators expose 主营业务利润 and 主营业务利润率. Revenue
-    can be inferred as main_business_profit / margin when both fields exist.
-    """
+    """Derive revenue from AKShare indicators when direct revenue is absent."""
     for row in rows:
         if not str(row.get("日期", "")).startswith(f"{year}-12-31"):
             continue
@@ -284,7 +473,7 @@ def relative_strength(rows: list[dict], index_rows: list[dict], periods: int = 6
 # Output generation
 # ---------------------------------------------------------------------------
 
-COMPANY_TABLE_FIELDS = [
+LEGACY_COMPANY_TABLE_FIELDS = [
     "stock_code", "company_name", "main_theme", "sub_theme", "chain_position",
     "market_cap", "latest_price", "pct_change_1m", "pct_change_3m", "pct_change_6m",
     "turnover_value_20d_avg", "relative_strength_vs_index",
@@ -297,7 +486,7 @@ COMPANY_TABLE_FIELDS = [
     "catalysts", "risks", "data_source", "source_date", "source_url", "confidence_level",
 ]
 
-COMPARISON_FIELDS = [
+LEGACY_COMPARISON_FIELDS = [
     "main_theme", "sub_theme", "chain_position", "industry_logic_summary",
     "representative_companies", "performance_stage_score", "industry_prosperity_score",
     "upside_score", "bubble_safety_score", "fund_recognition_score",
@@ -305,11 +494,43 @@ COMPARISON_FIELDS = [
     "key_evidence", "key_risks", "missing_data", "source_index_refs",
 ]
 
-SOURCE_FIELDS = [
+LEGACY_SOURCE_FIELDS = [
     "source_id", "source_type", "source_name", "source_date", "source_url",
     "related_main_theme", "related_sub_theme", "related_company",
     "quote_or_excerpt", "data_fields_supported",
     "confidence_level", "notes",
+]
+
+COMPANY_TABLE_FIELDS = [
+    "project_id", "sector_id", "sector_name", "research_group_id",
+    "stock_code", "stock_name", "market", "role", "exposure_type",
+    "coverage_status", "data_status", "financial_period",
+    "revenue", "net_profit", "gross_margin",
+    "pe_ttm", "pe_2026e", "pe_2027e", "peg",
+    "source_ids", "evidence_ids", "missing_fields", "conflict_flags", "notes",
+]
+
+COMPARISON_FIELDS = [
+    "project_id", "sector_id", "sector_name", "research_group_id",
+    "parent_chain", "chain_position", "core_logic",
+    "leader_stocks", "elastic_stocks",
+    "prosperity_score", "prosperity_reason",
+    "earnings_certainty_score", "earnings_certainty_reason",
+    "valuation_score", "valuation_reason",
+    "trading_comfort_score", "trading_comfort_reason",
+    "catalyst_score", "catalyst_reason",
+    "purity_score", "purity_reason",
+    "risk_control_score", "risk_control_reason",
+    "total_score", "action_rating", "rating_reason", "suggested_action",
+    "key_evidence", "key_risk", "missing_data_flags",
+    "source_ids", "evidence_ids", "confidence_level", "generated_at",
+]
+
+SOURCE_FIELDS = [
+    "project_id", "source_id", "subject_type", "subject_id", "subject_name",
+    "sector_id", "claim_supported", "source_type", "source_title",
+    "source_date", "url_or_path", "extracted_fields", "confidence",
+    "evidence_ids", "notes",
 ]
 
 
@@ -328,10 +549,164 @@ def append_csv(path: Path, fields: list[str], rows: list[dict]) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     file_exists = path.exists()
     with path.open("a", newline="", encoding="utf-8-sig") as f:
-        writer = csv.DictWriter(f, fieldnames=fields)
+        writer = csv.DictWriter(f, fieldnames=fields, extrasaction="ignore")
         if not file_exists:
             writer.writeheader()
         writer.writerows(rows)
+
+
+def _market_from_code(code: str) -> str:
+    if "." in code:
+        return code.split(".")[-1]
+    if code.startswith("6"):
+        return "SH"
+    if code.startswith(("0", "3")):
+        return "SZ"
+    if code.startswith(("4", "8")):
+        return "BJ"
+    return ""
+
+
+def _project_sector_meta(sector_id: str | None) -> dict[str, str]:
+    if _project_config is None or not sector_id:
+        return {}
+    try:
+        from investment_system.pipelines.sector_research.load_project import get_sector
+        sector = get_sector(_project_config, sector_id)
+    except Exception:
+        return {}
+    return {
+        "sector_id": sector.get("sector_id", sector_id),
+        "sector_name": sector.get("sector_name", ""),
+        "research_group_id": sector.get("research_group_id", ""),
+        "parent_chain": sector.get("parent_chain", ""),
+        "chain_position": sector.get("chain_position", ""),
+    }
+
+
+def _company_meta_by_code(companies: list[dict]) -> dict[str, dict]:
+    result: dict[str, dict] = {}
+    for c in companies:
+        code = str(c.get("code", ""))
+        base = code.split(".")[0]
+        result[base] = c
+        result[code] = c
+    return result
+
+
+def to_project_company_rows(
+    legacy_rows: list[dict[str, str]],
+    companies: list[dict],
+    sector_id: str | None,
+) -> list[dict[str, str]]:
+    """Adapt legacy company rows into the project-aware company_table contract."""
+    sector = _project_sector_meta(sector_id)
+    company_meta = _company_meta_by_code(companies)
+    rows: list[dict[str, str]] = []
+    for row in legacy_rows:
+        raw_code = str(row.get("stock_code", ""))
+        base_code = raw_code.split(".")[0]
+        meta = company_meta.get(raw_code) or company_meta.get(base_code) or {}
+        full_code = raw_code if "." in raw_code else (
+            f"{base_code}.{meta.get('market', '')}" if meta.get("market") else base_code
+        )
+        missing_fields = [
+            key for key, value in row.items()
+            if value in ("", "缺失") or "缺失" in str(value)
+        ]
+        rows.append({
+            "project_id": _project_config.project_id if _project_config else "",
+            "sector_id": sector.get("sector_id", sector_id or ""),
+            "sector_name": sector.get("sector_name", row.get("sub_theme", "")),
+            "research_group_id": sector.get("research_group_id", ""),
+            "stock_code": full_code,
+            "stock_name": row.get("company_name", meta.get("name", "")),
+            "market": meta.get("market", _market_from_code(full_code)),
+            "role": meta.get("role", ""),
+            "exposure_type": meta.get("exposure_type", ""),
+            "coverage_status": "listed",
+            "data_status": "legacy_adapter",
+            "financial_period": "latest_available",
+            "revenue": row.get("revenue_2025") or row.get("revenue_2024", ""),
+            "net_profit": row.get("net_profit_2025") or row.get("net_profit_2024", ""),
+            "gross_margin": row.get("gross_margin_latest", ""),
+            "pe_ttm": row.get("pe_ttm", ""),
+            "pe_2026e": row.get("pe_2026E", ""),
+            "pe_2027e": row.get("pe_2027E", ""),
+            "peg": row.get("peg_2026E", ""),
+            "source_ids": "",
+            "evidence_ids": "",
+            "missing_fields": ",".join(missing_fields),
+            "conflict_flags": "",
+            "notes": "adapted_from_legacy_company_row; source/evidence ids require next-stage generator alignment",
+        })
+    return rows
+
+
+def to_project_comparison_row(row: dict[str, str], sector_id: str | None) -> dict[str, str]:
+    """Adapt a legacy comparison row into the project-aware comparison contract."""
+    sector = _project_sector_meta(sector_id)
+    return {
+        "project_id": _project_config.project_id if _project_config else "",
+        "sector_id": sector.get("sector_id", sector_id or ""),
+        "sector_name": sector.get("sector_name", row.get("sub_theme", "")),
+        "research_group_id": sector.get("research_group_id", ""),
+        "parent_chain": sector.get("parent_chain", row.get("main_theme", "")),
+        "chain_position": sector.get("chain_position", row.get("chain_position", "")),
+        "core_logic": row.get("industry_logic_summary", ""),
+        "leader_stocks": row.get("representative_companies", ""),
+        "elastic_stocks": "",
+        "prosperity_score": row.get("industry_prosperity_score", ""),
+        "prosperity_reason": row.get("key_evidence", ""),
+        "earnings_certainty_score": row.get("performance_stage_score", ""),
+        "earnings_certainty_reason": row.get("key_evidence", ""),
+        "valuation_score": row.get("upside_score", ""),
+        "valuation_reason": row.get("key_risks", ""),
+        "trading_comfort_score": row.get("bubble_safety_score", ""),
+        "trading_comfort_reason": row.get("key_risks", ""),
+        "catalyst_score": row.get("catalyst_score", ""),
+        "catalyst_reason": row.get("key_evidence", ""),
+        "purity_score": row.get("fund_recognition_score", ""),
+        "purity_reason": row.get("key_evidence", ""),
+        "risk_control_score": row.get("bubble_safety_score", ""),
+        "risk_control_reason": row.get("key_risks", ""),
+        "total_score": row.get("total_score", ""),
+        "action_rating": "",
+        "rating_reason": "pending_output_schema_alignment",
+        "suggested_action": row.get("recommended_next_action", ""),
+        "key_evidence": row.get("key_evidence", ""),
+        "key_risk": row.get("key_risks", ""),
+        "missing_data_flags": row.get("missing_data", ""),
+        "source_ids": row.get("source_index_refs", ""),
+        "evidence_ids": "",
+        "confidence_level": "",
+        "generated_at": datetime.now().isoformat(timespec="seconds"),
+    }
+
+
+def to_project_source_rows(rows: list[dict[str, str]], sector_id: str | None) -> list[dict[str, str]]:
+    """Adapt legacy source rows into the project-aware source_index contract."""
+    sector = _project_sector_meta(sector_id)
+    result: list[dict[str, str]] = []
+    for row in rows:
+        result.append({
+            "project_id": _project_config.project_id if _project_config else "",
+            "source_id": row.get("source_id", ""),
+            "subject_type": "company" if row.get("related_company") else "sector",
+            "subject_id": row.get("related_company") or sector.get("sector_id", sector_id or ""),
+            "subject_name": row.get("related_company") or sector.get("sector_name", ""),
+            "sector_id": sector.get("sector_id", sector_id or ""),
+            "claim_supported": row.get("quote_or_excerpt", ""),
+            "source_type": row.get("source_type", "other"),
+            "source_title": row.get("source_name", ""),
+            "source_date": row.get("source_date", ""),
+            "url_or_path": row.get("source_url", ""),
+            "extracted_fields": row.get("data_fields_supported", ""),
+            "confidence": row.get("confidence_level", ""),
+            "evidence_ids": "",
+            "notes": row.get("notes", ""),
+        })
+    return result
 
 
 def read_raw_rows(path: Path) -> list[dict[str, str]]:
@@ -434,8 +809,7 @@ def build_company_rows(
         except (TypeError, ValueError):
             pe_ttm = "缺失"
 
-        # Index data (placeholder for now - gets 创业板 later)
-        idx_rows = []  # will be filled if index data is available
+        idx_rows = []  # placeholder
         rel_strength = relative_strength(drows, idx_rows, 60)
 
         src_id = build_source_id(f"BAO-{code}")
@@ -506,7 +880,6 @@ def build_comparison_row(
     industry_logic: str = "",
 ) -> dict:
     """Build one cross-theme comparison row."""
-    # Collect stats
     all_6m = []
     for code, rows in daily_data.items():
         try:
@@ -527,7 +900,7 @@ def build_comparison_row(
         "main_theme": main_theme,
         "sub_theme": sub_theme,
         "chain_position": chain_position,
-        "industry_logic_summary": (industry_logic.strip() or f"{sub_theme}方向；{len(companies)}家代表公司，当前涨幅区间({', '.join(f'{v:.0f}%' for v in all_6m[:3])})，待完成公告级核验。"),
+        "industry_logic_summary": (industry_logic.strip() or f"{sub_theme}方向；{len(companies)}家代表公司，当前涨幅区间({', '.join(f'{v:.0f}%' for v in all_6m[:3])}，待完成公告级核验。"),
         "representative_companies": names,
         "performance_stage_score": "4",
         "industry_prosperity_score": "4",
@@ -553,7 +926,6 @@ def build_research_card(
     industry_logic: str = "",
 ) -> str:
     """Build a Codex-compliant research card markdown."""
-    # Aggregate stats
     all_1m, all_3m, all_6m, all_avg = [], [], [], []
     for code, rows in daily_data.items():
         try:
@@ -661,7 +1033,7 @@ def build_research_card(
 
 ## 11. 数据缺口
 | 数据项 | 当前状态 | 获取方式 |
-|---|---|---|
+|---|---|
 | 业务收入暴露 | 缺失 | 年报、公告、互动易、上证e互动或公司官网资料 |
 | 客户/订单/定点 | 缺失 | 公告、投资者关系记录、互动平台、券商研报 |
 | 2026E/2027E预测 | 缺失 | 用户提供数据、可验证公开预测页面或券商研报，标明来源类型 |
@@ -706,7 +1078,6 @@ class DataTracker:
         self.sources.append(source)
 
     def save(self):
-        # Use project-aware paths if set, otherwise fall back to legacy globals
         if _runtime_paths is not None:
             log_dir = _runtime_paths.logs_dir
             out_dir = _runtime_paths.output_root
@@ -716,7 +1087,6 @@ class DataTracker:
             out_dir = OUT_DIR
             src_dir = out_dir / "00_总表"
 
-        # Missing data
         missing_md = "# 缺失数据清单\n\n"
         if self.missing:
             missing_md += "| 细分方向 | 公司 | 缺失字段 | 下一步建议 |\n|---|---|---|---|\n"
@@ -727,7 +1097,6 @@ class DataTracker:
 
         (log_dir / "缺失数据清单.md").write_text(missing_md, encoding="utf-8")
 
-        # Conflicts
         conflict_md = "# 冲突数据清单\n\n"
         if self.conflicts:
             conflict_md += "| 细分方向 | 公司 | 冲突字段 | 来源A | 来源B | 当前处理 |\n|---|---|---|---|---|---|\n"
@@ -738,11 +1107,12 @@ class DataTracker:
 
         (log_dir / "冲突数据清单.md").write_text(conflict_md, encoding="utf-8")
 
-        # Sources
         if self.sources:
-            append_csv(src_dir / "数据来源索引.csv", SOURCE_FIELDS, self.sources)
+            if _project_config is not None:
+                append_csv(src_dir / "数据来源索引.csv", SOURCE_FIELDS, to_project_source_rows(self.sources, None))
+            else:
+                append_csv(src_dir / "数据来源索引.csv", LEGACY_SOURCE_FIELDS, self.sources)
 
-        # Log
         log_path = log_dir / "调研日志.md"
         existing = log_path.read_text(encoding="utf-8") if log_path.exists() else ""
         new_entry = f"\n## {datetime.now().isoformat(timespec='seconds')}\n\n"
@@ -792,7 +1162,6 @@ def run_sub_theme(
         json.dumps(run_meta, ensure_ascii=False, indent=2), encoding="utf-8"
     )
 
-    # Collect data
     daily_data: dict[str, list[dict]] = {}
     profit_data: dict[str, list[dict]] = {}
     financial_fallbacks: dict[str, dict[str, str]] = {}
@@ -804,7 +1173,6 @@ def run_sub_theme(
             code, market, name = c["code"], c["market"], c["name"]
             print(f"  [{name}] Fetching data...")
 
-            # Daily kline
             daily_path = RAW_DIR / "baostock" / "daily_kline" / TODAY / f"{code}.json"
             drows = read_raw_rows(daily_path)
             if drows:
@@ -832,7 +1200,6 @@ def run_sub_theme(
                         encoding="utf-8",
                     )
                 elif not prefer_tencent_daily:
-                    # Tencent fallback when BaoStock returns an error.
                     sym = f"{'sh' if market == 'SH' else 'sz'}{code}"
                     drows = tencent_bar_direct(sym)
                     if drows and "_error" not in drows[0]:
@@ -843,7 +1210,6 @@ def run_sub_theme(
                             encoding="utf-8",
                         )
 
-            # Profit
             profit_path = RAW_DIR / "baostock" / "profit" / TODAY / f"{code}.json"
             prows = read_raw_rows(profit_path)
             if prows:
@@ -876,7 +1242,6 @@ def run_sub_theme(
                             "source_url_append": f"investment_system/data/raw/akshare/financial_indicator/{TODAY}/{code}.json",
                         }
 
-            # Guosen is disabled by default; only run if explicitly re-enabled.
             if not skip_guosen:
                 try:
                     hq = client.get_comb_hq([code], [c["set_code"]])
@@ -890,7 +1255,6 @@ def run_sub_theme(
 
         guosen_health = client.guosen_health()
 
-    # Track missing data
     missing_fields = evidence.get("remaining_missing_fields") or (
         [] if evidence else ["800G/1.6T收入占比", "海外CSP客户/订单", "产能利用率", "机构一致预期", "估值历史分位"]
     )
@@ -899,7 +1263,6 @@ def run_sub_theme(
             for field in missing_fields:
                 tracker.add_missing(sub_theme, c["name"], field, "查公司公告/投资者关系/互动易")
 
-    # Build outputs
     company_rows, new_sources = build_company_rows(
         companies, daily_data, profit_data, sub_theme, main_theme, chain_position, []
     )
@@ -933,7 +1296,6 @@ def run_sub_theme(
 
     # ── Resolve output paths ──────────────────────────────────────────────────
     if _runtime_paths is not None:
-        # Project-aware mode: use loader helper APIs
         if sector_id:
             try:
                 card_path = _runtime_paths.resolve_sector_card_path(sector_id)
@@ -954,7 +1316,6 @@ def run_sub_theme(
         lg_dir = _runtime_paths.logs_dir
         path_mode = "project-aware"
     else:
-        # Legacy mode: use hard-coded globals (original behavior)
         _legacy_prefix = "01_" if "AI" in main_theme else "02_"
         card_dir = OUT_DIR / (_legacy_prefix + main_theme)
         out_dir = OUT_DIR
@@ -962,14 +1323,26 @@ def run_sub_theme(
         lg_dir = LOG_DIR
         path_mode = "legacy"
 
-    # ── Write outputs ─────────────────────────────────────────────────────────
-    append_csv(tt_dir / "代表公司财务估值总表.csv", COMPANY_TABLE_FIELDS, company_rows)
-    append_csv(tt_dir / "科技细分方向横向比较表.csv", COMPARISON_FIELDS, [comparison_row])
+    if _project_config is not None:
+        company_rows_out = to_project_company_rows(company_rows, companies, sector_id)
+        comparison_rows_out = [to_project_comparison_row(comparison_row, sector_id)]
+        company_fields = COMPANY_TABLE_FIELDS
+        comparison_fields = COMPARISON_FIELDS
+    else:
+        company_rows_out = company_rows
+        comparison_rows_out = [comparison_row]
+        company_fields = LEGACY_COMPANY_TABLE_FIELDS
+        comparison_fields = LEGACY_COMPARISON_FIELDS
+
+    append_csv(tt_dir / "代表公司财务估值总表.csv", company_fields, company_rows_out)
+    append_csv(tt_dir / "科技细分方向横向比较表.csv", comparison_fields, comparison_rows_out)
     curated_sources = evidence_source_rows(evidence)
     if curated_sources:
-        append_csv(tt_dir / "数据来源索引.csv", SOURCE_FIELDS, curated_sources)
+        if _project_config is not None:
+            append_csv(tt_dir / "数据来源索引.csv", SOURCE_FIELDS, to_project_source_rows(curated_sources, sector_id))
+        else:
+            append_csv(tt_dir / "数据来源索引.csv", LEGACY_SOURCE_FIELDS, curated_sources)
 
-    # Sector card
     if card_path is not None:
         card_dir.mkdir(parents=True, exist_ok=True)
         card_path.write_text(card_md, encoding="utf-8")
@@ -1005,35 +1378,218 @@ def main() -> int:
     parser.add_argument("--project", type=str,
                         help="Project ID (e.g. tech_ai_semiconductor). Activates project-aware mode.")
     parser.add_argument("--sub-theme", type=str,
-                        help="Run a specific sub-theme by name (legacy mode, or mixed with --project)")
+                        help="Run a specific sub-theme by name (legacy mode only)")
     parser.add_argument("--sector-id", type=str,
-                        help="Canonical sector_id to run (project-aware only). Resolves via legacy_sector_map.")
+                        help="Canonical sector_id to run (project-aware only). Accepts legacy alias.")
     parser.add_argument("--batch", type=str, choices=["p0", "p1", "p2", "all"],
-                        help="Run all sub-themes in a batch")
+                        help="Run all sectors in a batch (project-aware uses sector_universe, legacy uses KNOWN_COMPANIES)")
     parser.add_argument("--companies", type=str,
                         help="Comma-separated codes override (e.g. 300308,300502)")
     parser.add_argument("--enable-guosen", action="store_true",
                         help="Re-enable legacy Guosen API calls")
     parser.add_argument("--dry-run", action="store_true",
                         help="Fetch data but don't write outputs")
+    parser.add_argument("--dry-run-resolve", action="store_true",
+                        help="[Project-aware] Only parse sector context and print paths; no data collection, no file writes")
+    parser.add_argument("--dry-run-generate", action="store_true",
+                        help="[Project-aware] Build canonical generator preview records; no data collection, no formal output writes")
+    parser.add_argument("--write-audit-preview", action="store_true",
+                        help="[Project-aware] With --dry-run-generate, write preview files under audits/generator_previews only")
     parser.add_argument("--prefer-tencent-daily", action="store_true",
                         help="Use Tencent direct for daily K-line before BaoStock")
     args = parser.parse_args()
 
     global _project_config, _runtime_paths
 
-    # ── Project-aware init ─────────────────────────────────────────────────
-    if args.project:
-        from investment_system.pipelines.sector_research.load_project import (
-            load_project,
-            resolve_sector_card_path as _lp_resolve_sector_card_path,
-            resolve_output_paths as _lp_resolve_output_paths,
-            get_sector as _lp_get_sector,
+    # ── --dry-run-resolve: project-aware only, parse-only ─────────────────
+    if args.dry_run_resolve:
+        if not args.project:
+            print("[ERROR] --dry-run-resolve requires --project")
+            return 1
+        if not args.sector_id:
+            print("[ERROR] --dry-run-resolve requires --sector-id")
+            return 1
+
+        from investment_system.pipelines.sector_research import load_project as lp_module
+        try:
+            config = lp_module.load_project(args.project, silent=True, strict=False)
+        except Exception as exc:
+            print(f"[ERROR] Failed to load project '{args.project}': {exc}")
+            return 1
+
+        try:
+            ctx = resolve_sector_context(config, args.sector_id, lp_module)
+        except KeyError as exc:
+            print(f"[ERROR] Cannot resolve sector '{args.sector_id}': {exc}")
+            # Suggest alternatives
+            valid_ids = sorted({s.get("sector_id") for s in config.raw.get("sectors", [])})
+            print(f"[HINT] Valid canonical sector_ids ({len(valid_ids)}):")
+            for sid in valid_ids:
+                print(f"        {sid}")
+            return 1
+
+        # Print sector context
+        print(f"\n{'='*60}")
+        print(f"  [DRY-RUN-RESOLVE] Sector Context")
+        print(f"{'='*60}")
+        print(f"  input_raw          : {ctx.input_raw}")
+        if ctx.was_legacy_alias:
+            print(f"  [WARNING] Input '{ctx.input_raw}' is a legacy alias.")
+            print(f"  [WARNING] Resolved to canonical sector_id: {ctx.sector_id}")
+        else:
+            print(f"  was_legacy_alias   : False (canonical sector_id provided)")
+        print(f"  canonical_sector_id: {ctx.sector_id}")
+        print(f"  sector_name        : {ctx.sector_name}")
+        print(f"  research_group_id  : {ctx.research_group_id}")
+        print(f"  group_name         : {ctx.group_name}")
+        print(f"  group_order        : {ctx.group_order}")
+        print(f"  priority           : {ctx.priority}")
+        print(f"  chain_position     : {ctx.chain_position}")
+        print(f"  parent_chain       : {ctx.parent_chain}")
+        print(f"  scoring_enabled    : {ctx.scoring_enabled}")
+        print(f"  aliases            : {ctx.aliases}")
+        print(f"  legacy_sector_ids  : {ctx.legacy_sector_ids}")
+        print(f"  legacy_theme_names : {ctx.legacy_theme_names}")
+
+        # Resolve and print paths
+        card_path = lp_module.resolve_sector_card_path(config, ctx.sector_id)
+        print(f"\n  Expected sector card path:")
+        print(f"    {card_path}")
+
+        paths = lp_module.resolve_output_paths(config, ctx.sector_id)
+        print(f"\n  Other resolved paths:")
+        for key in ["output_root", "total_tables_dir", "logs_dir", "source_index_path",
+                     "company_table_path", "comparison_table_path",
+                     "missing_data_log_path", "conflict_data_log_path"]:
+            if key in paths:
+                print(f"    {key}: {paths[key]}")
+
+        # Show stock list (from stock_universe via loader API)
+        print(f"  stock_source        : stock_universe.yaml")
+        try:
+            stocks = lp_module.get_stocks_for_sector(config, ctx.sector_id, include_pending=False)
+            listed = [s for s in stocks if s.get("code") and s.get("code") not in ("pending", "待查", "")]
+            coverage = compute_coverage_status(ctx, len(listed))
+            print(f"  stock_count         : {len(listed)}")
+            print(f"  coverage_status     : {coverage['status']}")
+            print(f"  coverage_required   : {coverage['required']}")
+            if coverage["warning"]:
+                print(f"  coverage_warning    : {coverage['warning']}")
+
+            print(f"\n  Stocks ({len(listed)} listed from stock_universe):")
+            for s in listed:
+                print(f"    {s.get('code', '?')}  {s.get('name', '?')}  [{s.get('role', '')}/{s.get('exposure_type', '')}]")
+            if not listed:
+                print(f"    (WARNING: no listed stocks — stock_universe is still incomplete)")
+        except Exception as exc:
+            print(f"  Stocks: (ERROR loading stock_universe: {exc})")
+
+        # Show evidence binding metadata only; do not read evidence contents.
+        print(f"\n  Evidence source      : run_manifest.yaml + sector_universe.yaml")
+        try:
+            evidence_files = lp_module.resolve_evidence_files_for_sector(config, ctx.sector_id)
+            print(f"  Evidence files count : {len(evidence_files)}")
+            if evidence_files:
+                print(f"  Evidence files       :")
+                for ef in evidence_files:
+                    print(
+                        f"    - {ef.get('evidence_file_id', '?')} -> "
+                        f"{ef.get('path', '?')} "
+                        f"[status={ef.get('status', '')}, action={ef.get('action', '')}, "
+                        f"exists={ef.get('exists')}]"
+                    )
+            else:
+                print(f"  evidence_warning    : no evidence files bound to this sector yet.")
+        except Exception as exc:
+            print(f"  Evidence files      : (ERROR resolving evidence bindings: {exc})")
+
+        print(f"\n  [DRY-RUN-RESOLVE] No data collected. No files written.")
+        print(f"{'='*60}")
+        return 0
+
+    # ── --dry-run-generate: project-aware writer preview only ───────────────
+    if args.dry_run_generate:
+        if not args.project:
+            print("[ERROR] --dry-run-generate requires --project")
+            return 1
+        if not args.sector_id:
+            print("[ERROR] --dry-run-generate requires --sector-id")
+            return 1
+
+        from investment_system.pipelines.sector_research import load_project as lp_module
+        from investment_system.pipelines.sector_research.output_writers import (
+            PREVIEW_MARKER,
+            build_generator_preview_records,
+            get_generator_preview_dir,
+            validate_preview_records,
+            write_generator_preview_files,
         )
 
         try:
-            _project_config = load_project(args.project, silent=False, strict=False)
-            paths = _lp_resolve_output_paths(_project_config)
+            config = lp_module.load_project(args.project, silent=True, strict=False)
+            ctx = resolve_sector_context(config, args.sector_id, lp_module)
+        except Exception as exc:
+            print(f"[ERROR] Failed to prepare generator preview: {exc}")
+            return 1
+
+        print(f"\n{'='*60}")
+        print("  [DRY-RUN-GENERATE] Canonical Generator Preview")
+        print(f"{'='*60}")
+        print(f"  project_id          : {config.project_id}")
+        print(f"  input_raw           : {args.sector_id}")
+        if ctx.was_legacy_alias:
+            print(f"  legacy_alias_warning: resolved to canonical sector_id {ctx.sector_id}")
+        print(f"  canonical_sector_id : {ctx.sector_id}")
+        print(f"  sector_name         : {ctx.sector_name}")
+        print(f"  preview_marker      : {PREVIEW_MARKER}")
+        print("  data_collection     : skipped")
+        print("  formal_output_write : skipped")
+
+        try:
+            records = build_generator_preview_records(config, ctx.sector_id)
+            results = validate_preview_records(config, records)
+        except Exception as exc:
+            print(f"[ERROR] Failed to build generator preview records: {exc}")
+            return 1
+
+        pass_count = sum(1 for result in results.values() if result.get("ok"))
+        fail_count = sum(1 for result in results.values() if not result.get("ok"))
+        print(f"  output_type_count   : {len(results)}")
+        print(f"  preview_record_count: {len(records)}")
+        print(f"  record_shape_pass   : {pass_count}")
+        print(f"  record_shape_fail   : {fail_count}")
+        for output_type, result in results.items():
+            status = "ok" if result.get("ok") else "failed"
+            print(f"    - {output_type}: {status}")
+            for error in result.get("errors", []):
+                print(f"      ERROR: {error}")
+
+        written: list[Path] = []
+        if args.write_audit_preview:
+            try:
+                written = write_generator_preview_files(config, records)
+            except Exception as exc:
+                print(f"[ERROR] Failed to write generator preview files: {exc}")
+                return 1
+            print(f"  write_audit_preview : true")
+            print(f"  preview_output_dir  : {get_generator_preview_dir(config)}")
+            for path in written:
+                print(f"    wrote: {path}")
+        else:
+            print("  write_audit_preview : false")
+            print("  No files written.")
+
+        print("  No data collected. No formal files written.")
+        print(f"{'='*60}")
+        return 1 if fail_count else 0
+
+    # ── Project-aware init ─────────────────────────────────────────────────
+    if args.project:
+        from investment_system.pipelines.sector_research import load_project as lp_module
+
+        try:
+            _project_config = lp_module.load_project(args.project, silent=False, strict=False)
+            paths = lp_module.resolve_output_paths(_project_config)
 
             _runtime_paths = ResearchRuntimePaths(
                 output_root=Path(paths["output_root"]),
@@ -1045,7 +1601,7 @@ def main() -> int:
                 conflict_data_log_path=Path(paths["conflict_data_log_path"]),
                 research_log_path=Path(paths["research_log_path"]),
             )
-            _runtime_paths._resolve_sector_card_path = lambda sid: _lp_resolve_sector_card_path(
+            _runtime_paths._resolve_sector_card_path = lambda sid: lp_module.resolve_sector_card_path(
                 _project_config, sid
             )
 
@@ -1053,8 +1609,8 @@ def main() -> int:
             print(f"[PROJECT-AWARE] Output root: {_runtime_paths.output_root}")
             print(f"[PROJECT-AWARE] total_tables: {_runtime_paths.total_tables_dir}")
             print(f"[PROJECT-AWARE] logs: {_runtime_paths.logs_dir}")
+            print(f"[PROJECT-AWARE] stock_source: stock_universe.yaml")
 
-            # Warn if output_root doesn't exist (don't create aggressively)
             if not _runtime_paths.output_root.exists():
                 print(f"[WARNING] Output root does not exist: {_runtime_paths.output_root}")
                 print(f"[WARNING] Outputs will be written there (mkdir will be called on first write).")
@@ -1073,60 +1629,142 @@ def main() -> int:
     tracker = DataTracker()
     results = []
 
-    # ── Single sub-theme / sector-id ──────────────────────────────────────
-    if args.sub_theme or args.sector_id:
-        if args.sector_id and _project_config:
-            # Project-aware sector-id mode
-            try:
-                sector = _lp_get_sector(_project_config, args.sector_id)
-                sub_theme = sector.get("sector_name", args.sector_id)
-                canonical_id = sector.get("sector_id", args.sector_id)
-                main_theme = sector.get("parent_chain", "AI算力硬件")
-                chain_position = sector.get("chain_position", "待确认")
-                industry_logic = sector.get("industry_logic", "")
+    # ── Parameter conflict checks ─────────────────────────────────────────
+    if args.project and args.sub_theme:
+        print("[WARNING] Both --project and --sub-theme provided. "
+              "--sub-theme is ignored in project-aware mode; using --sector-id as primary key.")
+    if args.project and args.sector_id and args.batch:
+        print("[WARNING] Both --sector-id and --batch provided. "
+              "Running in batch mode; --sector-id will be ignored.")
 
-                # Get companies from stock_universe via get_stocks_for_sector
-                from investment_system.pipelines.sector_research.load_project import (
-                    get_stocks_for_sector,
-                )
-                sector_stocks = get_stocks_for_sector(_project_config, canonical_id, include_pending=False)
-                if not sector_stocks:
-                    # Fall back to legacy KNOWN_COMPANIES if no stocks found
-                    print(f"[WARNING] No stocks found for sector_id='{canonical_id}' in stock_universe. "
-                          f"Falling back to KNOWN_COMPANIES.")
-                    companies = KNOWN_COMPANIES.get(sub_theme, [])
-                else:
-                    companies = []
-                    for s in sector_stocks:
-                        code = s.get("code", "")
-                        if not code or code in ("pending", "待查"):
-                            continue
-                        market = "SZ" if code.startswith(("0", "3")) else "SH"
-                        companies.append({
-                            "code": code,
-                            "market": market,
-                            "set_code": s.get("set_code", 0),
-                            "name": s.get("name", code),
-                        })
+    # ── Single sector-id (project-aware) ────────────────────────────────
+    if args.project and args.sector_id and not args.batch:
+        from investment_system.pipelines.sector_research import load_project as lp_module
 
-            except KeyError as exc:
-                print(f"[ERROR] Cannot resolve sector_id='{args.sector_id}': {exc}")
+        try:
+            ctx = resolve_sector_context(_project_config, args.sector_id, lp_module)
+        except KeyError as exc:
+            print(f"[ERROR] Cannot resolve sector '{args.sector_id}': {exc}")
+            return 1
+
+        if ctx.was_legacy_alias:
+            print(f"[WARNING] Input sector_id '{args.sector_id}' was resolved to canonical "
+                  f"sector_id '{ctx.sector_id}' via legacy alias. "
+                  f"Prefer using canonical sector_id directly.")
+
+        # Get companies from stock_universe
+        try:
+            sector_stocks = lp_module.get_stocks_for_sector(
+                _project_config, ctx.sector_id, include_pending=False
+            )
+            companies = []
+            for s in sector_stocks:
+                code = s.get("code", "")
+                if not code or code in ("pending", "待查", ""):
+                    continue
+                market = "SZ" if code.startswith(("0", "3")) else "SH"
+                companies.append({
+                    "code": code,
+                    "market": market,
+                    "set_code": s.get("set_code", 0),
+                    "name": s.get("name", code),
+                })
+            if not companies:
+                print(f"[ERROR] No stocks found for sector_id='{ctx.sector_id}' in stock_universe.yaml. "
+                      f"Cannot run research without a stock pool.")
+                print(f"[ERROR] Please populate stock_universe.yaml for this sector before running.")
                 return 1
-        elif args.sub_theme:
-            # Legacy sub-theme mode
-            sub_theme = args.sub_theme
-            canonical_id = args.sector_id  # may be None
-            companies = KNOWN_COMPANIES.get(sub_theme, [])
-            theme_meta = load_theme_registry().get(sub_theme, {})
-            main_theme = theme_meta.get("main_theme", "AI算力硬件")
-            chain_position = theme_meta.get("chain_position", "待确认")
-            industry_logic = theme_meta.get("industry_logic", "")
+
+            coverage = compute_coverage_status(ctx, len(companies))
+            if coverage["warning"]:
+                print(f"[WARNING] sector '{ctx.sector_id}' coverage_status={coverage['status']}: "
+                      f"{coverage['warning']} Research quality will be limited.")
+        except Exception as exc:
+            print(f"[ERROR] get_stocks_for_sector failed for '{ctx.sector_id}': {exc}")
+            return 1
+
+        if args.companies:
+            codes = args.companies.split(",")
+            companies = [{"code": c, "market": "SZ", "set_code": 0, "name": c} for c in codes]
+
+        r = run_sub_theme(
+            ctx.sector_name,
+            companies,
+            ctx.parent_chain,
+            ctx.chain_position,
+            tracker,
+            skip_guosen=not args.enable_guosen,
+            dry_run=args.dry_run,
+            industry_logic=ctx.industry_logic,
+            prefer_tencent_daily=args.prefer_tencent_daily,
+            sector_id=ctx.sector_id,
+        )
+        results.append(r)
+
+    # ── Batch mode (project-aware) ─────────────────────────────────────
+    elif args.project and args.batch:
+        from investment_system.pipelines.sector_research import load_project as lp_module
+
+        sectors = list_project_sectors_by_priority(
+            _project_config, args.batch, lp_module
+        )
+        print(f"[PROJECT-AWARE BATCH] {args.batch.upper()}: {len(sectors)} sectors")
+
+        for ctx in sectors:
+            try:
+                sector_stocks = lp_module.get_stocks_for_sector(
+                    _project_config, ctx.sector_id, include_pending=False
+                )
+                companies = []
+                for s in sector_stocks:
+                    code = s.get("code", "")
+                    if not code or code in ("pending", "待查", ""):
+                        continue
+                    market = "SZ" if code.startswith(("0", "3")) else "SH"
+                    companies.append({
+                        "code": code,
+                        "market": market,
+                        "set_code": s.get("set_code", 0),
+                        "name": s.get("name", code),
+                    })
+                if not companies:
+                    print(f"[WARNING] No stocks for '{ctx.sector_id}' in stock_universe.yaml — skipping sector.")
+            except Exception as exc:
+                print(f"[ERROR] get_stocks_for_sector failed for '{ctx.sector_id}': {exc} — skipping sector.")
+                companies = []
 
             if not companies:
-                print(f"Unknown sub-theme '{sub_theme}' with no known companies.")
-                return 1
-        else:
-            print("[ERROR] --sector-id requires --project")
+                continue
+
+            try:
+                r = run_sub_theme(
+                    ctx.sector_name,
+                    companies,
+                    ctx.parent_chain,
+                    ctx.chain_position,
+                    tracker,
+                    skip_guosen=not args.enable_guosen,
+                    dry_run=args.dry_run,
+                    industry_logic=ctx.industry_logic,
+                    prefer_tencent_daily=args.prefer_tencent_daily,
+                    sector_id=ctx.sector_id,
+                )
+                results.append(r)
+            except Exception as exc:
+                print(f"  ERROR in {ctx.sector_id}: {exc}")
+                results.append({"sector_id": ctx.sector_id, "sub_theme": ctx.sector_name, "error": str(exc)})
+
+    # ── Legacy sub-theme mode (no --project) ────────────────────────────
+    elif args.sub_theme and not args.project:
+        sub_theme = args.sub_theme
+        companies = KNOWN_COMPANIES.get(sub_theme, [])
+        theme_meta = load_theme_registry().get(sub_theme, {})
+        main_theme = theme_meta.get("main_theme", "AI算力硬件")
+        chain_position = theme_meta.get("chain_position", "待确认")
+        industry_logic = theme_meta.get("industry_logic", "")
+
+        if not companies:
+            print(f"Unknown sub-theme '{sub_theme}' with no known companies.")
             return 1
 
         if args.companies:
@@ -1143,30 +1781,15 @@ def main() -> int:
             dry_run=args.dry_run,
             industry_logic=industry_logic,
             prefer_tencent_daily=args.prefer_tencent_daily,
-            sector_id=canonical_id,
+            sector_id=None,
         )
         results.append(r)
 
-    # ── Batch mode ─────────────────────────────────────────────────────────
-    elif args.batch:
+    # ── Legacy batch mode (no --project) ──────────────────────────────
+    elif args.batch and not args.project:
         registry = load_theme_registry()
         for sub_theme, companies in KNOWN_COMPANIES.items():
             theme_meta = registry.get(sub_theme, {})
-
-            # In project-aware mode, try to resolve sector_id from legacy alias
-            canonical_id = None
-            if _project_config is not None:
-                try:
-                    sector = _lp_get_sector(_project_config, sub_theme)
-                    canonical_id = sector.get("sector_id", None)
-                except KeyError:
-                    canonical_id = None  # not in sector_universe, will be skipped below
-
-                if canonical_id is None:
-                    print(f"  [WARNING] Project-aware: '{sub_theme}' has no canonical sector_id "
-                          f"(not in sector_universe.yaml), skipping card output.")
-                    # Still run but without sector_id → card output skipped
-
             try:
                 r = run_sub_theme(
                     sub_theme, companies,
@@ -1177,7 +1800,7 @@ def main() -> int:
                     dry_run=args.dry_run,
                     industry_logic=theme_meta.get("industry_logic", ""),
                     prefer_tencent_daily=args.prefer_tencent_daily,
-                    sector_id=canonical_id,
+                    sector_id=None,
                 )
                 results.append(r)
             except Exception as exc:
@@ -1185,13 +1808,12 @@ def main() -> int:
                 results.append({"sub_theme": sub_theme, "error": str(exc)})
 
     else:
-        print("Specify --sub-theme <name> or --batch <p0|p1|p2|all>")
+        parser.print_help()
         return 1
 
     if tracker.missing or tracker.conflicts or tracker.sources:
         tracker.save()
 
-    # ── Summary ───────────────────────────────────────────────────────────
     print(f"\n{'='*60}")
     print(" RESEARCH RUN COMPLETE")
     print(f"{'='*60}")
@@ -1199,14 +1821,15 @@ def main() -> int:
         status = "OK" if "error" not in r else f"ERROR: {r.get('error')}"
         companies_done = r.get("companies", "?")
         mode = r.get("path_mode", "?")
+        sid = r.get("sector_id", "?")
         card = r.get("card_path", "?")
-        print(f"  [{mode}] {r['sub_theme']}: {status} ({companies_done} companies)")
+        sub = r.get("sub_theme", sid)
+        print(f"  [{mode}] {sub}: {status} ({companies_done} companies)")
         print(f"          card: {card}")
 
     out_dir = (_runtime_paths.output_root if _runtime_paths else OUT_DIR)
     print(f"\nAll outputs in: {out_dir.relative_to(ROOT)}")
 
-    # Reset global state
     _project_config = None
     _runtime_paths = None
     return 0

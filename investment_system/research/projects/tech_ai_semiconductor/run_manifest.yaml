@@ -123,8 +123,9 @@ retired_legacy_outputs:
 
 # ── Evidence YAML Files ──────────────────────────────────────────────────────
 # These are the durable source-of-truth evidence files for this project.
-# They are STILL ACTIVE inputs to the project-aware pipeline (via evidence_overrides.py).
-# DO NOT DELETE until evidence_overrides.py is fully refactored (Phase 1E-d).
+# In project-aware mode they are indexed via run_manifest.yaml +
+# sector_universe.yaml evidence_file_ids + load_project.resolve_evidence_files_for_sector().
+# evidence_overrides.py is legacy-only compatibility, not the project-aware registry.
 
 evidence_files:
   - path: investment_system/research/evidence/high_speed_optical_modules.yaml
@@ -135,10 +136,12 @@ evidence_files:
     status: indexed_existing_evidence
     action: index_only
     notes: >
-      [ACTIVE — DO NOT DELETE] 旧 evidence YAML，仍作为 project-aware pipeline
-      的 evidence 输入来源（通过 evidence_overrides.py → load_theme_evidence）。
+      [INDEXED — DO NOT DELETE] 旧 evidence YAML，已登记为 project-aware
+      evidence 索引来源；通过 run_manifest.yaml + sector_universe.yaml
+      evidence_file_ids + load_project.resolve_evidence_files_for_sector()
+      解析，不再以 evidence_overrides.py 作为 project-aware 主 registry。
       包含 company_overrides、comparison_override、source_rows、logs 和 card_markdown。
-      将在 Phase 1E-d 中重构为从 run_manifest + evidence_file_ids 读取。
+      当前阶段仅 index_only，不视为已完成或 research-grade。
 
   - path: investment_system/research/evidence/optical_components_fau_precision_optics.yaml
     type: evidence_yaml
@@ -148,10 +151,12 @@ evidence_files:
     status: indexed_existing_evidence
     action: index_only
     notes: >
-      [ACTIVE — DO NOT DELETE] 旧 evidence YAML，仍作为 project-aware pipeline
-      的 evidence 输入来源（通过 evidence_overrides.py → load_theme_evidence）。
+      [INDEXED — DO NOT DELETE] 旧 evidence YAML，已登记为 project-aware
+      evidence 索引来源；通过 run_manifest.yaml + sector_universe.yaml
+      evidence_file_ids + load_project.resolve_evidence_files_for_sector()
+      解析，不再以 evidence_overrides.py 作为 project-aware 主 registry。
       包含6家公司的 CNINFO 年报证据。
-      将在 Phase 1E-d 中重构为从 run_manifest + evidence_file_ids 读取。
+      当前阶段仅 index_only，不视为已完成或 research-grade。
 
 # ── Seed Documents (from user copy, NOT research-grade) ────────────────────
 # These are user-copied draft notes. They must pass evidence + source

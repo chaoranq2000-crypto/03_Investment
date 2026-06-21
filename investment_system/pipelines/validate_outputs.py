@@ -84,6 +84,12 @@ def read_csv(path: Path) -> list[dict[str, str]]:
         return list(csv.DictReader(f))
 
 
+def read_csv_header(path: Path) -> list[str]:
+    with path.open(newline="", encoding="utf-8-sig") as f:
+        reader = csv.reader(f)
+        return next(reader, [])
+
+
 def fail(message: str, failures: list[str]) -> None:
     failures.append(message)
     print(f"[FAIL] {message}")
@@ -105,6 +111,156 @@ def has_indexable_source(value: str) -> bool:
         if normalized.startswith(("investment_system/data/raw/", "investment_system/research/evidence/", "科技主线调研输出/")):
             return True
     return False
+
+
+def validate_csv_contract(
+    output_type: str,
+    path: Path,
+    contract: dict,
+    failures: list[str],
+    warnings: list[str],
+) -> None:
+    header = read_csv_header(path)
+    required = contract.get("required_fields", []) or []
+    deprecated = contract.get("deprecated_fields", []) or []
+    missing = [field for field in required if field not in header]
+    if missing:
+        fail(f"{output_type}: missing required fields: {', '.join(missing)}", failures)
+    else:
+        ok(f"{output_type}: required fields present")
+
+    deprecated_present = [field for field in deprecated if field in header]
+    if deprecated_present:
+        fail(f"{output_type}: deprecated fields present: {', '.join(deprecated_present)}", failures)
+
+    if output_type == "company_table":
+        legacy_keys = [field for field in ("main_theme", "sub_theme") if field in header]
+        if legacy_keys:
+            fail(f"company_table: legacy project-aware key fields present: {', '.join(legacy_keys)}", failures)
+        for field in ("project_id", "sector_id", "stock_code"):
+            if field not in header:
+                fail(f"company_table: canonical key missing: {field}", failures)
+
+    if output_type == "sector_comparison_table":
+        if "sector_id" not in header:
+            fail("sector_comparison_table: canonical sector_id missing", failures)
+        score_fields = [field for field in header if field.endswith("_score") and field != "total_score"]
+        missing_reasons = [
+            field.replace("_score", "_reason")
+            for field in score_fields
+            if field.replace("_score", "_reason") not in header
+        ]
+        if missing_reasons:
+            fail(f"sector_comparison_table: score reason fields missing: {', '.join(missing_reasons)}", failures)
+
+    if output_type == "source_index" and "source_id" not in header:
+        fail("source_index: source_id missing", failures)
+
+    if not failures:
+        ok(f"{output_type}: output contract header check passed")
+
+
+def _validate_mock_audit_files(project_config: object, failures: list[str], warnings: list[str]) -> dict[str, int]:
+    """Validate optional audit/mock files without treating them as formal outputs."""
+    from investment_system.pipelines.sector_research.build_mock_outputs import (
+        CSV_OUTPUT_TYPES,
+        MOCK_FILENAMES,
+        MOCK_MARKER,
+        get_mock_output_dir,
+    )
+    from investment_system.pipelines.sector_research.load_project import get_output_contract
+
+    mock_dir = get_mock_output_dir(project_config)
+    checked = 0
+    if not mock_dir.exists():
+        warnings.append(f"[MOCK] mock audit directory not found: {mock_dir}")
+        print(f"[MOCK] mock audit directory not found: {mock_dir}")
+        return {"mock_files_checked": 0}
+
+    output_root = project_config.output_root.resolve()
+    for output_type in CSV_OUTPUT_TYPES:
+        path = mock_dir / MOCK_FILENAMES[output_type]
+        if not path.exists():
+            warnings.append(f"[MOCK] missing mock file: {path}")
+            print(f"[MOCK] missing mock file: {path}")
+            continue
+        checked += 1
+        if str(path.resolve()).startswith(str(output_root)):
+            fail(f"mock file is inside formal output root: {path}", failures)
+        text = path.read_text(encoding="utf-8-sig", errors="ignore")
+        if MOCK_MARKER not in text:
+            fail(f"mock file missing marker {MOCK_MARKER}: {path}", failures)
+        validate_csv_contract(output_type, path, get_output_contract(project_config, output_type), failures, warnings)
+
+    card_path = mock_dir / MOCK_FILENAMES["sector_card"]
+    if card_path.exists():
+        checked += 1
+        if str(card_path.resolve()).startswith(str(output_root)):
+            fail(f"mock file is inside formal output root: {card_path}", failures)
+        card_text = card_path.read_text(encoding="utf-8", errors="ignore")
+        for token in ("---", "project_id:", "sector_id:", "source_ids:", "mock_only: true", MOCK_MARKER):
+            if token not in card_text:
+                fail(f"mock sector_card front matter missing token: {token}", failures)
+    else:
+        warnings.append(f"[MOCK] missing mock file: {card_path}")
+        print(f"[MOCK] missing mock file: {card_path}")
+
+    return {"mock_files_checked": checked}
+
+
+def _validate_generator_preview_files(project_config: object, failures: list[str], warnings: list[str]) -> dict[str, int]:
+    """Validate generator preview files without treating them as formal outputs."""
+    from investment_system.pipelines.sector_research.load_project import get_output_contract
+    from investment_system.pipelines.sector_research.output_writers import (
+        CSV_OUTPUT_TYPES,
+        GENERATOR_PREVIEW_FILENAMES,
+        PREVIEW_MARKER,
+        PREVIEW_RATING,
+        get_generator_preview_dir,
+    )
+
+    preview_dir = get_generator_preview_dir(project_config)
+    checked = 0
+    if not preview_dir.exists():
+        warnings.append(f"[PREVIEW] generator preview directory not found: {preview_dir}")
+        print(f"[PREVIEW] generator preview directory not found: {preview_dir}")
+        return {"generator_preview_files_checked": 0}
+
+    output_root = project_config.output_root.resolve()
+    for output_type in CSV_OUTPUT_TYPES:
+        path = preview_dir / GENERATOR_PREVIEW_FILENAMES[output_type]
+        if not path.exists():
+            warnings.append(f"[PREVIEW] missing generator preview file: {path}")
+            print(f"[PREVIEW] missing generator preview file: {path}")
+            continue
+        checked += 1
+        if str(path.resolve()).startswith(str(output_root)):
+            fail(f"generator preview file is inside formal output root: {path}", failures)
+        text = path.read_text(encoding="utf-8-sig", errors="ignore")
+        if PREVIEW_MARKER not in text:
+            fail(f"generator preview file missing marker {PREVIEW_MARKER}: {path}", failures)
+        if output_type == "score_table" and PREVIEW_RATING not in text:
+            fail(f"generator preview score_table missing preview-only rating: {path}", failures)
+        validate_csv_contract(output_type, path, get_output_contract(project_config, output_type), failures, warnings)
+
+    card_path = preview_dir / GENERATOR_PREVIEW_FILENAMES["sector_card"]
+    if card_path.exists():
+        checked += 1
+        if str(card_path.resolve()).startswith(str(output_root)):
+            fail(f"generator preview file is inside formal output root: {card_path}", failures)
+        card_text = card_path.read_text(encoding="utf-8", errors="ignore")
+        for token in ("---", "project_id:", "sector_id:", "source_ids:", "preview_only: true", PREVIEW_MARKER):
+            if token not in card_text:
+                fail(f"generator preview sector_card front matter missing token: {token}", failures)
+    else:
+        warnings.append(f"[PREVIEW] missing generator preview file: {card_path}")
+        print(f"[PREVIEW] missing generator preview file: {card_path}")
+
+    if project_config.output_root.exists():
+        for path in project_config.output_root.rglob("preview_*"):
+            fail(f"generator preview file found in formal output root: {path}", failures)
+
+    return {"generator_preview_files_checked": checked}
 
 
 def infer_card_path(sub_theme: str) -> Path:
@@ -193,6 +349,10 @@ def main() -> int:
     parser.add_argument("--card", default="",
                         help="Explicit card path override.")
     parser.add_argument("--grade", choices=["pipeline", "research"], default="pipeline")
+    parser.add_argument("--include-mock-audit-files", action="store_true",
+                        help="Also validate audits/mock_outputs files without treating them as formal outputs.")
+    parser.add_argument("--include-generator-previews", action="store_true",
+                        help="Also validate audits/generator_previews files without treating them as formal outputs.")
     args = parser.parse_args()
 
     failures: list[str] = []
@@ -202,12 +362,15 @@ def main() -> int:
     if args.project:
         try:
             from investment_system.pipelines.sector_research.load_project import (
+                get_output_contract,
+                list_output_types,
                 load_project,
             )
             _project_config = load_project(args.project, silent=True, strict=False)
             _project_out = _project_config.output_root
             print(f"[PROJECT-AWARE] Project: {_project_config.project_name}")
             print(f"[PROJECT-AWARE] Output root: {_project_out}")
+            print(f"[PROJECT-AWARE] Output contract loaded: {len(list_output_types(_project_config))} output types")
             retired_count = _project_config.raw.get("retired_legacy_output_count", 0)
             if retired_count:
                 print(f"[PROJECT-AWARE] Retired legacy outputs: {retired_count} (will be skipped in validation)")
@@ -292,8 +455,30 @@ def main() -> int:
         # If ALL files are missing, this is a "not yet run" state
         all_missing = all(not p.exists() for p in [company_csv, comparison_csv, source_csv])
         if all_missing:
+            mock_stats = {"mock_files_checked": 0}
+            preview_stats = {"generator_preview_files_checked": 0}
+            if args.include_mock_audit_files:
+                print("[PROJECT-AWARE] Checking mock audit files only under audits/mock_outputs.")
+                mock_stats = _validate_mock_audit_files(_project_config, failures, warnings)
+                if failures:
+                    print(f"Validation failed: {len(failures)} issue(s)")
+                    return 1
+            if args.include_generator_previews:
+                print("[PROJECT-AWARE] Checking generator previews only under audits/generator_previews.")
+                preview_stats = _validate_generator_preview_files(_project_config, failures, warnings)
+                if failures:
+                    print(f"Validation failed: {len(failures)} issue(s)")
+                    return 1
+            print("[PROJECT-AWARE] No formal output files found.")
             print("[PROJECT-AWARE] No output files exist for this project yet.")
             print("[PROJECT-AWARE] Validation is structural-only (passed).")
+            print("[PROJECT-AWARE] Output contract loaded.")
+            print(f"[PROJECT-AWARE] mock_files_checked: {mock_stats['mock_files_checked']}")
+            print(f"[PROJECT-AWARE] generator_preview_files_checked: {preview_stats['generator_preview_files_checked']}")
+            print("[PROJECT-AWARE] formal_outputs_checked: 0")
+            print("[PROJECT-AWARE] formal_outputs_found: 0")
+            print(f"[PROJECT-AWARE] mock_only: {str(args.include_mock_audit_files).lower()}")
+            print(f"[PROJECT-AWARE] preview_only: {str(args.include_generator_previews).lower()}")
             print("[PROJECT-AWARE] Run the research pipeline to generate outputs.")
             # Print config info
             print(f"[PROJECT-AWARE] Config checks:")
@@ -303,9 +488,62 @@ def main() -> int:
             print(f"  raw_data_root: {_project_config.raw_data_root}")
             return 0
 
-        # If some files exist (e.g. from previous run), validate them
-        # Filter failures for missing files that aren't expected to exist yet
-        pass  # fall through to normal validation
+        # If some formal files exist, validate existing CSV headers against the output contract.
+        try:
+            from investment_system.pipelines.sector_research.load_project import get_output_contract
+
+            contract_files = [
+                ("company_table", company_csv),
+                ("sector_comparison_table", comparison_csv),
+                ("source_index", source_csv),
+            ]
+            for output_type, path in contract_files:
+                if path.exists():
+                    validate_csv_contract(
+                        output_type,
+                        path,
+                        get_output_contract(_project_config, output_type),
+                        failures,
+                        warnings,
+                    )
+
+            missing_log = _project_config.logs_dir / "缺失数据清单.md"
+            conflict_log = _project_config.logs_dir / "冲突数据清单.md"
+            if missing_log.exists():
+                text = missing_log.read_text(encoding="utf-8")
+                for token in ("output_type", "sector_id", "missing_field", "severity", "reason"):
+                    if token not in text:
+                        fail(f"missing_data_log: required marker missing: {token}", failures)
+            if conflict_log.exists():
+                text = conflict_log.read_text(encoding="utf-8")
+                for token in ("output_type", "sector_id", "field", "conflicting_values", "source_ids"):
+                    if token not in text:
+                        fail(f"conflict_data_log: required marker missing: {token}", failures)
+
+            mock_stats = {"mock_files_checked": 0}
+            preview_stats = {"generator_preview_files_checked": 0}
+            if args.include_mock_audit_files:
+                print("[PROJECT-AWARE] Checking mock audit files only under audits/mock_outputs.")
+                mock_stats = _validate_mock_audit_files(_project_config, failures, warnings)
+            if args.include_generator_previews:
+                print("[PROJECT-AWARE] Checking generator previews only under audits/generator_previews.")
+                preview_stats = _validate_generator_preview_files(_project_config, failures, warnings)
+
+            if failures:
+                print(f"Validation failed: {len(failures)} issue(s)")
+                return 1
+            print("[PROJECT-AWARE] Output contract validation passed for existing formal files.")
+            formal_found = sum(1 for path in [company_csv, comparison_csv, source_csv] if path.exists())
+            print(f"[PROJECT-AWARE] mock_files_checked: {mock_stats['mock_files_checked']}")
+            print(f"[PROJECT-AWARE] generator_preview_files_checked: {preview_stats['generator_preview_files_checked']}")
+            print(f"[PROJECT-AWARE] formal_outputs_checked: {formal_found}")
+            print(f"[PROJECT-AWARE] formal_outputs_found: {formal_found}")
+            print(f"[PROJECT-AWARE] mock_only: {str(args.include_mock_audit_files and formal_found == 0).lower()}")
+            print(f"[PROJECT-AWARE] preview_only: {str(args.include_generator_previews and formal_found == 0).lower()}")
+            return 0
+        except Exception as exc:
+            fail(f"output contract validation failed to run: {exc}", failures)
+            return 1
 
     # ── Standard validation (runs when files exist) ────────────────────────
     # Check required files

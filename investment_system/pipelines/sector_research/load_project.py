@@ -42,6 +42,7 @@ import yaml
 
 WORKSPACE_ROOT = Path(__file__).resolve().parents[3]
 PROJECTS_ROOT = WORKSPACE_ROOT / "investment_system" / "research" / "projects"
+SCHEMAS_ROOT = WORKSPACE_ROOT / "investment_system" / "research" / "schemas"
 
 REQUIRED_PROJECT_FILES = [
     "project.yaml",
@@ -439,6 +440,53 @@ def list_scoring_sectors(config: ProjectConfig) -> list[dict[str, Any]]:
     ]
 
 
+def _normalize_stock_entry(entry: dict[str, Any]) -> dict[str, Any]:
+    """
+    Normalize a stock entry to a consistent dict shape.
+
+    The stock_universe.yaml uses field names:
+      code, name, sectors, role, exposure_type, notes, verification_status, source
+
+    The project schema expects at minimum: code, name, sectors, role, exposure_type, status, notes.
+    We accept alternative field names and normalize them here so callers get a uniform shape.
+    """
+    code = entry.get("code", "")
+    name = entry.get("name", code)
+
+    # Accept 'status' or fall back to 'verification_status'
+    status = entry.get("status") or entry.get("verification_status", "unverified")
+
+    # Normalize sectors: may be in 'sectors', 'sector_ids', or 'sector'
+    raw_sectors = entry.get("sectors") or entry.get("sector_ids") or entry.get("sector", [])
+    if isinstance(raw_sectors, str):
+        raw_sectors = [raw_sectors]
+
+    # Normalize role/exposure_type
+    role = entry.get("role", "")
+    exposure = entry.get("exposure_type") or entry.get("exposure", "")
+
+    return {
+        "code": code,
+        "name": name,
+        "sectors": list(raw_sectors),
+        "role": role,
+        "exposure_type": exposure,
+        "status": status,
+        "notes": entry.get("notes", ""),
+        "source": entry.get("source", ""),
+        "_source": entry.get("_source", "stocks"),
+        "pending": entry.get("pending", False),
+    }
+
+
+def _is_listed_stock(entry: dict[str, Any]) -> bool:
+    """Return True if this entry represents a listed stock (has a valid code)."""
+    code = entry.get("code", "")
+    if not code or code in ("pending", "待查", ""):
+        return False
+    return True
+
+
 def get_stocks_for_sector(
     config: ProjectConfig,
     sector_id_or_legacy: str,
@@ -450,29 +498,62 @@ def get_stocks_for_sector(
 
     Args:
         config: loaded ProjectConfig
-        sector_id_or_legacy: sector identifier
+        sector_id_or_legacy: sector identifier (canonical or legacy alias)
         include_pending: if True, also includes pending_code_resolution entries
                          that reference this sector, tagged as {pending: True}
 
-    Returns list of stock dicts (from stock_universe.yaml) + optionally pending items.
+    Returns:
+        List of normalized stock dicts. Each dict has at minimum:
+          code, name, sectors, role, exposure_type, status, notes, _source, pending
+
+    Behavior:
+      - sector_id is resolved to canonical before lookup.
+      - Only returns listed stocks by default (pending/待查 codes are excluded).
+      - Results are deduplicated by (code, canonical_sector_id).
+      - If include_pending=True, adds pending items tagged with {pending: True}.
+      - Reference companies are NOT included (they are separate in stock_universe.yaml).
+      - Reference errors for invalid sector refs are raised by loader validators at load time.
+
+    Raises:
+        KeyError: if sector cannot be resolved.
     """
     sector = get_sector(config, sector_id_or_legacy)
     canonical_id = sector.get("sector_id", "")
 
-    stocks = config.raw.get("stocks", [])
-    result = [
-        {**s, "_source": "stocks"}
-        for s in stocks
-        if canonical_id in s.get("sectors", [])
-    ]
+    stocks_raw = config.raw.get("stocks", [])
+    seen_keys: set[str] = set()
+    result: list[dict[str, Any]] = []
+
+    for entry in stocks_raw:
+        entry_sectors = entry.get("sectors", []) or entry.get("sector_ids", []) or []
+        if canonical_id not in entry_sectors:
+            continue
+        if not _is_listed_stock(entry):
+            continue
+        normalized = _normalize_stock_entry(entry)
+        # Deduplicate by (code, canonical_id)
+        dedup_key = (normalized["code"], canonical_id)
+        if dedup_key in seen_keys:
+            continue
+        seen_keys.add(dedup_key)
+        result.append(normalized)
 
     if include_pending:
-        pending = config.raw.get("stock_universe", {}).get(
-            "pending_code_resolution", []
-        )
-        for item in pending:
-            if canonical_id in item.get("suggested_sectors", []):
-                result.append({**item, "_source": "pending", "pending": True})
+        pending_raw = config.raw.get("stock_universe", {}).get("pending_code_resolution", [])
+        for item in pending_raw:
+            item_sectors = item.get("suggested_sectors", [])
+            if canonical_id not in item_sectors:
+                continue
+            normalized = _normalize_stock_entry(item)
+            normalized["pending"] = True
+            normalized["_source"] = "pending"
+            normalized["status"] = "pending_code_resolution"
+            # Pending items have no code — dedup key uses name
+            dedup_key = (normalized.get("name", ""), canonical_id)
+            if dedup_key in seen_keys:
+                continue
+            seen_keys.add(dedup_key)
+            result.append(normalized)
 
     return result
 
@@ -484,38 +565,250 @@ def resolve_evidence_files_for_sector(
     """
     Return evidence file records associated with a sector.
 
-    Checks:
-      1. run_manifest.evidence_files[].sector_id matches canonical sector_id
-      2. sector_universe[].evidence_file_ids matches evidence_file_id
+    Project-aware evidence binding is keyed by canonical sector_id:
+      1. Resolve the input through canonical/legacy sector aliases.
+      2. Prefer sector_universe.yaml evidence_file_ids[] for that sector.
+      3. Match run_manifest.yaml evidence_files[] by evidence_file_id or sector_id.
+      4. Return normalized records with file existence metadata.
 
-    Legacy sector_ids are resolved via legacy_sector_map first.
+    This resolver intentionally ignores seed_documents and retired_legacy_outputs.
     """
     sector = get_sector(config, sector_id_or_legacy)
     canonical_id = sector.get("sector_id", "")
-    ef_ids = set(sector.get("evidence_file_ids", []))
+    ef_ids = set(sector.get("evidence_file_ids", []) or [])
 
     evidence_files = config.raw.get("evidence_files", [])
-    result = []
+    legacy_map = config.raw.get("legacy_sector_map", {})
+    valid_ids = {s.get("sector_id") for s in config.raw.get("sectors", []) if s.get("sector_id")}
+    result: list[dict[str, Any]] = []
+    seen_ids: set[str] = set()
+
+    def _resolve_path(raw_path: str) -> Path:
+        path = Path(raw_path)
+        if path.is_absolute():
+            return path
+        return WORKSPACE_ROOT / path
+
+    def _normalize_record(ef: dict[str, Any], match_type: str) -> dict[str, Any]:
+        raw_path = str(ef.get("path", ""))
+        resolved_path = _resolve_path(raw_path) if raw_path else WORKSPACE_ROOT
+        legacy_sid = str(ef.get("legacy_sector_id", "") or "")
+        legacy_resolved = ""
+        legacy_is_alias = False
+        if legacy_sid:
+            legacy_resolved, legacy_is_alias = resolve_sector_id(legacy_sid, valid_ids, legacy_map)
+        return {
+            "evidence_file_id": ef.get("evidence_file_id", ""),
+            "path": raw_path,
+            "type": ef.get("type", ""),
+            "sector_id": canonical_id,
+            "legacy_sector_id": legacy_sid,
+            "status": ef.get("status", ""),
+            "action": ef.get("action", ""),
+            "exists": bool(raw_path and resolved_path.exists()),
+            "notes": ef.get("notes", ""),
+            "_source": "run_manifest.yaml + sector_universe.yaml",
+            "_match_type": match_type,
+            "_manifest_sector_id": ef.get("sector_id", ""),
+            "_resolved_path": str(resolved_path),
+            "_legacy_resolved_sector_id": legacy_resolved if legacy_is_alias else "",
+        }
+
+    def _append_once(ef: dict[str, Any], match_type: str) -> None:
+        ef_id = str(ef.get("evidence_file_id", "") or "")
+        dedup_key = ef_id or str(ef.get("path", ""))
+        if dedup_key in seen_ids:
+            return
+        seen_ids.add(dedup_key)
+        result.append(_normalize_record(ef, match_type))
 
     for ef in evidence_files:
         ef_sid = ef.get("sector_id", "")
-        # Check canonical match
-        if ef_sid == canonical_id:
-            result.append({**ef, "_match_type": "canonical_sector_id"})
-            continue
-        # Check via legacy map
-        legacy_map = config.raw.get("legacy_sector_map", {})
-        resolved, is_legacy = resolve_sector_id(ef_sid, {canonical_id}, legacy_map)
-        if is_legacy and resolved == canonical_id:
-            result.append({**ef, "_match_type": "legacy_sector_id"})
-            continue
-        # Check via evidence_file_id
         ef_id = ef.get("evidence_file_id", "")
+
+        # Prefer explicit evidence_file_ids from sector_universe.yaml.
         if ef_id and ef_id in ef_ids:
-            result.append({**ef, "_match_type": "evidence_file_id"})
+            _append_once(ef, "evidence_file_id")
+            continue
+
+        # Fall back to canonical sector_id in run_manifest.yaml.
+        if ef_sid == canonical_id:
+            _append_once(ef, "canonical_sector_id")
+            continue
+
+        # Check via legacy map
+        resolved, is_legacy = resolve_sector_id(ef_sid, valid_ids, legacy_map)
+        if is_legacy and resolved == canonical_id:
+            _append_once(ef, "legacy_sector_id")
             continue
 
     return result
+
+
+def get_output_spec(config: ProjectConfig) -> dict[str, Any]:
+    """Return project output_spec.yaml as loaded by the project loader."""
+    return config.raw.get("output_spec", {}) or {}
+
+
+def get_output_schema() -> dict[str, Any]:
+    """Return the canonical output.schema.yaml contract."""
+    path = SCHEMAS_ROOT / "output.schema.yaml"
+    if not path.exists():
+        return {}
+    with path.open("r", encoding="utf-8") as f:
+        return yaml.safe_load(f) or {}
+
+
+def list_output_types(config: ProjectConfig) -> list[str]:
+    """List output types known to the canonical output contract."""
+    schema = get_output_schema()
+    output_types = schema.get("output_types", {}) or {}
+    return sorted(output_types)
+
+
+def get_output_contract(config: ProjectConfig, output_type: str) -> dict[str, Any]:
+    """
+    Return a single output contract.
+
+    The canonical source is investment_system/research/schemas/output.schema.yaml.
+    output_spec.yaml remains the project-local file/path/field definition source.
+    """
+    schema = get_output_schema()
+    contract = (schema.get("output_types", {}) or {}).get(output_type)
+    if not contract:
+        raise KeyError(f"output_type '{output_type}' not found in output.schema.yaml")
+    result = dict(contract)
+    result["output_type"] = output_type
+    result["schema_version"] = schema.get("schema_version", "")
+    return result
+
+
+def _table_file_by_name(config: ProjectConfig, file_name: str) -> Path:
+    return config.total_tables_dir / file_name
+
+
+def resolve_output_path(
+    config: ProjectConfig,
+    output_type: str,
+    sector_id: str | None = None,
+) -> str:
+    """Resolve project-aware output path for a known output type."""
+    if output_type == "sector_card":
+        if not sector_id:
+            raise ValueError("sector_id is required for sector_card output path")
+        return str(resolve_sector_card_path(config, sector_id))
+    if output_type == "company_table":
+        return str(_table_file_by_name(config, "代表公司财务估值总表.csv"))
+    if output_type == "sector_comparison_table":
+        return str(_table_file_by_name(config, "科技细分方向横向比较表.csv"))
+    if output_type == "source_index":
+        return str(_table_file_by_name(config, "数据来源索引.csv"))
+    if output_type == "missing_data_log":
+        return str(config.logs_dir / "缺失数据清单.md")
+    if output_type == "conflict_data_log":
+        return str(config.logs_dir / "冲突数据清单.md")
+    if output_type == "score_table":
+        return str(_table_file_by_name(config, "科技细分方向横向比较表.csv"))
+    raise KeyError(f"Unknown output_type '{output_type}'")
+
+
+def validate_output_record_shape(
+    config: ProjectConfig,
+    output_type: str,
+    record: dict[str, Any],
+) -> dict[str, Any]:
+    """Validate a generated output record against the canonical output contract."""
+    errors: list[str] = []
+    warnings: list[str] = []
+    contract = get_output_contract(config, output_type)
+    required = list(contract.get("required_fields", []) or [])
+    deprecated = set(contract.get("deprecated_fields", []) or [])
+    legacy_display = set(contract.get("legacy_display_fields", []) or [])
+    primary_keys = set(contract.get("primary_key", []) or [])
+    optional = set(contract.get("optional_fields", []) or [])
+    allowed_placeholders = set((get_output_schema().get("empty_value_policy", {}) or {}).get("allowed_placeholders", []) or [])
+
+    missing_required = sorted(
+        field for field in required
+        if field not in record or record.get(field) is None or str(record.get(field)).strip() == ""
+    )
+    for field in missing_required:
+        errors.append(f"{output_type} record missing required field '{field}'")
+
+    deprecated_fields_present = sorted(deprecated.intersection(record))
+    for field in deprecated_fields_present:
+        warnings.append(f"{output_type} record contains deprecated field '{field}'")
+
+    legacy_fields_present = sorted(legacy_display.intersection(record))
+    forbidden = {"main_theme", "sub_theme", "legacy_theme_name"}
+    for key in sorted(primary_keys.intersection(forbidden)):
+        errors.append(f"{output_type} contract uses legacy field '{key}' as primary key")
+
+    for key in sorted(forbidden.intersection(record)):
+        if key in primary_keys:
+            errors.append(f"{output_type} record uses legacy field '{key}' as primary key")
+        elif key not in legacy_display:
+            warnings.append(f"{output_type} record contains legacy field '{key}' outside legacy_display_fields")
+
+    empty_required = [
+        field for field in required
+        if str(record.get(field, "")).strip() in allowed_placeholders and str(record.get(field, "")).strip() != ""
+    ]
+    for field in empty_required:
+        warnings.append(f"{output_type} required field '{field}' uses placeholder value '{record.get(field)}'")
+
+    source_status: dict[str, Any] = {"status": "not_required"}
+    source_reqs = contract.get("source_evidence_requirements", {}) or {}
+    if source_reqs.get("source_ids_required") and "source_ids" not in record:
+        errors.append(f"{output_type} requires source_ids field")
+        source_status["status"] = "missing_source_ids"
+    elif source_reqs.get("source_ids_required"):
+        source_status["status"] = "source_ids_present"
+
+    if source_reqs.get("source_id_required") and "source_id" not in record:
+        errors.append(f"{output_type} requires source_id field")
+        source_status["status"] = "missing_source_id"
+    elif source_reqs.get("source_id_required"):
+        source_status["status"] = "source_id_present"
+
+    if output_type == "source_index" and "source_id" not in record:
+        errors.append("source_index record missing source_id")
+
+    if output_type == "score_table":
+        score_fields = [field for field in required if field.endswith("_score") and field != "total_score"]
+        missing_reasons = [
+            field.replace("_score", "_reason")
+            for field in score_fields
+            if field.replace("_score", "_reason") not in record or str(record.get(field.replace("_score", "_reason"), "")).strip() == ""
+        ]
+        if missing_reasons:
+            errors.append(f"score_table missing score reason fields: {', '.join(missing_reasons)}")
+
+    if output_type == "missing_data_log":
+        for field in ["output_type", "sector_id", "missing_field", "severity", "reason"]:
+            if field not in record or str(record.get(field, "")).strip() == "":
+                errors.append(f"missing_data_log missing canonical field '{field}'")
+
+    if output_type == "conflict_data_log":
+        for field in ["output_type", "sector_id", "field", "conflicting_values", "source_ids"]:
+            if field not in record or str(record.get(field, "")).strip() == "":
+                errors.append(f"conflict_data_log missing canonical field '{field}'")
+
+    contract_fields = set(required) | optional | legacy_display
+    extra_fields = sorted(set(record) - contract_fields - deprecated)
+    if extra_fields:
+        warnings.append(f"{output_type} record has fields outside contract: {extra_fields}")
+
+    return {
+        "ok": not errors,
+        "errors": errors,
+        "warnings": warnings,
+        "output_type": output_type,
+        "missing_required_fields": missing_required,
+        "deprecated_fields_present": deprecated_fields_present,
+        "legacy_fields_present": legacy_fields_present,
+        "source_evidence_status": source_status,
+    }
 
 
 # ── Validation Helpers ───────────────────────────────────────────────────────
@@ -1674,6 +1967,34 @@ def _print_dry_run_paths(config: ProjectConfig) -> None:
         print(f"  {f.get('name','?')} -> {full}")
 
 
+def _print_dry_run_output_contract(config: ProjectConfig) -> None:
+    """Print output contract summary without creating files."""
+    print(f"Output contract dry-run for project: {config.project_id} ({config.project_name})")
+    print("Contract source: investment_system/research/schemas/output.schema.yaml")
+    print("Project output spec: output_spec.yaml")
+    print()
+    output_types = list_output_types(config)
+    print(f"Output types ({len(output_types)}):")
+    for output_type in output_types:
+        contract = get_output_contract(config, output_type)
+        required = contract.get("required_fields", []) or []
+        deprecated = contract.get("deprecated_fields", []) or []
+        legacy_display = contract.get("legacy_display_fields", []) or []
+        try:
+            sample_sector = config.raw.get("sectors", [{}])[0].get("sector_id", "")
+            path = resolve_output_path(config, output_type, sample_sector if output_type == "sector_card" else None)
+        except Exception as exc:
+            path = f"(unresolved: {exc})"
+        print(f"  - {output_type}")
+        print(f"      primary_key: {contract.get('primary_key', [])}")
+        print(f"      required_fields({len(required)}): {required}")
+        print(f"      deprecated_fields({len(deprecated)}): {deprecated}")
+        print(f"      legacy_display_fields({len(legacy_display)}): {legacy_display}")
+        print(f"      path: {path}")
+    print()
+    print("No files created. No data collected.")
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(
         description="Load and validate a sector research project configuration.",
@@ -1699,6 +2020,11 @@ def main() -> int:
         "--dry-run-paths",
         action="store_true",
         help="Print resolved output paths for all sectors WITHOUT creating files",
+    )
+    parser.add_argument(
+        "--dry-run-output-contract",
+        action="store_true",
+        help="Print output contract and resolved paths WITHOUT creating files",
     )
     parser.add_argument(
         "--create-output-dirs",
@@ -1727,6 +2053,12 @@ def main() -> int:
 
     if args.dry_run_paths:
         _print_dry_run_paths(config)
+        if errors:
+            return 2
+        return 0
+
+    if args.dry_run_output_contract:
+        _print_dry_run_output_contract(config)
         if errors:
             return 2
         return 0
