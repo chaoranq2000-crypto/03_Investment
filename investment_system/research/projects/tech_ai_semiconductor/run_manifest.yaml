@@ -158,6 +158,22 @@ evidence_files:
       包含6家公司的 CNINFO 年报证据。
       当前阶段仅 index_only，不视为已完成或 research-grade。
 
+  - path: investment_system/research/evidence/trading_heat_optical_chain.yaml
+    type: evidence_yaml
+    sector_id: optical_chip_components
+    sector_ids:
+      - cpo_optical_module_silicon_photonics
+      - optical_chip_components
+    evidence_file_id: trading_heat_optical_chain
+    status: schema_normalized
+    action: index_only
+    notes: >
+      [INDEXED — DO NOT DELETE] 1E-g-b 新增 trading_heat evidence。
+      使用本地 BaoStock 日线缓存生成交易热度事实，覆盖光模块/CPO/硅光
+      与光芯片/激光器/光器件两个 PARTIAL sector。仅记录价格、20/60日
+      涨跌幅、换手率、成交额、成交额分位和 MA 距离等事实；不得作为
+      投资结论、建仓评级或正式评分使用。
+
 # ── Seed Documents (from user copy, NOT research-grade) ────────────────────
 # These are user-copied draft notes. They must pass evidence + source
 # verification before being upgraded. Do NOT treat as completed sector cards.

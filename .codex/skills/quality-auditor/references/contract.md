@@ -25,7 +25,7 @@
 
 ## Acceptance
 
-- `validate_outputs.py --sub-theme <细分方向> --grade pipeline` exits 0.
-- `validate_outputs.py --sub-theme <细分方向> --grade research` exits 0 for final reports.
+- `validate_outputs.py --project <project_id> --sector-id <sector_id> --grade pipeline` exits 0.
+- `validate_outputs.py --project <project_id> --sector-id <sector_id> --grade research` exits 0 for final reports.
 - Remaining data gaps are explicitly listed.
 - Data-source failures are described without overclaiming root cause.

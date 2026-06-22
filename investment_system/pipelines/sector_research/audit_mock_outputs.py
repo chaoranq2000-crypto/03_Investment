@@ -179,10 +179,10 @@ def _audit_existing_mock_files(config: ProjectConfig, findings: list[Finding]) -
     }
 
 
-def audit_project(project_id: str, write_report: bool = True) -> tuple[list[Finding], dict[str, Any]]:
+def audit_project(project_id: str, write_report: bool = True, sector_id: str | None = None) -> tuple[list[Finding], dict[str, Any]]:
     config = load_project(project_id, create_dirs=False, strict=False, silent=True)
     findings: list[Finding] = []
-    records = build_mock_records(config)
+    records = build_mock_records(config, sector_id)
     output_types = list_output_types(config)
 
     missing_types = [output_type for output_type in output_types if output_type not in records]
@@ -198,6 +198,8 @@ def audit_project(project_id: str, write_report: bool = True) -> tuple[list[Find
     counts = _counts(findings)
     summary = {
         **counts,
+        "project_id": project_id,
+        "sector_id": sector_id,
         "output_type_count": len(output_types),
         "mock_record_count": len(records),
         "mock_file_count": file_counts["mock_file_count"],
@@ -225,7 +227,10 @@ def _write_report(project_id: str, findings: list[Finding], summary: dict[str, A
     audit_dir.mkdir(parents=True, exist_ok=True)
     path = audit_dir / "mock_output_audit.md"
     lines = [
-        "# Mock Output Audit",
+        "# Mock Output Audit — Phase 1E-e-b",
+        "",
+        f"Project: `{project_id}`",
+        f"Sector ID: `{summary.get('sector_id', 'default')}`",
         "",
         "Scope: engineering mock-output audit only. No formal research output is generated.",
         "",
@@ -249,8 +254,13 @@ def _write_report(project_id: str, findings: list[Finding], summary: dict[str, A
 def _print_summary(findings: list[Finding], summary: dict[str, Any]) -> None:
     print("Mock Output Audit")
     print("=" * 60)
+    print(f"project_id: {summary.get('project_id')}")
+    print(f"sector_id: {summary.get('sector_id')}")
+    print(f"ERROR: {summary.get('ERROR')}")
+    print(f"WARNING: {summary.get('WARNING')}")
+    print(f"INFO: {summary.get('INFO')}")
     for key in [
-        "ERROR", "WARNING", "INFO", "output_type_count", "mock_record_count",
+        "output_type_count", "mock_record_count",
         "mock_file_count", "record_shape_pass_count", "record_shape_fail_count",
         "csv_header_pass_count", "markdown_front_matter_pass_count",
         "deprecated_field_violation_count", "formal_output_write_violation_count",
@@ -267,8 +277,9 @@ def _print_summary(findings: list[Finding], summary: dict[str, Any]) -> None:
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description="Audit project-aware mock output generation.")
     parser.add_argument("--project", required=True)
+    parser.add_argument("--sector-id", default=None, help="Canonical sector_id for mock output audit.")
     args = parser.parse_args(argv)
-    findings, summary = audit_project(args.project, write_report=True)
+    findings, summary = audit_project(args.project, write_report=True, sector_id=args.sector_id)
     _print_summary(findings, summary)
     return 1 if summary["ERROR"] else 0
 

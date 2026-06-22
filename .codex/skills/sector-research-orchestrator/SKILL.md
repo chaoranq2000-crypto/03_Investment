@@ -1,6 +1,6 @@
 ---
 name: sector-research-orchestrator
-description: Orchestrates A-share sector and sub-theme research workflows in C:\Projects\03_Investment, especially AI算力硬件 and 半导体国产替代. Use when the user asks to run板块调研, 科技主线调研, P0/P1/P2批量调研, 补全缺失数据, 标准化调研流程, or generate/update structured research cards, cross-theme comparison tables, company financial valuation tables, source indexes, missing-data logs, and quality checks.
+description: Orchestrates A-share sector research workflows in C:\Projects\03_Investment. Use when the user asks to run板块调研, 科技主线调研, P0/P1/P2批量调研, 补全缺失数据, 标准化调研流程, or generate/update structured research cards, cross-theme comparison tables, company financial valuation tables, source indexes, missing-data logs, and quality checks.
 ---
 
 # Sector Research Orchestrator
@@ -33,10 +33,13 @@ Read these only when needed:
 Use the project Conda runtime:
 
 ```powershell
-& "C:\Projects\03_Investment\.conda\investment-system\python.exe" investment_system\pipelines\run_research.py --sub-theme "高速光模块" --skip-guosen
+# Project-aware mode (recommended):
+& "C:\Projects\03_Investment\.conda\investment-system\python.exe" investment_system\pipelines\run_research.py --project tech_ai_semiconductor --sector-id <canonical_sector_id> --skip-guosen
+# Batch mode (P0/P1/P2):
+& "C:\Projects\03_Investment\.conda\investment-system\python.exe" investment_system\pipelines\run_research.py --project tech_ai_semiconductor --batch p0 --skip-guosen
+# Cleanup and validation:
 & "C:\Projects\03_Investment\.conda\investment-system\python.exe" investment_system\pipelines\cleanup_outputs.py
-& "C:\Projects\03_Investment\.conda\investment-system\python.exe" investment_system\pipelines\validate_outputs.py --sub-theme "高速光模块"
-& "C:\Projects\03_Investment\.conda\investment-system\python.exe" investment_system\pipelines\validate_outputs.py --sub-theme "高速光模块" --grade research
+& "C:\Projects\03_Investment\.conda\investment-system\python.exe" investment_system\pipelines\validate_outputs.py --project tech_ai_semiconductor --sector-id <sector_id>
 ```
 
 ## Rules

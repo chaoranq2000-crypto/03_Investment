@@ -17,9 +17,9 @@ Use this as the final gate before presenting investment research outputs.
 ## Standard Command
 
 ```powershell
-& "C:\Projects\03_Investment\.conda\investment-system\python.exe" investment_system\pipelines\cleanup_outputs.py
-& "C:\Projects\03_Investment\.conda\investment-system\python.exe" investment_system\pipelines\validate_outputs.py --sub-theme "高速光模块"
-& "C:\Projects\03_Investment\.conda\investment-system\python.exe" investment_system\pipelines\validate_outputs.py --sub-theme "高速光模块" --grade research
+# Project-aware mode (recommended):
+& "C:\Projects\03_Investment\.conda\investment-system\python.exe" investment_system\pipelines\validate_outputs.py --project tech_ai_semiconductor --sector-id <sector_id>
+& "C:\Projects\03_Investment\.conda\investment-system\python.exe" investment_system\pipelines\validate_outputs.py --project tech_ai_semiconductor --sector-id <sector_id> --grade research
 ```
 
 ## Rules

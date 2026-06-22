@@ -1,0 +1,554 @@
+schema_version: '1.1'
+evidence_file_id: trading_heat_optical_chain
+status: schema_normalized
+project_ids:
+  - tech_ai_semiconductor
+canonical_sector_ids:
+  - cpo_optical_module_silicon_photonics
+  - optical_chip_components
+_audit_metadata:
+  created_for_phase: 1E-g-b
+  created_date: '2026-06-22'
+  source_id_convention_version: '1.1'
+  note: >
+    Trading heat facts only. This evidence file records local market-data facts
+    and must not be used as a standalone investment conclusion, final rating,
+    or position-sizing basis.
+
+source_index:
+  - source_id: BAO-DAILY-TRADING-OPTICAL-20260620
+    source_type: market_data
+    title: BaoStock 日线行情缓存 - 光通信链 trading_heat
+    publisher: BaoStock
+    date: '2026-06-20'
+    url: ''
+    access_method: script_query
+    local_path: investment_system/data/raw/baostock/daily_kline/2026-06-20/
+    dataset_ref: baostock:history_k_data_plus
+    reliability_level: 高
+    notes: >
+      覆盖 cpo_optical_module_silicon_photonics 与 optical_chip_components
+      两个 sector 的 12 只正式股票。原始字段包括 date/open/high/low/close/
+      volume/amount/turn/pctChg；688127.SH 本地缓存字段使用 turnover 比例，
+      已换算为 turnover_rate_pct。计算字段包括 20/60 个交易日涨跌幅、
+      最新换手率、成交额、可用历史成交额分位、distance_to_ma20 和
+      distance_to_ma60。数据最后交易日为 2026-06-18。
+
+evidence_items:
+  - evidence_id: EV-TH-CPO-300308-20260620
+    source_id: BAO-DAILY-TRADING-OPTICAL-20260620
+    source_ids:
+      - BAO-DAILY-TRADING-OPTICAL-20260620
+    project_id: tech_ai_semiconductor
+    sector_id: cpo_optical_module_silicon_photonics
+    subject_type: company
+    subject_id: 300308.SZ
+    subject_name: 中际旭创
+    claim: >
+      trading_heat fact: as_of_date=2026-06-18; close_price=1367.88;
+      return_20d_pct=37.71; return_60d_pct=123.51; turnover_rate_pct=2.57;
+      trading_amount_billion_yuan=381.77; amount_percentile_available_history_pct=95.9;
+      distance_to_ma20_pct=15.66; distance_to_ma60_pct=46.65.
+    evidence_type: trading_heat_fact
+    metrics_supported:
+      - price_data
+      - close_price
+      - return_20d
+      - return_60d
+      - turnover_data
+      - turnover_rate
+      - trading_amount
+      - amount_percentile_available_history
+      - momentum_data
+      - distance_to_ma20
+      - distance_to_ma60
+    time_scope: '2026-06-18'
+    confidence: 高
+    used_for:
+      - sector_card
+      - company_table
+      - comparison_table
+      - source_index
+      - scoring_reason
+    not_allowed_for:
+      - investment_conclusion
+      - position_sizing
+      - final_rating
+    notes: >
+      Source row count=145. Local cache:
+      investment_system/data/raw/baostock/daily_kline/2026-06-20/300308.json.
+
+  - evidence_id: EV-TH-CPO-300502-20260620
+    source_id: BAO-DAILY-TRADING-OPTICAL-20260620
+    source_ids:
+      - BAO-DAILY-TRADING-OPTICAL-20260620
+    project_id: tech_ai_semiconductor
+    sector_id: cpo_optical_module_silicon_photonics
+    subject_type: company
+    subject_id: 300502.SZ
+    subject_name: 新易盛
+    claim: >
+      trading_heat fact: as_of_date=2026-06-18; close_price=581.48;
+      return_20d_pct=2.73; return_60d_pct=21.89; turnover_rate_pct=3.42;
+      trading_amount_billion_yuan=247.40; amount_percentile_available_history_pct=84.1;
+      distance_to_ma20_pct=-12.97; distance_to_ma60_pct=0.81.
+    evidence_type: trading_heat_fact
+    metrics_supported:
+      - price_data
+      - close_price
+      - return_20d
+      - return_60d
+      - turnover_data
+      - turnover_rate
+      - trading_amount
+      - amount_percentile_available_history
+      - momentum_data
+      - distance_to_ma20
+      - distance_to_ma60
+    time_scope: '2026-06-18'
+    confidence: 高
+    used_for:
+      - sector_card
+      - company_table
+      - comparison_table
+      - source_index
+      - scoring_reason
+    not_allowed_for:
+      - investment_conclusion
+      - position_sizing
+      - final_rating
+    notes: >
+      Source row count=145. Local cache:
+      investment_system/data/raw/baostock/daily_kline/2026-06-20/300502.json.
+
+  - evidence_id: EV-TH-CPO-603083-20260620
+    source_id: BAO-DAILY-TRADING-OPTICAL-20260620
+    source_ids:
+      - BAO-DAILY-TRADING-OPTICAL-20260620
+    project_id: tech_ai_semiconductor
+    sector_id: cpo_optical_module_silicon_photonics
+    subject_type: company
+    subject_id: 603083.SH
+    subject_name: 剑桥科技
+    claim: >
+      trading_heat fact: as_of_date=2026-06-18; close_price=214.54;
+      return_20d_pct=19.73; return_60d_pct=86.02; turnover_rate_pct=10.03;
+      trading_amount_billion_yuan=58.96; amount_percentile_available_history_pct=82.1;
+      distance_to_ma20_pct=10.54; distance_to_ma60_pct=32.08.
+    evidence_type: trading_heat_fact
+    metrics_supported:
+      - price_data
+      - close_price
+      - return_20d
+      - return_60d
+      - turnover_data
+      - turnover_rate
+      - trading_amount
+      - amount_percentile_available_history
+      - momentum_data
+      - distance_to_ma20
+      - distance_to_ma60
+    time_scope: '2026-06-18'
+    confidence: 高
+    used_for:
+      - sector_card
+      - company_table
+      - comparison_table
+      - source_index
+      - scoring_reason
+    not_allowed_for:
+      - investment_conclusion
+      - position_sizing
+      - final_rating
+    notes: >
+      Source row count=145. Local cache:
+      investment_system/data/raw/baostock/daily_kline/2026-06-20/603083.json.
+
+  - evidence_id: EV-TH-CPO-002281-20260620
+    source_id: BAO-DAILY-TRADING-OPTICAL-20260620
+    source_ids:
+      - BAO-DAILY-TRADING-OPTICAL-20260620
+    project_id: tech_ai_semiconductor
+    sector_id: cpo_optical_module_silicon_photonics
+    subject_type: company
+    subject_id: 002281.SZ
+    subject_name: 光迅科技
+    claim: >
+      trading_heat fact: as_of_date=2026-06-18; close_price=266.20;
+      return_20d_pct=22.50; return_60d_pct=220.41; turnover_rate_pct=5.25;
+      trading_amount_billion_yuan=104.78; amount_percentile_available_history_pct=76.6;
+      distance_to_ma20_pct=22.29; distance_to_ma60_pct=64.20.
+    evidence_type: trading_heat_fact
+    metrics_supported:
+      - price_data
+      - close_price
+      - return_20d
+      - return_60d
+      - turnover_data
+      - turnover_rate
+      - trading_amount
+      - amount_percentile_available_history
+      - momentum_data
+      - distance_to_ma20
+      - distance_to_ma60
+    time_scope: '2026-06-18'
+    confidence: 高
+    used_for:
+      - sector_card
+      - company_table
+      - comparison_table
+      - source_index
+      - scoring_reason
+    not_allowed_for:
+      - investment_conclusion
+      - position_sizing
+      - final_rating
+    notes: >
+      Source row count=145. Local cache:
+      investment_system/data/raw/baostock/daily_kline/2026-06-20/002281.json.
+
+  - evidence_id: EV-TH-CPO-000988-20260620
+    source_id: BAO-DAILY-TRADING-OPTICAL-20260620
+    source_ids:
+      - BAO-DAILY-TRADING-OPTICAL-20260620
+    project_id: tech_ai_semiconductor
+    sector_id: cpo_optical_module_silicon_photonics
+    subject_type: company
+    subject_id: 000988.SZ
+    subject_name: 华工科技
+    claim: >
+      trading_heat fact: as_of_date=2026-06-18; close_price=177.55;
+      return_20d_pct=15.32; return_60d_pct=52.95; turnover_rate_pct=7.77;
+      trading_amount_billion_yuan=137.80; amount_percentile_available_history_pct=82.1;
+      distance_to_ma20_pct=12.15; distance_to_ma60_pct=32.24.
+    evidence_type: trading_heat_fact
+    metrics_supported:
+      - price_data
+      - close_price
+      - return_20d
+      - return_60d
+      - turnover_data
+      - turnover_rate
+      - trading_amount
+      - amount_percentile_available_history
+      - momentum_data
+      - distance_to_ma20
+      - distance_to_ma60
+    time_scope: '2026-06-18'
+    confidence: 高
+    used_for:
+      - sector_card
+      - company_table
+      - comparison_table
+      - source_index
+      - scoring_reason
+    not_allowed_for:
+      - investment_conclusion
+      - position_sizing
+      - final_rating
+    notes: >
+      Source row count=145. Local cache:
+      investment_system/data/raw/baostock/daily_kline/2026-06-20/000988.json.
+
+  - evidence_id: EV-TH-CPO-300548-20260620
+    source_id: BAO-DAILY-TRADING-OPTICAL-20260620
+    source_ids:
+      - BAO-DAILY-TRADING-OPTICAL-20260620
+    project_id: tech_ai_semiconductor
+    sector_id: cpo_optical_module_silicon_photonics
+    subject_type: company
+    subject_id: 300548.SZ
+    subject_name: 博创科技
+    claim: >
+      trading_heat fact: as_of_date=2026-06-18; close_price=281.99;
+      return_20d_pct=21.83; return_60d_pct=92.97; turnover_rate_pct=10.02;
+      trading_amount_billion_yuan=74.93; amount_percentile_available_history_pct=98.6;
+      distance_to_ma20_pct=16.90; distance_to_ma60_pct=22.34.
+    evidence_type: trading_heat_fact
+    metrics_supported:
+      - price_data
+      - close_price
+      - return_20d
+      - return_60d
+      - turnover_data
+      - turnover_rate
+      - trading_amount
+      - amount_percentile_available_history
+      - momentum_data
+      - distance_to_ma20
+      - distance_to_ma60
+    time_scope: '2026-06-18'
+    confidence: 高
+    used_for:
+      - sector_card
+      - company_table
+      - comparison_table
+      - source_index
+      - scoring_reason
+    not_allowed_for:
+      - investment_conclusion
+      - position_sizing
+      - final_rating
+    notes: >
+      Source row count=145. Local cache:
+      investment_system/data/raw/baostock/daily_kline/2026-06-20/300548.json.
+
+  - evidence_id: EV-TH-OCFP-300394-20260620
+    source_id: BAO-DAILY-TRADING-OPTICAL-20260620
+    source_ids:
+      - BAO-DAILY-TRADING-OPTICAL-20260620
+    project_id: tech_ai_semiconductor
+    sector_id: optical_chip_components
+    subject_type: company
+    subject_id: 300394.SZ
+    subject_name: 天孚通信
+    claim: >
+      trading_heat fact: as_of_date=2026-06-18; close_price=336.60;
+      return_20d_pct=-0.18; return_60d_pct=7.88; turnover_rate_pct=4.52;
+      trading_amount_billion_yuan=164.97; amount_percentile_available_history_pct=77.2;
+      distance_to_ma20_pct=-16.86; distance_to_ma60_pct=-6.81.
+    evidence_type: trading_heat_fact
+    metrics_supported:
+      - price_data
+      - close_price
+      - return_20d
+      - return_60d
+      - turnover_data
+      - turnover_rate
+      - trading_amount
+      - amount_percentile_available_history
+      - momentum_data
+      - distance_to_ma20
+      - distance_to_ma60
+    time_scope: '2026-06-18'
+    confidence: 高
+    used_for:
+      - sector_card
+      - company_table
+      - comparison_table
+      - source_index
+      - scoring_reason
+    not_allowed_for:
+      - investment_conclusion
+      - position_sizing
+      - final_rating
+    notes: >
+      Source row count=145. Local cache:
+      investment_system/data/raw/baostock/daily_kline/2026-06-20/300394.json.
+
+  - evidence_id: EV-TH-OCFP-300570-20260620
+    source_id: BAO-DAILY-TRADING-OPTICAL-20260620
+    source_ids:
+      - BAO-DAILY-TRADING-OPTICAL-20260620
+    project_id: tech_ai_semiconductor
+    sector_id: optical_chip_components
+    subject_type: company
+    subject_id: 300570.SZ
+    subject_name: 太辰光
+    claim: >
+      trading_heat fact: as_of_date=2026-06-18; close_price=268.60;
+      return_20d_pct=80.85; return_60d_pct=125.41; turnover_rate_pct=15.62;
+      trading_amount_billion_yuan=78.61; amount_percentile_available_history_pct=98.6;
+      distance_to_ma20_pct=45.59; distance_to_ma60_pct=74.87.
+    evidence_type: trading_heat_fact
+    metrics_supported:
+      - price_data
+      - close_price
+      - return_20d
+      - return_60d
+      - turnover_data
+      - turnover_rate
+      - trading_amount
+      - amount_percentile_available_history
+      - momentum_data
+      - distance_to_ma20
+      - distance_to_ma60
+    time_scope: '2026-06-18'
+    confidence: 高
+    used_for:
+      - sector_card
+      - company_table
+      - comparison_table
+      - source_index
+      - scoring_reason
+    not_allowed_for:
+      - investment_conclusion
+      - position_sizing
+      - final_rating
+    notes: >
+      Source row count=145. Local cache:
+      investment_system/data/raw/baostock/daily_kline/2026-06-20/300570.json.
+
+  - evidence_id: EV-TH-OCFP-688195-20260620
+    source_id: BAO-DAILY-TRADING-OPTICAL-20260620
+    source_ids:
+      - BAO-DAILY-TRADING-OPTICAL-20260620
+    project_id: tech_ai_semiconductor
+    sector_id: optical_chip_components
+    subject_type: company
+    subject_id: 688195.SH
+    subject_name: 腾景科技
+    claim: >
+      trading_heat fact: as_of_date=2026-06-18; close_price=212.54;
+      return_20d_pct=-33.78; return_60d_pct=-9.21; turnover_rate_pct=5.69;
+      trading_amount_billion_yuan=21.94; amount_percentile_available_history_pct=49.7;
+      distance_to_ma20_pct=-13.42; distance_to_ma60_pct=-29.79.
+    evidence_type: trading_heat_fact
+    metrics_supported:
+      - price_data
+      - close_price
+      - return_20d
+      - return_60d
+      - turnover_data
+      - turnover_rate
+      - trading_amount
+      - amount_percentile_available_history
+      - momentum_data
+      - distance_to_ma20
+      - distance_to_ma60
+    time_scope: '2026-06-18'
+    confidence: 高
+    used_for:
+      - sector_card
+      - company_table
+      - comparison_table
+      - source_index
+      - scoring_reason
+    not_allowed_for:
+      - investment_conclusion
+      - position_sizing
+      - final_rating
+    notes: >
+      Source row count=145. Local cache:
+      investment_system/data/raw/baostock/daily_kline/2026-06-20/688195.json.
+
+  - evidence_id: EV-TH-OCFP-300620-20260620
+    source_id: BAO-DAILY-TRADING-OPTICAL-20260620
+    source_ids:
+      - BAO-DAILY-TRADING-OPTICAL-20260620
+    project_id: tech_ai_semiconductor
+    sector_id: optical_chip_components
+    subject_type: company
+    subject_id: 300620.SZ
+    subject_name: 光库科技
+    claim: >
+      trading_heat fact: as_of_date=2026-06-18; close_price=390.80;
+      return_20d_pct=56.38; return_60d_pct=138.58; turnover_rate_pct=5.43;
+      trading_amount_billion_yuan=52.10; amount_percentile_available_history_pct=76.6;
+      distance_to_ma20_pct=26.17; distance_to_ma60_pct=50.67.
+    evidence_type: trading_heat_fact
+    metrics_supported:
+      - price_data
+      - close_price
+      - return_20d
+      - return_60d
+      - turnover_data
+      - turnover_rate
+      - trading_amount
+      - amount_percentile_available_history
+      - momentum_data
+      - distance_to_ma20
+      - distance_to_ma60
+    time_scope: '2026-06-18'
+    confidence: 高
+    used_for:
+      - sector_card
+      - company_table
+      - comparison_table
+      - source_index
+      - scoring_reason
+    not_allowed_for:
+      - investment_conclusion
+      - position_sizing
+      - final_rating
+    notes: >
+      Source row count=145. Local cache:
+      investment_system/data/raw/baostock/daily_kline/2026-06-20/300620.json.
+
+  - evidence_id: EV-TH-OCFP-688025-20260620
+    source_id: BAO-DAILY-TRADING-OPTICAL-20260620
+    source_ids:
+      - BAO-DAILY-TRADING-OPTICAL-20260620
+    project_id: tech_ai_semiconductor
+    sector_id: optical_chip_components
+    subject_type: company
+    subject_id: 688025.SH
+    subject_name: 杰普特
+    claim: >
+      trading_heat fact: as_of_date=2026-06-18; close_price=449.00;
+      return_20d_pct=18.16; return_60d_pct=111.69; turnover_rate_pct=3.24;
+      trading_amount_billion_yuan=13.75; amount_percentile_available_history_pct=62.1;
+      distance_to_ma20_pct=10.95; distance_to_ma60_pct=33.74.
+    evidence_type: trading_heat_fact
+    metrics_supported:
+      - price_data
+      - close_price
+      - return_20d
+      - return_60d
+      - turnover_data
+      - turnover_rate
+      - trading_amount
+      - amount_percentile_available_history
+      - momentum_data
+      - distance_to_ma20
+      - distance_to_ma60
+    time_scope: '2026-06-18'
+    confidence: 高
+    used_for:
+      - sector_card
+      - company_table
+      - comparison_table
+      - source_index
+      - scoring_reason
+    not_allowed_for:
+      - investment_conclusion
+      - position_sizing
+      - final_rating
+    notes: >
+      Source row count=145. Local cache:
+      investment_system/data/raw/baostock/daily_kline/2026-06-20/688025.json.
+
+  - evidence_id: EV-TH-OCFP-688127-20260620
+    source_id: BAO-DAILY-TRADING-OPTICAL-20260620
+    source_ids:
+      - BAO-DAILY-TRADING-OPTICAL-20260620
+    project_id: tech_ai_semiconductor
+    sector_id: optical_chip_components
+    subject_type: company
+    subject_id: 688127.SH
+    subject_name: 蓝特光学
+    claim: >
+      trading_heat fact: as_of_date=2026-06-18; close_price=89.48;
+      return_20d_pct=-6.15; return_60d_pct=49.53; turnover_rate_pct=3.55;
+      trading_amount_billion_yuan=12.74; amount_percentile_available_history_pct=98.6;
+      distance_to_ma20_pct=4.53; distance_to_ma60_pct=15.92.
+    evidence_type: trading_heat_fact
+    metrics_supported:
+      - price_data
+      - close_price
+      - return_20d
+      - return_60d
+      - turnover_data
+      - turnover_rate
+      - trading_amount
+      - amount_percentile_available_history
+      - momentum_data
+      - distance_to_ma20
+      - distance_to_ma60
+    time_scope: '2026-06-18'
+    confidence: 中高
+    used_for:
+      - sector_card
+      - company_table
+      - comparison_table
+      - source_index
+      - scoring_reason
+    not_allowed_for:
+      - investment_conclusion
+      - position_sizing
+      - final_rating
+    notes: >
+      Source row count=220. Local cache:
+      investment_system/data/raw/baostock/daily_kline/2026-06-20/688127.json.
+      This cache stores turnover as a ratio field named turnover; turnover_rate_pct
+      is turnover * 100.

@@ -4,7 +4,7 @@ sector_id: cpo_optical_module_silicon_photonics
 sector_name: 光模块/CPO/硅光
 research_group_id: optical_interconnect
 status: mock
-generated_at: '2026-06-21T13:18:22+00:00'
+generated_at: '2026-06-21T16:37:39+00:00'
 source_ids: MOCK-SOURCE-001
 evidence_ids: MOCK-EVIDENCE-001
 mock_only: true

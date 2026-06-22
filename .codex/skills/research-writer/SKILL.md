@@ -17,7 +17,9 @@ Use this as the output-generation layer. It writes deliverables from collected d
 ## Standard Command
 
 ```powershell
-& "C:\Projects\03_Investment\.conda\investment-system\python.exe" investment_system\pipelines\run_research.py --sub-theme "高速光模块" --skip-guosen
+# Project-aware mode (recommended):
+& "C:\Projects\03_Investment\.conda\investment-system\python.exe" investment_system\pipelines\run_research.py --project tech_ai_semiconductor --sector-id <sector_id> --skip-guosen
+# After generation:
 & "C:\Projects\03_Investment\.conda\investment-system\python.exe" investment_system\pipelines\cleanup_outputs.py
 ```
 

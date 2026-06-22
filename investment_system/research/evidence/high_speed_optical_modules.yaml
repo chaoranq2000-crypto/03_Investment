@@ -1,680 +1,850 @@
-schema_version: '1.0'
+schema_version: '1.1'
 evidence_file_id: high_speed_optical_modules
 status: indexed_existing_evidence
 project_ids:
-- tech_ai_semiconductor
+  - tech_ai_semiconductor
 canonical_sector_ids:
-- cpo_optical_module_silicon_photonics
+  - cpo_optical_module_silicon_photonics
 legacy_sector_ids:
-- cpo_optical_module
-- high_speed_optical_modules
+  - cpo_optical_module
+  - high_speed_optical_modules
+_audit_metadata:
+  last_schema_normalized: '2026-06-22'
+  source_id_convention_version: '1.1'
+  _source_id_rules:
+    pattern: '{PROVIDER}-{SCOPE_TYPE}-{SCOPE_ID}-{DATE}'
+    provider_values: [BAO, TENCENT, AKSHARE, CNINFO, CURATED, LEGACY, EVIDENCE]
+    scope_type_values: [DAILY, PROFIT, STOCK, SECTOR, COMPARISON, BUNDLE]
+    date_format: YYYYMMDD
+  _duplicate_resolved:
+    - original_ids: [SRC-BAO-300308-20260619185911, SRC-BAO-300308-20260619190729, SRC-BAO-300308-20260619191111]
+      resolved_to: BAO-STOCK-300308-20260619
+      reason: 同一标的同一日期的三次重复查询，统一到采集日期
+    - original_ids: [SRC-BAO-300502-20260619185911, SRC-BAO-300502-20260619190729, SRC-BAO-300502-20260619191111]
+      resolved_to: BAO-STOCK-300502-20260619
+      reason: 同一标的同一日期的三次重复查询，统一到采集日期
+    - original_ids: [SRC-BAO-300394-20260619185911, SRC-BAO-300394-20260619190729, SRC-BAO-300394-20260619191111]
+      resolved_to: BAO-STOCK-300394-20260619
+      reason: 同一标的同一日期的三次重复查询，统一到采集日期
+    - original_ids: [SRC-BAO-603083-20260619185911, SRC-BAO-603083-20260619190729, SRC-BAO-603083-20260619191111]
+      resolved_to: BAO-STOCK-603083-20260619
+      reason: 同一标的同一日期的三次重复查询，统一到采集日期
+    - original_ids: [SRC-BAO-002281-20260619185911, SRC-BAO-002281-20260619190729, SRC-BAO-002281-20260619191111]
+      resolved_to: BAO-STOCK-002281-20260619
+      reason: 同一标的同一日期的三次重复查询，统一到采集日期
+    - original_ids: [SRC-BAO-000988-20260619185911, SRC-BAO-000988-20260619190729, SRC-BAO-000988-20260619191111]
+      resolved_to: BAO-STOCK-000988-20260619
+      reason: 同一标的同一日期的三次重复查询，统一到采集日期
+    - original_ids: [SRC-BAO-300570-20260619185911, SRC-BAO-300570-20260619190729, SRC-BAO-300570-20260619191111]
+      resolved_to: BAO-STOCK-300570-20260619
+      reason: 同一标的同一日期的三次重复查询，统一到采集日期
+    - original_ids: [SRC-BAO-300548-20260619185911, SRC-BAO-300548-20260619190729, SRC-BAO-300548-20260619191111]
+      resolved_to: BAO-STOCK-300548-20260619
+      reason: 同一标的同一日期的三次重复查询，统一到采集日期
 source_index:
-- source_id: SRC-BAO-DAILY-001
-  source_type: database
-  title: BaoStock query_history_k_data_plus
-  publisher: BaoStock query_history_k_data_plus
-  date: '2026-06-19'
-  url: ''
-  path: investment_system/data/raw/baostock/daily_kline/2026-06-19/
-  accessed_at: '2026-06-21'
-  reliability: 高
-  notes: 'legacy_excerpt: 字段包括date, open, high, low, close, volume, amount, turn, pctChg；用于计算近1/3/6月涨幅和20日平均成交额。 | fields: latest_price,pct_change_1m,pct_change_3m,pct_change_6m,turnover_value_20d_avg
-    | 最新交易日为2026-06-18；2026-06-19为当前日期但未取得当日收盘数据。'
-- source_id: SRC-LEGACY-DISABLED-001
-  source_type: disabled_source
-  title: Legacy disabled interface
-  publisher: Legacy disabled interface
-  date: '2026-06-19'
-  url: ''
-  path: ''
-  accessed_at: '2026-06-21'
-  reliability: 高
-  notes: 'legacy_excerpt: 历史接口记录已移除，不作为本项目事实来源。 | fields: none | 当前统一数据源使用 BaoStock、Tencent direct、AKShare、Tushare、公告和公开可验证来源。'
-- source_id: SRC-AKSHARE-ERR-001
-  source_type: api_error
-  title: AKShare stock_zh_a_hist
-  publisher: AKShare stock_zh_a_hist
-  date: '2026-06-19'
-  url: ''
-  path: investment_system/data/raw/diagnostics/2026-06-19/data_sources_runtime.json; endpoint=push2his.eastmoney.com
-  accessed_at: '2026-06-21'
-  reliability: 高
-  notes: 'legacy_excerpt: ProxyError/RemoteDisconnected；禁用代理后仍RemoteDisconnected。 | fields: none | 与当前环境下Eastmoney端点不稳定一致。'
-- source_id: SRC-BAO-300308-20260619185911
-  source_type: database
-  title: BaoStock query_history_k_data_plus + query_profit_data
-  publisher: BaoStock query_history_k_data_plus + query_profit_data
-  date: '2026-06-19'
-  url: ''
-  path: investment_system/data/raw/baostock/
-  accessed_at: '2026-06-21'
-  reliability: 高
-  notes: 'legacy_excerpt: revenue_2025=38239935640.670000元, net_profit_2025=11579754107.990000元 | fields: revenue,net_profit,gross_margin,net_margin,epsTTM,totalShare,close
-    | BaoStock primary data; Tencent fallback if BaoStock fails'
-- source_id: SRC-BAO-300502-20260619185911
-  source_type: database
-  title: BaoStock query_history_k_data_plus + query_profit_data
-  publisher: BaoStock query_history_k_data_plus + query_profit_data
-  date: '2026-06-19'
-  url: ''
-  path: investment_system/data/raw/baostock/
-  accessed_at: '2026-06-21'
-  reliability: 高
-  notes: 'legacy_excerpt: revenue_2025=24841854840.220000元, net_profit_2025=9553276217.150000元 | fields: revenue,net_profit,gross_margin,net_margin,epsTTM,totalShare,close
-    | BaoStock primary data; Tencent fallback if BaoStock fails'
-- source_id: SRC-BAO-300394-20260619185911
-  source_type: database
-  title: BaoStock query_history_k_data_plus + query_profit_data
-  publisher: BaoStock query_history_k_data_plus + query_profit_data
-  date: '2026-06-19'
-  url: ''
-  path: investment_system/data/raw/baostock/
-  accessed_at: '2026-06-21'
-  reliability: 高
-  notes: 'legacy_excerpt: revenue_2025=5163432471.160000元, net_profit_2025=2017676180.690000元 | fields: revenue,net_profit,gross_margin,net_margin,epsTTM,totalShare,close
-    | BaoStock primary data; Tencent fallback if BaoStock fails'
-- source_id: SRC-BAO-603083-20260619185911
-  source_type: database
-  title: BaoStock query_history_k_data_plus + query_profit_data
-  publisher: BaoStock query_history_k_data_plus + query_profit_data
-  date: '2026-06-19'
-  url: ''
-  path: investment_system/data/raw/baostock/
-  accessed_at: '2026-06-21'
-  reliability: 高
-  notes: 'legacy_excerpt: revenue_2025=4823405697.640000元, net_profit_2025=222597154.100000元 | fields: revenue,net_profit,gross_margin,net_margin,epsTTM,totalShare,close
-    | BaoStock primary data; Tencent fallback if BaoStock fails'
-- source_id: SRC-BAO-002281-20260619185911
-  source_type: database
-  title: BaoStock query_history_k_data_plus + query_profit_data
-  publisher: BaoStock query_history_k_data_plus + query_profit_data
-  date: '2026-06-19'
-  url: ''
-  path: investment_system/data/raw/baostock/
-  accessed_at: '2026-06-21'
-  reliability: 高
-  notes: 'legacy_excerpt: revenue_2025=11928697127.380000元, net_profit_2025=931857075.210000元 | fields: revenue,net_profit,gross_margin,net_margin,epsTTM,totalShare,close
-    | BaoStock primary data; Tencent fallback if BaoStock fails'
-- source_id: SRC-BAO-000988-20260619185911
-  source_type: database
-  title: BaoStock query_history_k_data_plus + query_profit_data
-  publisher: BaoStock query_history_k_data_plus + query_profit_data
-  date: '2026-06-19'
-  url: ''
-  path: investment_system/data/raw/baostock/
-  accessed_at: '2026-06-21'
-  reliability: 高
-  notes: 'legacy_excerpt: revenue_2025=14354760508.180000元, net_profit_2025=1454468065.680000元 | fields: revenue,net_profit,gross_margin,net_margin,epsTTM,totalShare,close
-    | BaoStock primary data; Tencent fallback if BaoStock fails'
-- source_id: SRC-BAO-300570-20260619185911
-  source_type: database
-  title: BaoStock query_history_k_data_plus + query_profit_data
-  publisher: BaoStock query_history_k_data_plus + query_profit_data
-  date: '2026-06-19'
-  url: ''
-  path: investment_system/data/raw/baostock/
-  accessed_at: '2026-06-21'
-  reliability: 高
-  notes: 'legacy_excerpt: revenue_2025=1546758347.740000元, net_profit_2025=307590247.850000元 | fields: revenue,net_profit,gross_margin,net_margin,epsTTM,totalShare,close
-    | BaoStock primary data; Tencent fallback if BaoStock fails'
-- source_id: SRC-BAO-300548-20260619185911
-  source_type: database
-  title: BaoStock query_history_k_data_plus + query_profit_data
-  publisher: BaoStock query_history_k_data_plus + query_profit_data
-  date: '2026-06-19'
-  url: ''
-  path: investment_system/data/raw/baostock/
-  accessed_at: '2026-06-21'
-  reliability: 高
-  notes: 'legacy_excerpt: revenue_2025=2532639369.670000元, net_profit_2025=579621864.970000元 | fields: revenue,net_profit,gross_margin,net_margin,epsTTM,totalShare,close
-    | BaoStock primary data; Tencent fallback if BaoStock fails'
-- source_id: SRC-BAO-300308-20260619190729
-  source_type: database
-  title: BaoStock query_history_k_data_plus + query_profit_data
-  publisher: BaoStock query_history_k_data_plus + query_profit_data
-  date: '2026-06-19'
-  url: ''
-  path: investment_system/data/raw/baostock/
-  accessed_at: '2026-06-21'
-  reliability: 高
-  notes: 'legacy_excerpt: revenue_2025=38239935640.670000元, net_profit_2025=11579754107.990000元 | fields: revenue,net_profit,gross_margin,net_margin,epsTTM,totalShare,close
-    | BaoStock primary data; Tencent fallback if BaoStock fails'
-- source_id: SRC-BAO-300502-20260619190729
-  source_type: database
-  title: BaoStock query_history_k_data_plus + query_profit_data
-  publisher: BaoStock query_history_k_data_plus + query_profit_data
-  date: '2026-06-19'
-  url: ''
-  path: investment_system/data/raw/baostock/
-  accessed_at: '2026-06-21'
-  reliability: 高
-  notes: 'legacy_excerpt: revenue_2025=24841854840.220000元, net_profit_2025=9553276217.150000元 | fields: revenue,net_profit,gross_margin,net_margin,epsTTM,totalShare,close
-    | BaoStock primary data; Tencent fallback if BaoStock fails'
-- source_id: SRC-BAO-300394-20260619190729
-  source_type: database
-  title: BaoStock query_history_k_data_plus + query_profit_data
-  publisher: BaoStock query_history_k_data_plus + query_profit_data
-  date: '2026-06-19'
-  url: ''
-  path: investment_system/data/raw/baostock/
-  accessed_at: '2026-06-21'
-  reliability: 高
-  notes: 'legacy_excerpt: revenue_2025=5163432471.160000元, net_profit_2025=2017676180.690000元 | fields: revenue,net_profit,gross_margin,net_margin,epsTTM,totalShare,close
-    | BaoStock primary data; Tencent fallback if BaoStock fails'
-- source_id: SRC-BAO-603083-20260619190729
-  source_type: database
-  title: BaoStock query_history_k_data_plus + query_profit_data
-  publisher: BaoStock query_history_k_data_plus + query_profit_data
-  date: '2026-06-19'
-  url: ''
-  path: investment_system/data/raw/baostock/
-  accessed_at: '2026-06-21'
-  reliability: 高
-  notes: 'legacy_excerpt: revenue_2025=4823405697.640000元, net_profit_2025=222597154.100000元 | fields: revenue,net_profit,gross_margin,net_margin,epsTTM,totalShare,close
-    | BaoStock primary data; Tencent fallback if BaoStock fails'
-- source_id: SRC-BAO-002281-20260619190729
-  source_type: database
-  title: BaoStock query_history_k_data_plus + query_profit_data
-  publisher: BaoStock query_history_k_data_plus + query_profit_data
-  date: '2026-06-19'
-  url: ''
-  path: investment_system/data/raw/baostock/
-  accessed_at: '2026-06-21'
-  reliability: 高
-  notes: 'legacy_excerpt: revenue_2025=11928697127.380000元, net_profit_2025=931857075.210000元 | fields: revenue,net_profit,gross_margin,net_margin,epsTTM,totalShare,close
-    | BaoStock primary data; Tencent fallback if BaoStock fails'
-- source_id: SRC-BAO-000988-20260619190729
-  source_type: database
-  title: BaoStock query_history_k_data_plus + query_profit_data
-  publisher: BaoStock query_history_k_data_plus + query_profit_data
-  date: '2026-06-19'
-  url: ''
-  path: investment_system/data/raw/baostock/
-  accessed_at: '2026-06-21'
-  reliability: 高
-  notes: 'legacy_excerpt: revenue_2025=14354760508.180000元, net_profit_2025=1454468065.680000元 | fields: revenue,net_profit,gross_margin,net_margin,epsTTM,totalShare,close
-    | BaoStock primary data; Tencent fallback if BaoStock fails'
-- source_id: SRC-BAO-300570-20260619190729
-  source_type: database
-  title: BaoStock query_history_k_data_plus + query_profit_data
-  publisher: BaoStock query_history_k_data_plus + query_profit_data
-  date: '2026-06-19'
-  url: ''
-  path: investment_system/data/raw/baostock/
-  accessed_at: '2026-06-21'
-  reliability: 高
-  notes: 'legacy_excerpt: revenue_2025=1546758347.740000元, net_profit_2025=307590247.850000元 | fields: revenue,net_profit,gross_margin,net_margin,epsTTM,totalShare,close
-    | BaoStock primary data; Tencent fallback if BaoStock fails'
-- source_id: SRC-BAO-300548-20260619190729
-  source_type: database
-  title: BaoStock query_history_k_data_plus + query_profit_data
-  publisher: BaoStock query_history_k_data_plus + query_profit_data
-  date: '2026-06-19'
-  url: ''
-  path: investment_system/data/raw/baostock/
-  accessed_at: '2026-06-21'
-  reliability: 高
-  notes: 'legacy_excerpt: revenue_2025=2532639369.670000元, net_profit_2025=579621864.970000元 | fields: revenue,net_profit,gross_margin,net_margin,epsTTM,totalShare,close
-    | BaoStock primary data; Tencent fallback if BaoStock fails'
-- source_id: SRC-BAO-300308-20260619191111
-  source_type: database
-  title: BaoStock query_history_k_data_plus + query_profit_data
-  publisher: BaoStock query_history_k_data_plus + query_profit_data
-  date: '2026-06-19'
-  url: ''
-  path: investment_system/data/raw/baostock/
-  accessed_at: '2026-06-21'
-  reliability: 高
-  notes: 'legacy_excerpt: revenue_2025=38239935640.670000元, net_profit_2025=11579754107.990000元 | fields: revenue,net_profit,gross_margin,net_margin,epsTTM,totalShare,close
-    | BaoStock primary data; Tencent fallback if BaoStock fails'
-- source_id: SRC-TENCENT-DAILY-001
-  source_type: direct_api
-  title: Tencent Finance direct HTTP (web.ifzq.gtimg.cn)
-  publisher: Tencent Finance direct HTTP (web.ifzq.gtimg.cn)
-  date: '2026-06-19'
-  url: ''
-  path: investment_system/data/raw/baostock/daily_kline/2026-06-19/
-  accessed_at: '2026-06-21'
-  reliability: 高
-  notes: 'legacy_excerpt: 覆盖8家公司，220交易日，数据截止2026-06-18 | fields: date,open,high,low,close,volume | 替代BaoStock日线；proxy-safe via curl'
-- source_id: SRC-BAO-PROFIT-001
-  source_type: database
-  title: BaoStock query_profit_data
-  publisher: BaoStock query_profit_data
-  date: '2026-06-19'
-  url: ''
-  path: investment_system/data/raw/baostock/profit/2026-06-19/
-  accessed_at: '2026-06-21'
-  reliability: 高
-  notes: 'legacy_excerpt: 字段: MBRevenue, netProfit, gpMargin, npMargin, epsTTM, totalShare | fields: revenue,net_profit,gross_margin,net_margin,epsTTM,totalShare
-    | BaoStock主财务数据源；收入字段仅年报/半年报有值'
-- source_id: SRC-HSOM-COMPANY-300308-20260619
-  source_type: curated_evidence_bundle
-  title: 中际旭创 legacy company evidence bundle
-  publisher: legacy evidence YAML
-  date: '2026-06-19'
-  url: ''
-  path: investment_system/data/raw/baostock/daily_kline/2026-06-19/300308.json; investment_system/data/raw/baostock/profit/2026-06-19/300308.json;
-    年报(巨潮); 同花顺机构预期
-  accessed_at: '2026-06-21'
-  reliability: 高
-  notes: 'Migrated from company_overrides.data_source. legacy_data_source: Tencent direct(行情); BaoStock(财务); 年报/研报(基本面); 同花顺一致预期. May bundle database,
-    annual report, broker report, and local cache references.'
-- source_id: SRC-HSOM-COMPANY-300502-20260619
-  source_type: curated_evidence_bundle
-  title: 新易盛 legacy company evidence bundle
-  publisher: legacy evidence YAML
-  date: '2026-06-19'
-  url: ''
-  path: investment_system/data/raw/baostock/daily_kline/2026-06-19/300502.json; investment_system/data/raw/baostock/profit/2026-06-19/300502.json;
-    年报(深交所/巨潮); 同花顺一致预期; 山西证券研报
-  accessed_at: '2026-06-21'
-  reliability: 高
-  notes: 'Migrated from company_overrides.data_source. legacy_data_source: Tencent direct(行情); BaoStock(财务); 年报(深交所/巨潮); 同花顺一致预期; 山西证券研报. May
-    bundle database, annual report, broker report, and local cache references.'
-- source_id: SRC-HSOM-COMPANY-300394-20260619
-  source_type: curated_evidence_bundle
-  title: 天孚通信 legacy company evidence bundle
-  publisher: legacy evidence YAML
-  date: '2026-06-19'
-  url: ''
-  path: investment_system/data/raw/baostock/daily_kline/2026-06-19/300394.json; investment_system/data/raw/baostock/profit/2026-06-19/300394.json;
-    年报(巨潮); 同花顺一致预期
-  accessed_at: '2026-06-21'
-  reliability: 高
-  notes: 'Migrated from company_overrides.data_source. legacy_data_source: Tencent direct(行情); BaoStock(财务); 年报(巨潮); 同花顺一致预期. May bundle database,
-    annual report, broker report, and local cache references.'
-- source_id: SRC-HSOM-COMPANY-603083-20260619
-  source_type: curated_evidence_bundle
-  title: 剑桥科技 legacy company evidence bundle
-  publisher: legacy evidence YAML
-  date: '2026-06-19'
-  url: ''
-  path: investment_system/data/raw/baostock/daily_kline/2026-06-19/603083.json; investment_system/data/raw/baostock/profit/2026-06-19/603083.json;
-    年报(巨潮); 国泰海通/光大证券研报
-  accessed_at: '2026-06-21'
-  reliability: 高
-  notes: 'Migrated from company_overrides.data_source. legacy_data_source: Tencent direct(行情); BaoStock(财务); 年报(巨潮); 国泰海通/光大证券研报. May bundle database,
-    annual report, broker report, and local cache references.'
-- source_id: SRC-HSOM-COMPANY-002281-20260619
-  source_type: curated_evidence_bundle
-  title: 光迅科技 legacy company evidence bundle
-  publisher: legacy evidence YAML
-  date: '2026-06-19'
-  url: ''
-  path: investment_system/data/raw/baostock/daily_kline/2026-06-19/002281.json; investment_system/data/raw/baostock/profit/2026-06-19/002281.json;
-    年报(巨潮); 国泰海通研报
-  accessed_at: '2026-06-21'
-  reliability: 高
-  notes: 'Migrated from company_overrides.data_source. legacy_data_source: Tencent direct(行情); BaoStock(财务); 年报(巨潮); 国泰海通研报. May bundle database,
-    annual report, broker report, and local cache references.'
-- source_id: SRC-HSOM-COMPANY-000988-20260619
-  source_type: curated_evidence_bundle
-  title: 华工科技 legacy company evidence bundle
-  publisher: legacy evidence YAML
-  date: '2026-06-19'
-  url: ''
-  path: investment_system/data/raw/baostock/daily_kline/2026-06-19/000988.json; investment_system/data/raw/baostock/profit/2026-06-19/000988.json;
-    年报(巨潮); 国海证券研报
-  accessed_at: '2026-06-21'
-  reliability: 高
-  notes: 'Migrated from company_overrides.data_source. legacy_data_source: Tencent direct(行情); BaoStock(财务); 年报(巨潮); 国海证券研报. May bundle database,
-    annual report, broker report, and local cache references.'
-- source_id: SRC-HSOM-COMPANY-300570-20260619
-  source_type: curated_evidence_bundle
-  title: 太辰光 legacy company evidence bundle
-  publisher: legacy evidence YAML
-  date: '2026-06-19'
-  url: ''
-  path: investment_system/data/raw/baostock/daily_kline/2026-06-19/300570.json; investment_system/data/raw/baostock/profit/2026-06-19/300570.json;
-    年报(深交所); 研报(华鑫/国金); 互动易
-  accessed_at: '2026-06-21'
-  reliability: 高
-  notes: 'Migrated from company_overrides.data_source. legacy_data_source: Tencent direct(行情); BaoStock(财务); 年报(深交所); 研报(华鑫/国金); 互动易. May bundle
-    database, annual report, broker report, and local cache references.'
-- source_id: SRC-HSOM-COMPANY-300548-20260619
-  source_type: curated_evidence_bundle
-  title: 博创科技 legacy company evidence bundle
-  publisher: legacy evidence YAML
-  date: '2026-06-19'
-  url: ''
-  path: investment_system/data/raw/baostock/daily_kline/2026-06-19/300548.json; investment_system/data/raw/baostock/profit/2026-06-19/300548.json;
-    年报(巨潮); 研报(东北/中信/华泰/国盛/大摩); 互动易
-  accessed_at: '2026-06-21'
-  reliability: 中高
-  notes: 'Migrated from company_overrides.data_source. legacy_data_source: Tencent direct(行情); BaoStock(财务); 年报(巨潮); 研报(东北/中信/华泰/国盛/大摩); 互动易.
-    May bundle database, annual report, broker report, and local cache references.'
-- source_id: SRC-HSOM-COMPARISON-20260619
-  source_type: curated_evidence_bundle
-  title: 光模块/CPO/硅光 legacy sector comparison evidence bundle
-  publisher: legacy evidence YAML
-  date: '2026-06-19'
-  url: ''
-  path: investment_system/research/evidence/high_speed_optical_modules.yaml
-  accessed_at: '2026-06-21'
-  reliability: 中
-  notes: Migrated from comparison_override; original source_index_refs retained in legacy field.
+  # ── Market Data Sources ───────────────────────────────────────────────────────
+  - source_id: BAO-DAILY-HSOM-20260619
+    source_type: market_data
+    title: BaoStock 日线行情数据采集 (8家高速光模块公司)
+    publisher: BaoStock
+    date: '2026-06-19'
+    url: ''
+    access_method: script_query
+    local_path: investment_system/data/raw/baostock/daily_kline/2026-06-19/
+    dataset_ref: baostock:history_k_data_plus
+    reliability_level: 高
+    notes: >
+      覆盖8家公司，220交易日，数据截止2026-06-18。
+      字段: date, open, high, low, close, volume, amount, turn, pctChg。
+      用于计算近1/3/6月涨幅和20日平均成交额。
+  - source_id: TENCENT-DAILY-HSOM-20260619
+    source_type: market_data
+    title: 腾讯财经直连 HTTP 行情数据 (web.ifzq.gtimg.cn)
+    publisher: Tencent Finance
+    date: '2026-06-19'
+    url: ''
+    access_method: direct_api
+    local_path: investment_system/data/raw/baostock/daily_kline/2026-06-19/
+    dataset_ref: tencent:finance_direct
+    reliability_level: 高
+    notes: >
+      覆盖8家公司，220交易日，数据截止2026-06-18。
+      字段: date, open, high, low, close, volume。
+      替代 BaoStock 日线；proxy-safe via curl。
+  - source_id: BAO-PROFIT-HSOM-20260619
+    source_type: financial_data
+    title: BaoStock 利润表财务数据采集 (8家高速光模块公司)
+    publisher: BaoStock
+    date: '2026-06-19'
+    url: ''
+    access_method: script_query
+    local_path: investment_system/data/raw/baostock/profit/2026-06-19/
+    dataset_ref: baostock:query_profit_data
+    reliability_level: 高
+    notes: >
+      字段: MBRevenue, netProfit, gpMargin, npMargin, epsTTM, totalShare。
+      BaoStock 主财务数据源；收入字段仅年报/半年报有值。
+
+  # ── Per-Stock Financial Data (Deduplicated) ──────────────────────────────────
+  - source_id: BAO-STOCK-300308-20260619
+    source_type: financial_data
+    title: BaoStock 中际旭创 财务+行情数据
+    publisher: BaoStock
+    date: '2026-06-19'
+    url: ''
+    access_method: script_query
+    local_path: investment_system/data/raw/baostock/
+    dataset_ref: baostock:query_profit_data+history_k_data_plus
+    reliability_level: 高
+    notes: >
+      revenue_2025=38.24亿, net_profit_2025=11.58亿。
+      字段: revenue, net_profit, gross_margin, net_margin, epsTTM, totalShare, close。
+      BaoStock primary data; Tencent fallback if BaoStock fails。
+      原重复ID合并: SRC-BAO-300308-20260619185911/190729/191111。
+  - source_id: BAO-STOCK-300502-20260619
+    source_type: financial_data
+    title: BaoStock 新易盛 财务+行情数据
+    publisher: BaoStock
+    date: '2026-06-19'
+    url: ''
+    access_method: script_query
+    local_path: investment_system/data/raw/baostock/
+    dataset_ref: baostock:query_profit_data+history_k_data_plus
+    reliability_level: 高
+    notes: >
+      revenue_2025=24.84亿, net_profit_2025=9.55亿。
+      字段: revenue, net_profit, gross_margin, net_margin, epsTTM, totalShare, close。
+      BaoStock primary data; Tencent fallback if BaoStock fails。
+      原重复ID合并: SRC-BAO-300502-20260619185911/190729/191111。
+  - source_id: BAO-STOCK-300394-20260619
+    source_type: financial_data
+    title: BaoStock 天孚通信 财务+行情数据
+    publisher: BaoStock
+    date: '2026-06-19'
+    url: ''
+    access_method: script_query
+    local_path: investment_system/data/raw/baostock/
+    dataset_ref: baostock:query_profit_data+history_k_data_plus
+    reliability_level: 高
+    notes: >
+      revenue_2025=5.16亿, net_profit_2025=2.02亿。
+      字段: revenue, net_profit, gross_margin, net_margin, epsTTM, totalShare, close。
+      BaoStock primary data; Tencent fallback if BaoStock fails。
+      原重复ID合并: SRC-BAO-300394-20260619185911/190729/191111。
+  - source_id: BAO-STOCK-603083-20260619
+    source_type: financial_data
+    title: BaoStock 剑桥科技 财务+行情数据
+    publisher: BaoStock
+    date: '2026-06-19'
+    url: ''
+    access_method: script_query
+    local_path: investment_system/data/raw/baostock/
+    dataset_ref: baostock:query_profit_data+history_k_data_plus
+    reliability_level: 高
+    notes: >
+      revenue_2025=4.82亿, net_profit_2025=2.23亿。
+      字段: revenue, net_profit, gross_margin, net_margin, epsTTM, totalShare, close。
+      BaoStock primary data; Tencent fallback if BaoStock fails。
+      原重复ID合并: SRC-BAO-603083-20260619185911/190729/191111。
+  - source_id: BAO-STOCK-002281-20260619
+    source_type: financial_data
+    title: BaoStock 光迅科技 财务+行情数据
+    publisher: BaoStock
+    date: '2026-06-19'
+    url: ''
+    access_method: script_query
+    local_path: investment_system/data/raw/baostock/
+    dataset_ref: baostock:query_profit_data+history_k_data_plus
+    reliability_level: 高
+    notes: >
+      revenue_2025=11.93亿, net_profit_2025=0.93亿。
+      字段: revenue, net_profit, gross_margin, net_margin, epsTTM, totalShare, close。
+      BaoStock primary data; Tencent fallback if BaoStock fails。
+      原重复ID合并: SRC-BAO-002281-20260619185911/190729/191111。
+  - source_id: BAO-STOCK-000988-20260619
+    source_type: financial_data
+    title: BaoStock 华工科技 财务+行情数据
+    publisher: BaoStock
+    date: '2026-06-19'
+    url: ''
+    access_method: script_query
+    local_path: investment_system/data/raw/baostock/
+    dataset_ref: baostock:query_profit_data+history_k_data_plus
+    reliability_level: 高
+    notes: >
+      revenue_2025=14.35亿, net_profit_2025=1.45亿。
+      字段: revenue, net_profit, gross_margin, net_margin, epsTTM, totalShare, close。
+      BaoStock primary data; Tencent fallback if BaoStock fails。
+      原重复ID合并: SRC-BAO-000988-20260619185911/190729/191111。
+  - source_id: BAO-STOCK-300570-20260619
+    source_type: financial_data
+    title: BaoStock 太辰光 财务+行情数据
+    publisher: BaoStock
+    date: '2026-06-19'
+    url: ''
+    access_method: script_query
+    local_path: investment_system/data/raw/baostock/
+    dataset_ref: baostock:query_profit_data+history_k_data_plus
+    reliability_level: 高
+    notes: >
+      revenue_2025=1.55亿, net_profit_2025=0.31亿。
+      字段: revenue, net_profit, gross_margin, net_margin, epsTTM, totalShare, close。
+      BaoStock primary data; Tencent fallback if BaoStock fails。
+      原重复ID合并: SRC-BAO-300570-20260619185911/190729/191111。
+  - source_id: BAO-STOCK-300548-20260619
+    source_type: financial_data
+    title: BaoStock 博创科技 财务+行情数据
+    publisher: BaoStock
+    date: '2026-06-19'
+    url: ''
+    access_method: script_query
+    local_path: investment_system/data/raw/baostock/
+    dataset_ref: baostock:query_profit_data+history_k_data_plus
+    reliability_level: 高
+    notes: >
+      revenue_2025=2.53亿, net_profit_2025=0.58亿。
+      字段: revenue, net_profit, gross_margin, net_margin, epsTTM, totalShare, close。
+      BaoStock primary data; Tencent fallback if BaoStock fails。
+      原重复ID合并: SRC-BAO-300548-20260619185911/190729/191111。
+
+  # ── Per-Company Curated Evidence Bundles ─────────────────────────────────────
+  - source_id: HSOM-BUNDLE-300308-20260619
+    source_type: legacy_migrated
+    title: 中际旭创 legacy company evidence bundle
+    publisher: legacy evidence YAML
+    date: '2026-06-19'
+    url: ''
+    access_method: yaml_migration
+    local_path: investment_system/research/evidence/high_speed_optical_modules.yaml
+    dataset_ref: ''
+    reliability_level: 高
+    notes: >
+      Migrated from company_overrides.data_source。
+      数据来源: Tencent direct(行情); BaoStock(财务); 年报/研报(基本面); 同花顺一致预期。
+      可能bundle数据库、年报、研报和本地缓存引用。
+  - source_id: HSOM-BUNDLE-300502-20260619
+    source_type: legacy_migrated
+    title: 新易盛 legacy company evidence bundle
+    publisher: legacy evidence YAML
+    date: '2026-06-19'
+    url: ''
+    access_method: yaml_migration
+    local_path: investment_system/research/evidence/high_speed_optical_modules.yaml
+    dataset_ref: ''
+    reliability_level: 高
+    notes: >
+      Migrated from company_overrides.data_source。
+      数据来源: Tencent direct(行情); BaoStock(财务); 年报(深交所/巨潮); 同花顺一致预期; 山西证券研报。
+      可能bundle数据库、年报、研报和本地缓存引用。
+  - source_id: HSOM-BUNDLE-300394-20260619
+    source_type: legacy_migrated
+    title: 天孚通信 legacy company evidence bundle
+    publisher: legacy evidence YAML
+    date: '2026-06-19'
+    url: ''
+    access_method: yaml_migration
+    local_path: investment_system/research/evidence/high_speed_optical_modules.yaml
+    dataset_ref: ''
+    reliability_level: 高
+    notes: >
+      Migrated from company_overrides.data_source。
+      数据来源: Tencent direct(行情); BaoStock(财务); 年报(巨潮); 同花顺一致预期。
+      可能bundle数据库、年报、研报和本地缓存引用。
+  - source_id: HSOM-BUNDLE-603083-20260619
+    source_type: legacy_migrated
+    title: 剑桥科技 legacy company evidence bundle
+    publisher: legacy evidence YAML
+    date: '2026-06-19'
+    url: ''
+    access_method: yaml_migration
+    local_path: investment_system/research/evidence/high_speed_optical_modules.yaml
+    dataset_ref: ''
+    reliability_level: 高
+    notes: >
+      Migrated from company_overrides.data_source。
+      数据来源: Tencent direct(行情); BaoStock(财务); 年报(巨潮); 国泰海通/光大证券研报。
+      可能bundle数据库、年报、研报和本地缓存引用。
+  - source_id: HSOM-BUNDLE-002281-20260619
+    source_type: legacy_migrated
+    title: 光迅科技 legacy company evidence bundle
+    publisher: legacy evidence YAML
+    date: '2026-06-19'
+    url: ''
+    access_method: yaml_migration
+    local_path: investment_system/research/evidence/high_speed_optical_modules.yaml
+    dataset_ref: ''
+    reliability_level: 高
+    notes: >
+      Migrated from company_overrides.data_source。
+      数据来源: Tencent direct(行情); BaoStock(财务); 年报(巨潮); 国泰海通研报。
+      可能bundle数据库、年报、研报和本地缓存引用。
+  - source_id: HSOM-BUNDLE-000988-20260619
+    source_type: legacy_migrated
+    title: 华工科技 legacy company evidence bundle
+    publisher: legacy evidence YAML
+    date: '2026-06-19'
+    url: ''
+    access_method: yaml_migration
+    local_path: investment_system/research/evidence/high_speed_optical_modules.yaml
+    dataset_ref: ''
+    reliability_level: 高
+    notes: >
+      Migrated from company_overrides.data_source。
+      数据来源: Tencent direct(行情); BaoStock(财务); 年报(巨潮); 国海证券研报。
+      可能bundle数据库、年报、研报和本地缓存引用。
+  - source_id: HSOM-BUNDLE-300570-20260619
+    source_type: legacy_migrated
+    title: 太辰光 legacy company evidence bundle
+    publisher: legacy evidence YAML
+    date: '2026-06-19'
+    url: ''
+    access_method: yaml_migration
+    local_path: investment_system/research/evidence/high_speed_optical_modules.yaml
+    dataset_ref: ''
+    reliability_level: 高
+    notes: >
+      Migrated from company_overrides.data_source。
+      数据来源: Tencent direct(行情); BaoStock(财务); 年报(深交所); 研报(华鑫/国金); 互动易。
+      可能bundle数据库、年报、研报和本地缓存引用。
+  - source_id: HSOM-BUNDLE-300548-20260619
+    source_type: legacy_migrated
+    title: 博创科技 legacy company evidence bundle
+    publisher: legacy evidence YAML
+    date: '2026-06-19'
+    url: ''
+    access_method: yaml_migration
+    local_path: investment_system/research/evidence/high_speed_optical_modules.yaml
+    dataset_ref: ''
+    reliability_level: 中高
+    notes: >
+      Migrated from company_overrides.data_source。
+      数据来源: Tencent direct(行情); BaoStock(财务); 年报(巨潮); 研报(东北/中信/华泰/国盛/大摩); 互动易。
+      可能bundle数据库、年报、研报和本地缓存引用。
+
+  # ── Sector Comparison Bundle ─────────────────────────────────────────────────
+  - source_id: HSOM-COMPARISON-20260619
+    source_type: legacy_migrated
+    title: 光模块/CPO/硅光 横向比较 evidence bundle
+    publisher: legacy evidence YAML
+    date: '2026-06-19'
+    url: ''
+    access_method: yaml_migration
+    local_path: investment_system/research/evidence/high_speed_optical_modules.yaml
+    dataset_ref: ''
+    reliability_level: 中
+    notes: >
+      Migrated from comparison_override; original source_index_refs retained in legacy field。
+
+  # ── Diagnostic / Error Records (for audit trail) ────────────────────────────
+  - source_id: AKSHARE-ERR-001-20260619
+    source_type: diagnostic_error
+    title: AKShare stock_zh_a_hist 采集失败记录
+    publisher: AKShare
+    date: '2026-06-19'
+    url: ''
+    access_method: script_query
+    local_path: investment_system/data/raw/diagnostics/2026-06-19/data_sources_runtime.json
+    dataset_ref: akshare:stock_zh_a_hist
+    reliability_level: 高
+    notes: >
+      ProxyError/RemoteDisconnected; 禁用代理后仍 RemoteDisconnected。
+      endpoint=push2his.eastmoney.com。
+      记录为诊断信息，不作为事实来源。
+  - source_id: LEGACY-DISABLED-001-20260619
+    source_type: diagnostic_disabled
+    title: Legacy 已禁用接口记录
+    publisher: Legacy
+    date: '2026-06-19'
+    url: ''
+    access_method: legacy_migration
+    local_path: investment_system/data/raw/diagnostics/legacy_disabled/
+    dataset_ref: ''
+    reliability_level: 高
+    notes: >
+      历史接口记录已移除，不作为本项目事实来源。
+      当前统一数据源使用 BaoStock、Tencent direct、AKShare、Tushare、公告和公开可验证来源。
+      此条目仅作审计追踪，不被任何 evidence_item 引用。
+
+  # ── Cross-Reference to optical_components Evidence (for shared CNINFO data) ────
+  - source_id: OCFP-CNINFO-SHARED-20260619
+    source_type: cross_reference
+    title: 光器件年报证据引用 (与 optical_components_fau_precision_optics.yaml 共享)
+    publisher: CNINFO
+    date: '2026-06-19'
+    url: ''
+    access_method: cross_file_reference
+    local_path: investment_system/research/evidence/optical_components_fau_precision_optics.yaml
+    dataset_ref: ''
+    reliability_level: 中高
+    notes: >
+      天孚通信、太辰光同时出现在高速光模块和光器件两个 evidence 文件中。
+      共享 CNINFO 年报数据来源。实际来源记录在 optical_components_fau_precision_optics.yaml 的 source_index。
+      此条目仅作为跨文件引用说明。
+
 evidence_items:
-- evidence_id: EV-HSOM-COMPANY-300308-001
-  source_id: SRC-HSOM-COMPANY-300308-20260619
-  project_id: tech_ai_semiconductor
-  sector_id: cpo_optical_module_silicon_photonics
-  subject_type: company
-  subject_id: 300308.SZ
-  subject_name: 中际旭创
-  claim: '业务暴露: 光通信收发模块占97.95%（含800G/1.6T）；境外收入346.37亿占90.58%；前5大客户占75.98%（含英伟达/谷歌/Meta/MS/亚马逊）；客户/订单: 800G全球市占率>40%，1.6T市占率50-70%全球第一；前5大客户占75.98%，第一大客户24.06%；1.6T季度出货量环比提升；已锁定2026全年订单；产能进展:
-    1.6T季度环比出货提升；3.2T产能准备中；部分原材料供给偏紧张；产品阶段: 已量产800G/1.6T；3.2T产能准备中；预测变化: 2026E净利润289.70亿（29家均值）；2027E 506亿；开源预测2028E 750亿；高盛目标价1187元；催化剂: CSP资本开支2026预计+53%；800G规模化放量；1.6T量产出货；工信部《AI+通信》政策；深圳推动光模块向1.6T/3.2T升级；LightCounting预测1.6T
-    2027年需求7100万只；风险: 涨幅较大（近6月+148%，PE TTM 101x）；两头在外（汇率/关税风险）；客户集中度高；CPO/LPO路线竞争'
-  evidence_type: legacy_company_override_bundle
-  metrics_supported:
-  - revenue_2026E
-  - revenue_2027E
-  - net_profit_2026E
-  - net_profit_2027E
-  - pe_2026E
-  - pe_2027E
-  - peg_2026E
-  - main_theme_revenue_exposure
-  - order_or_customer_evidence
-  - capacity_progress
-  - product_stage
-  - institution_forecast_change
-  - catalysts
-  - risks
-  time_scope: '2026-06-19'
-  confidence: 高
-  used_for: &id001
-  - sector_card
-  - company_table
-  - source_index
-  - missing_data_log
-  - scoring_reason
-  not_allowed_for: &id002
-  - investment_conclusion
-  - position_sizing
-  - final_rating
-  notes: Canonical evidence item generated from legacy company_overrides; original field-level values are retained unchanged.
-- evidence_id: EV-HSOM-COMPANY-300502-001
-  source_id: SRC-HSOM-COMPANY-300502-20260619
-  project_id: tech_ai_semiconductor
-  sector_id: cpo_optical_module_silicon_photonics
-  subject_type: company
-  subject_id: 300502.SZ
-  subject_name: 新易盛
-  claim: '业务暴露: 光互联产品占99.72%（含800G/1.6T）；境外收入238.72亿占96.16%；前5大客户占72.34%，第一大22.97%；800G全球市占25-30%；客户/订单: 全球少数具备800G以上规模化量产和交付能力的公司之一；全球首批1.6T量产交付；ROE
-    72.66%；1.6T良率95%+，毛利率50%+；产能进展: 800G硅光+薄膜铌酸锂双路线；1.6T已量产；泰国工厂二期高效运行；LPO/XPO/NPO/CPO全布局；产品阶段: 已量产800G/1.6T；全球首批量产1.6T；预测变化: 2026E净利润189.14亿（19家均值）；2027E
-    299.47亿；山西证券预测2026E 212亿/2027E 405亿；高盛看好环比增长；山西证券目标价对应PE 32.8x(2026E)；催化剂: CSP资本开支2026预计+53%；新易盛1.6T量产；800G市占率提升；工信部/深圳政策加持；供应链物料紧张Q2起逐渐缓解；CSP远期锁定2027年订单；风险:
-    PE 42x(2026E)相对合理但近1月+44%加速涌入；客户集中度极高（前5大72.34%）；汇兑损失风险（2026Q1 5.22亿）；两端在外汇率风险'
-  evidence_type: legacy_company_override_bundle
-  metrics_supported:
-  - revenue_2026E
-  - revenue_2027E
-  - net_profit_2026E
-  - net_profit_2027E
-  - pe_2026E
-  - pe_2027E
-  - peg_2026E
-  - main_theme_revenue_exposure
-  - order_or_customer_evidence
-  - capacity_progress
-  - product_stage
-  - institution_forecast_change
-  - catalysts
-  - risks
-  time_scope: '2026-06-19'
-  confidence: 高
-  used_for: *id001
-  not_allowed_for: *id002
-  notes: Canonical evidence item generated from legacy company_overrides; original field-level values are retained unchanged.
-- evidence_id: EV-HSOM-COMPANY-300394-001
-  source_id: SRC-HSOM-COMPANY-300394-20260619
-  project_id: tech_ai_semiconductor
-  sector_id: cpo_optical_module_silicon_photonics
-  subject_type: company
-  subject_id: 300394.SZ
-  subject_name: 天孚通信
-  claim: '业务暴露: 光通信元器件100%；境外收入74.35%；前5大客户占89.73%（Fabrinet FN为第一大客户占63.31%）；客户/订单: Fabrinet为全球顶级光器件代工厂；前5大客户89.73%；1.6T光引擎规模量产；CPO配套器件研发完成；泰国工厂二期已投产；产能进展:
-    1.6T光引擎规模量产；CPO配套器件研发完成；泰国工厂二期已投产；外销74.35%；产品阶段: 已量产1.6T光引擎；CPO配套；预测变化: 2026E净利润32.62亿（19家均值）；2027E 42.58亿；中信证券预测2026E 33.85亿；天风证券预测2026E
-    30.51亿；2026Q1 4.92亿同比+46%；催化剂: 工信部/深圳政策加持；1.6T规模量产；CPO器件国产替代；薄膜铌酸锂/磷化铟材料景气；数据中心网络升级带动需求；风险: PE 80x(2026E)偏高；客户集中度极高（Fabrinet占63.31%）；无源器件竞争激烈（2025年毛利率下滑3.67pct）；Q1毛利率56.6%环比+2.64pct改善'
-  evidence_type: legacy_company_override_bundle
-  metrics_supported:
-  - revenue_2026E
-  - revenue_2027E
-  - net_profit_2026E
-  - net_profit_2027E
-  - pe_2026E
-  - pe_2027E
-  - peg_2026E
-  - main_theme_revenue_exposure
-  - order_or_customer_evidence
-  - capacity_progress
-  - product_stage
-  - institution_forecast_change
-  - catalysts
-  - risks
-  time_scope: '2026-06-19'
-  confidence: 高
-  used_for: *id001
-  not_allowed_for: *id002
-  notes: Canonical evidence item generated from legacy company_overrides; original field-level values are retained unchanged.
-- evidence_id: EV-HSOM-COMPANY-603083-001
-  source_id: SRC-HSOM-COMPANY-603083-20260619
-  project_id: tech_ai_semiconductor
-  sector_id: cpo_optical_module_silicon_photonics
-  subject_type: company
-  subject_id: 603083.SH
-  subject_name: 剑桥科技
-  claim: '业务暴露: 高速光模块为核心；800G硅光已批量发货；1.6T送样中；马来西亚产能通过大客户认证；H股已上市（港交所主板）；客户/订单: 高速光模块为核心引擎；800G硅光批量发货；1.6T送样中；马来西亚工厂通过大客户认证；绑定上游光芯片供应商；产能进展: 马来西亚工厂通过北美大客户认证扩产顺利；1.6T量产节奏视客户认证进度；H股已上市；产品阶段:
-    已量产800G硅光；1.6T送样中；预测变化: 2026E净利润17.72亿（国泰海通）；光大预测2026E 20.72亿；股权激励考核线2026E 3.35亿；2026Q1 1.18亿同比+276%；催化剂: 800G规模化放量；1.6T量产进展；CSP资本开支+53%；工信部/深圳政策；马来西亚产能释放；风险:
-    PE 43x(2026E)看似便宜但净利润仅2.23亿体量小；1.6T尚未量产；股权激励行权价113.99元（现价214元高管有强动机）；汇兑风险'
-  evidence_type: legacy_company_override_bundle
-  metrics_supported:
-  - revenue_2026E
-  - revenue_2027E
-  - net_profit_2026E
-  - net_profit_2027E
-  - pe_2026E
-  - pe_2027E
-  - peg_2026E
-  - main_theme_revenue_exposure
-  - order_or_customer_evidence
-  - capacity_progress
-  - product_stage
-  - institution_forecast_change
-  - catalysts
-  - risks
-  time_scope: '2026-06-19'
-  confidence: 高
-  used_for: *id001
-  not_allowed_for: *id002
-  notes: Canonical evidence item generated from legacy company_overrides; original field-level values are retained unchanged.
-- evidence_id: EV-HSOM-COMPANY-002281-001
-  source_id: SRC-HSOM-COMPANY-002281-20260619
-  project_id: tech_ai_semiconductor
-  sector_id: cpo_optical_module_silicon_photonics
-  subject_type: company
-  subject_id: 002281.SZ
-  subject_name: 光迅科技
-  claim: '业务暴露: 数通光模块70.94%（含800G/1.6T）；国内头部CSP为核心；境外31.84亿（+36%）；前5大客户48.49%；客户/订单: 800G批量出货且占比提升；1.6T批量交付能力具备；3.2T硅光NPO国内头部CSP系统验证通过；合同负债10.95亿（预付款大幅增加）；产能进展:
-    1.6T批量交付能力具备（节奏视客户需求）；3.2T验证通过；定增扩产计划；预付款大幅增长反映供应链提前锁定；产品阶段: 已量产800G；1.6T批量交付能力具备；3.2T验证通过；预测变化: 2026E净利润15.88亿（6家均值）；国泰海通上调至18.70亿；2027E
-    37.77亿（国泰海通）；2026Q1 2.40亿同比+60%；催化剂: CSP资本开支+53%；1.6T订单放量关键节点；3.2T验证进展；国内算力中心建设；工信部/深圳政策；风险: PE 207x(TTM)/135x(2026E)极度高估；近6月+327%极度拥挤；3.2T尚未形成规模收入；1.6T放量节奏不确定'
-  evidence_type: legacy_company_override_bundle
-  metrics_supported:
-  - revenue_2026E
-  - revenue_2027E
-  - net_profit_2026E
-  - net_profit_2027E
-  - pe_2026E
-  - pe_2027E
-  - peg_2026E
-  - main_theme_revenue_exposure
-  - order_or_customer_evidence
-  - capacity_progress
-  - product_stage
-  - institution_forecast_change
-  - catalysts
-  - risks
-  time_scope: '2026-06-19'
-  confidence: 高
-  used_for: *id001
-  not_allowed_for: *id002
-  notes: Canonical evidence item generated from legacy company_overrides; original field-level values are retained unchanged.
-- evidence_id: EV-HSOM-COMPANY-000988-001
-  source_id: SRC-HSOM-COMPANY-000988-20260619
-  project_id: tech_ai_semiconductor
-  sector_id: cpo_optical_module_silicon_photonics
-  subject_type: company
-  subject_id: 000988.SZ
-  subject_name: 华工科技
-  claim: '业务暴露: 光联接业务60.97亿（占总收入42.48%，同比+53.39%）；目标5年AI相关营收占比60%；国内头部CSP为主；客户/订单: 800G硅光LPO+1.6T全球第一梯队规模化交付；3.2T NPO/CPO首发；国内头部CSP+设备商；目标5年AI相关收入>60%；H股已上市；产能进展:
-    泰国海外光模块基地竣工投产；武汉光电子信息产业园竣工；1.6T订单排产至2026Q4；H股发行上市推进中（已上市）；产品阶段: 已量产800G硅光LPO+1.6T；3.2T NPO/CPO首发；预测变化: 2025年实际低于Wind一致预期：营收低于预期12.65%，净利润低于预期19.78%；国海证券预测2026E/2027E
-    PE 53x/39x；目标5年AI相关收入占比60%；催化剂: CSP资本开支+53%；1.6T持续放量；2026中报验证；H股上市；工信部/深圳政策；3.2T迭代；风险: PE 53x(2026E)相对合理但近6月+145%偏高；光联接占42%而非100%（有其他业务）；实际低于机构预期12-20%；目标AI相关收入占比60%尚未实现'
-  evidence_type: legacy_company_override_bundle
-  metrics_supported:
-  - revenue_2026E
-  - revenue_2027E
-  - net_profit_2026E
-  - net_profit_2027E
-  - pe_2026E
-  - pe_2027E
-  - peg_2026E
-  - main_theme_revenue_exposure
-  - order_or_customer_evidence
-  - capacity_progress
-  - product_stage
-  - institution_forecast_change
-  - catalysts
-  - risks
-  time_scope: '2026-06-19'
-  confidence: 高
-  used_for: *id001
-  not_allowed_for: *id002
-  notes: Canonical evidence item generated from legacy company_overrides; original field-level values are retained unchanged.
-- evidence_id: EV-HSOM-COMPANY-300570-001
-  source_id: SRC-HSOM-COMPANY-300570-20260619
-  project_id: tech_ai_semiconductor
-  sector_id: cpo_optical_module_silicon_photonics
-  subject_type: company
-  subject_id: 300570.SZ
-  subject_name: 太辰光
-  claim: '业务暴露: 光连接器件为主；MPO等高密度光互联产品数据中心市场份额领先；境外收入占主要比例；通过康宁间接供应英伟达/微软/谷歌/亚马逊；自供谷歌Shuffle Box小批量；客户/订单: MPO全球核心玩家；通过康宁(占收入70%)间接供应英伟达/微软/谷歌/亚马逊；Shuffle
-    Box小批量供谷歌；CPO交换机光纤路由柔性板已完成头部客户验证；越南产能爬坡至80%设计产能；产能进展: 产能稳定；越南基地产能爬坡中；CPO交换机核心器件已头部客户验证；自产MT插芯规模化替代；产品阶段: 数据中心MPO高密度互联产品；Shuffle Box小批量供谷歌；预测变化:
-    2026E净利润6.17亿（华鑫/国金预测）；国金预测2026E 6.17亿；华鑫预测2027E 4.32亿；Q1 0.66亿同比-17%⚠️；催化剂: 数据中心互联需求增长；MPO/光纤连接器景气；光模块放量带动上游需求；康宁扩产10倍（太辰光是其MPO最高份额供应商）；风险:
-    ⚠️ Q1净利润-17%（唯一负增长标的）；PE 213x(TTM)/101x(2026E)极度高估；营收增速仅12%（低于板块平均）；规模体量小；PE透支未来3-4年'
-  evidence_type: legacy_company_override_bundle
-  metrics_supported:
-  - revenue_2026E
-  - revenue_2027E
-  - net_profit_2026E
-  - net_profit_2027E
-  - pe_2026E
-  - pe_2027E
-  - peg_2026E
-  - main_theme_revenue_exposure
-  - order_or_customer_evidence
-  - capacity_progress
-  - product_stage
-  - institution_forecast_change
-  - catalysts
-  - risks
-  time_scope: '2026-06-19'
-  confidence: 高
-  used_for: *id001
-  not_allowed_for: *id002
-  notes: Canonical evidence item generated from legacy company_overrides; original field-level values are retained unchanged.
-- evidence_id: EV-HSOM-COMPANY-300548-001
-  source_id: SRC-HSOM-COMPANY-300548-20260619
-  project_id: tech_ai_semiconductor
-  sector_id: cpo_optical_module_silicon_photonics
-  subject_type: company
-  subject_id: 300548.SZ
-  subject_name: 博创科技
-  claim: '业务暴露: 数据通信+消费工业互联业务10.74亿（+87.75%，含400G/800G数通+高速铜缆）；境外59.44%；长芯盛(控股60.45%)为谷歌MPO核心供应商(占谷歌采购30%+)；客户/订单: 长芯盛为谷歌MPO连接器核心供应商（占谷歌全球采购30%+）；谷歌AOC/MPO等光互联部件；长芯盛通过谷歌认证；800G
-    AEC通过英伟达GB200认证；博创主体400G/800G数通+高速DAC/AEC小批量；产能进展: 长芯盛成都蓉博工厂2025年6月投产（光模块产能）；印尼三期扩产中；MEMS光开关市场推广；OCS布局；产品阶段: 400G/800G数通光模块小批量；高速DAC/AEC批量；预测变化:
-    2026E净利润8.03亿（2家均值）；东北证券预测2026E 10.94亿；5家机构预测2026E均值7亿；2027E 20.41亿（东北）；Q1 1.30亿同比+45%；催化剂: 800G规模化放量；高速铜缆需求；OCS布局；CSP资本开支+53%；长芯盛谷歌MPO逐季放量（25年十亿级体量）；CPO交换机配套需求；风险:
-    PE 219x(TTM)/102x(2026E)极度高估；Q1增速+45%低于全年目标；净利润体量小(3.35亿)；长芯盛故事强但短期PE透支'
-  evidence_type: legacy_company_override_bundle
-  metrics_supported:
-  - revenue_2026E
-  - revenue_2027E
-  - net_profit_2026E
-  - net_profit_2027E
-  - pe_2026E
-  - pe_2027E
-  - peg_2026E
-  - main_theme_revenue_exposure
-  - order_or_customer_evidence
-  - capacity_progress
-  - product_stage
-  - institution_forecast_change
-  - catalysts
-  - risks
-  time_scope: '2026-06-19'
-  confidence: 中高
-  used_for: *id001
-  not_allowed_for: *id002
-  notes: Canonical evidence item generated from legacy company_overrides; original field-level values are retained unchanged.
-- evidence_id: EV-HSOM-SECTOR-COMPARISON-001
-  source_id: SRC-HSOM-COMPARISON-20260619
-  project_id: tech_ai_semiconductor
-  sector_id: cpo_optical_module_silicon_photonics
-  subject_type: sector
-  subject_id: cpo_optical_module_silicon_photonics
-  subject_name: 光模块/CPO/硅光
-  claim: 全部8家公司2025年净利润增速40-365%，Q1继续验证。中际旭创800G全球市占>40%、1.6T 50-70%全球第一；新易盛全球首批1.6T量产+ROE72%；天孚通信1.6T光引擎规模量产+CPO配套；光迅3.2T国内头部CSP验证通过；华工800G+1.6T规模化交付+订单排产至2026Q4；工信部/深圳政策催化。
-  evidence_type: legacy_sector_comparison_bundle
-  metrics_supported:
-  - main_theme
-  - sub_theme
-  - chain_position
-  - industry_logic_summary
-  - representative_companies
-  - performance_stage_score
-  - industry_prosperity_score
-  - upside_score
-  - bubble_safety_score
-  - fund_recognition_score
-  - catalyst_score
-  - total_score
-  - recommended_next_action
-  - key_evidence
-  - key_risks
-  - missing_data
-  - source_index_refs
-  time_scope: '2026-06-19'
-  confidence: 中
-  used_for:
-  - sector_card
-  - comparison_table
-  - source_index
-  - missing_data_log
-  - scoring_reason
-  not_allowed_for: *id002
-  notes: Canonical evidence item generated from legacy comparison_override; scoring/rating fields remain legacy-only until output schema alignment.
+  # ── Per-Company Evidence Items ──────────────────────────────────────────────
+  - evidence_id: EV-HSOM-COMPANY-300308-001
+    source_ids:
+      - HSOM-BUNDLE-300308-20260619
+      - BAO-STOCK-300308-20260619
+    source_id: HSOM-BUNDLE-300308-20260619
+    project_id: tech_ai_semiconductor
+    sector_id: cpo_optical_module_silicon_photonics
+    subject_type: company
+    subject_id: 300308.SZ
+    subject_name: 中际旭创
+    claim: >
+      业务暴露: 光通信收发模块占97.95%（含800G/1.6T）；境外收入346.37亿占90.58%；前5大客户占75.98%（含英伟达/谷歌/Meta/MS/亚马逊）。
+      客户/订单: 800G全球市占率>40%，1.6T市占率50-70%全球第一；前5大客户占75.98%，第一大客户24.06%；1.6T季度出货量环比提升；已锁定2026全年订单。
+      产能进展: 1.6T季度环比出货提升；3.2T产能准备中；部分原材料供给偏紧张。
+      产品阶段: 已量产800G/1.6T；3.2T产能准备中。
+      预测变化: 2026E净利润289.70亿（29家均值）；2027E 506亿；开源预测2028E 750亿；高盛目标价1187元。
+      催化剂: CSP资本开支2026预计+53%；800G规模化放量；1.6T量产出货；工信部《AI+通信》政策；深圳推动光模块向1.6T/3.2T升级；LightCounting预测1.6T 2027年需求7100万只。
+      风险: 涨幅较大（近6月+148%，PE TTM 101x）；两头在外（汇率/关税风险）；客户集中度高；CPO/LPO路线竞争。
+    evidence_type: legacy_company_override_bundle
+    metrics_supported:
+      - revenue_2026E
+      - revenue_2027E
+      - net_profit_2026E
+      - net_profit_2027E
+      - pe_2026E
+      - pe_2027E
+      - peg_2026E
+      - main_theme_revenue_exposure
+      - order_or_customer_evidence
+      - capacity_progress
+      - product_stage
+      - institution_forecast_change
+      - catalysts
+      - risks
+    time_scope: '2026-06-19'
+    confidence: 高
+    used_for:
+      - sector_card
+      - company_table
+      - source_index
+      - missing_data_log
+      - scoring_reason
+    not_allowed_for:
+      - investment_conclusion
+      - position_sizing
+      - final_rating
+    notes: Canonical evidence item generated from legacy company_overrides; original field-level values are retained unchanged.
+
+  - evidence_id: EV-HSOM-COMPANY-300502-001
+    source_ids:
+      - HSOM-BUNDLE-300502-20260619
+      - BAO-STOCK-300502-20260619
+    source_id: HSOM-BUNDLE-300502-20260619
+    project_id: tech_ai_semiconductor
+    sector_id: cpo_optical_module_silicon_photonics
+    subject_type: company
+    subject_id: 300502.SZ
+    subject_name: 新易盛
+    claim: >
+      业务暴露: 光互联产品占99.72%（含800G/1.6T）；境外收入238.72亿占96.16%；前5大客户占72.34%，第一大22.97%；800G全球市占25-30%。
+      客户/订单: 全球少数具备800G以上规模化量产和交付能力的公司之一；全球首批1.6T量产交付；ROE 72.66%；1.6T良率95%+，毛利率50%+。
+      产能进展: 800G硅光+薄膜铌酸锂双路线；1.6T已量产；泰国工厂二期高效运行；LPO/XPO/NPO/CPO全布局。
+      产品阶段: 已量产800G/1.6T；全球首批量产1.6T。
+      预测变化: 2026E净利润189.14亿（19家均值）；2027E 299.47亿；山西证券预测2026E 212亿/2027E 405亿；高盛看好环比增长；山西证券目标价对应PE 32.8x(2026E)。
+      催化剂: CSP资本开支2026预计+53%；新易盛1.6T量产；800G市占率提升；工信部/深圳政策加持；供应链物料紧张Q2起逐渐缓解；CSP远期锁定2027年订单。
+      风险: PE 42x(2026E)相对合理但近1月+44%加速涌入；客户集中度极高（前5大72.34%）；汇兑损失风险（2026Q1 5.22亿）；两端在外汇率风险。
+    evidence_type: legacy_company_override_bundle
+    metrics_supported:
+      - revenue_2026E
+      - revenue_2027E
+      - net_profit_2026E
+      - net_profit_2027E
+      - pe_2026E
+      - pe_2027E
+      - peg_2026E
+      - main_theme_revenue_exposure
+      - order_or_customer_evidence
+      - capacity_progress
+      - product_stage
+      - institution_forecast_change
+      - catalysts
+      - risks
+    time_scope: '2026-06-19'
+    confidence: 高
+    used_for:
+      - sector_card
+      - company_table
+      - source_index
+      - missing_data_log
+      - scoring_reason
+    not_allowed_for:
+      - investment_conclusion
+      - position_sizing
+      - final_rating
+    notes: Canonical evidence item generated from legacy company_overrides; original field-level values are retained unchanged.
+
+  - evidence_id: EV-HSOM-COMPANY-300394-001
+    source_ids:
+      - HSOM-BUNDLE-300394-20260619
+      - BAO-STOCK-300394-20260619
+    source_id: HSOM-BUNDLE-300394-20260619
+    project_id: tech_ai_semiconductor
+    sector_id: cpo_optical_module_silicon_photonics
+    subject_type: company
+    subject_id: 300394.SZ
+    subject_name: 天孚通信
+    claim: >
+      业务暴露: 光通信元器件100%；境外收入74.35%；前5大客户占89.73%（Fabrinet FN为第一大客户占63.31%）。
+      客户/订单: Fabrinet为全球顶级光器件代工厂；前5大客户89.73%；1.6T光引擎规模量产；CPO配套器件研发完成；泰国工厂二期已投产。
+      产能进展: 1.6T光引擎规模量产；CPO配套器件研发完成；泰国工厂二期已投产；外销74.35%。
+      产品阶段: 已量产1.6T光引擎；CPO配套。
+      预测变化: 2026E净利润32.62亿（19家均值）；2027E 42.58亿；中信证券预测2026E 33.85亿；天风证券预测2026E 30.51亿；2026Q1 4.92亿同比+46%。
+      催化剂: 工信部/深圳政策加持；1.6T规模量产；CPO器件国产替代；薄膜铌酸锂/磷化铟材料景气；数据中心网络升级带动需求。
+      风险: PE 80x(2026E)偏高；客户集中度极高（Fabrinet占63.31%）；无源器件竞争激烈（2025年毛利率下滑3.67pct）；Q1毛利率56.6%环比+2.64pct改善。
+    evidence_type: legacy_company_override_bundle
+    metrics_supported:
+      - revenue_2026E
+      - revenue_2027E
+      - net_profit_2026E
+      - net_profit_2027E
+      - pe_2026E
+      - pe_2027E
+      - peg_2026E
+      - main_theme_revenue_exposure
+      - order_or_customer_evidence
+      - capacity_progress
+      - product_stage
+      - institution_forecast_change
+      - catalysts
+      - risks
+    time_scope: '2026-06-19'
+    confidence: 高
+    used_for:
+      - sector_card
+      - company_table
+      - source_index
+      - missing_data_log
+      - scoring_reason
+    not_allowed_for:
+      - investment_conclusion
+      - position_sizing
+      - final_rating
+    notes: Canonical evidence item generated from legacy company_overrides; original field-level values are retained unchanged.
+
+  - evidence_id: EV-HSOM-COMPANY-603083-001
+    source_ids:
+      - HSOM-BUNDLE-603083-20260619
+      - BAO-STOCK-603083-20260619
+    source_id: HSOM-BUNDLE-603083-20260619
+    project_id: tech_ai_semiconductor
+    sector_id: cpo_optical_module_silicon_photonics
+    subject_type: company
+    subject_id: 603083.SH
+    subject_name: 剑桥科技
+    claim: >
+      业务暴露: 高速光模块为核心；800G硅光已批量发货；1.6T送样中；马来西亚产能通过大客户认证；H股已上市（港交所主板）。
+      客户/订单: 高速光模块为核心引擎；800G硅光批量发货；1.6T送样中；马来西亚工厂通过大客户认证；绑定上游光芯片供应商。
+      产能进展: 马来西亚工厂通过北美大客户认证扩产顺利；1.6T量产节奏视客户认证进度；H股已上市。
+      产品阶段: 已量产800G硅光；1.6T送样中。
+      预测变化: 2026E净利润17.72亿（国泰海通）；光大预测2026E 20.72亿；股权激励考核线2026E 3.35亿；2026Q1 1.18亿同比+276%。
+      催化剂: 800G规模化放量；1.6T量产进展；CSP资本开支+53%；工信部/深圳政策；马来西亚产能释放。
+      风险: PE 43x(2026E)看似便宜但净利润仅2.23亿体量小；1.6T尚未量产；股权激励行权价113.99元（现价214元高管有强动机）；汇兑风险。
+    evidence_type: legacy_company_override_bundle
+    metrics_supported:
+      - revenue_2026E
+      - revenue_2027E
+      - net_profit_2026E
+      - net_profit_2027E
+      - pe_2026E
+      - pe_2027E
+      - peg_2026E
+      - main_theme_revenue_exposure
+      - order_or_customer_evidence
+      - capacity_progress
+      - product_stage
+      - institution_forecast_change
+      - catalysts
+      - risks
+    time_scope: '2026-06-19'
+    confidence: 高
+    used_for:
+      - sector_card
+      - company_table
+      - source_index
+      - missing_data_log
+      - scoring_reason
+    not_allowed_for:
+      - investment_conclusion
+      - position_sizing
+      - final_rating
+    notes: Canonical evidence item generated from legacy company_overrides; original field-level values are retained unchanged.
+
+  - evidence_id: EV-HSOM-COMPANY-002281-001
+    source_ids:
+      - HSOM-BUNDLE-002281-20260619
+      - BAO-STOCK-002281-20260619
+    source_id: HSOM-BUNDLE-002281-20260619
+    project_id: tech_ai_semiconductor
+    sector_id: cpo_optical_module_silicon_photonics
+    subject_type: company
+    subject_id: 002281.SZ
+    subject_name: 光迅科技
+    claim: >
+      业务暴露: 数通光模块70.94%（含800G/1.6T）；国内头部CSP为核心；境外31.84亿（+36%）；前5大客户48.49%。
+      客户/订单: 800G批量出货且占比提升；1.6T批量交付能力具备；3.2T硅光NPO国内头部CSP系统验证通过；合同负债10.95亿（预付款大幅增加）。
+      产能进展: 1.6T批量交付能力具备（节奏视客户需求）；3.2T验证通过；定增扩产计划；预付款大幅增长反映供应链提前锁定。
+      产品阶段: 已量产800G；1.6T批量交付能力具备；3.2T验证通过。
+      预测变化: 2026E净利润15.88亿（6家均值）；国泰海通上调至18.70亿；2027E 37.77亿（国泰海通）；2026Q1 2.40亿同比+60%。
+      催化剂: CSP资本开支+53%；1.6T订单放量关键节点；3.2T验证进展；国内算力中心建设；工信部/深圳政策。
+      风险: PE 207x(TTM)/135x(2026E)极度高估；近6月+327%极度拥挤；3.2T尚未形成规模收入；1.6T放量节奏不确定。
+    evidence_type: legacy_company_override_bundle
+    metrics_supported:
+      - revenue_2026E
+      - revenue_2027E
+      - net_profit_2026E
+      - net_profit_2027E
+      - pe_2026E
+      - pe_2027E
+      - peg_2026E
+      - main_theme_revenue_exposure
+      - order_or_customer_evidence
+      - capacity_progress
+      - product_stage
+      - institution_forecast_change
+      - catalysts
+      - risks
+    time_scope: '2026-06-19'
+    confidence: 高
+    used_for:
+      - sector_card
+      - company_table
+      - source_index
+      - missing_data_log
+      - scoring_reason
+    not_allowed_for:
+      - investment_conclusion
+      - position_sizing
+      - final_rating
+    notes: Canonical evidence item generated from legacy company_overrides; original field-level values are retained unchanged.
+
+  - evidence_id: EV-HSOM-COMPANY-000988-001
+    source_ids:
+      - HSOM-BUNDLE-000988-20260619
+      - BAO-STOCK-000988-20260619
+    source_id: HSOM-BUNDLE-000988-20260619
+    project_id: tech_ai_semiconductor
+    sector_id: cpo_optical_module_silicon_photonics
+    subject_type: company
+    subject_id: 000988.SZ
+    subject_name: 华工科技
+    claim: >
+      业务暴露: 光联接业务60.97亿（占总收入42.48%，同比+53.39%）；目标5年AI相关营收占比60%；国内头部CSP为主。
+      客户/订单: 800G硅光LPO+1.6T全球第一梯队规模化交付；3.2T NPO/CPO首发；国内头部CSP+设备商；目标5年AI相关收入>60%；H股已上市。
+      产能进展: 泰国海外光模块基地竣工投产；武汉光电子信息产业园竣工；1.6T订单排产至2026Q4；H股发行上市推进中（已上市）。
+      产品阶段: 已量产800G硅光LPO+1.6T；3.2T NPO/CPO首发。
+      预测变化: 2025年实际低于Wind一致预期：营收低于预期12.65%，净利润低于预期19.78%；国海证券预测2026E/2027E PE 53x/39x；目标5年AI相关收入占比60%。
+      催化剂: CSP资本开支+53%；1.6T持续放量；2026中报验证；H股上市；工信部/深圳政策；3.2T迭代。
+      风险: PE 53x(2026E)相对合理但近6月+145%偏高；光联接占42%而非100%（有其他业务）；实际低于机构预期12-20%；目标AI相关收入占比60%尚未实现。
+    evidence_type: legacy_company_override_bundle
+    metrics_supported:
+      - revenue_2026E
+      - revenue_2027E
+      - net_profit_2026E
+      - net_profit_2027E
+      - pe_2026E
+      - pe_2027E
+      - peg_2026E
+      - main_theme_revenue_exposure
+      - order_or_customer_evidence
+      - capacity_progress
+      - product_stage
+      - institution_forecast_change
+      - catalysts
+      - risks
+    time_scope: '2026-06-19'
+    confidence: 高
+    used_for:
+      - sector_card
+      - company_table
+      - source_index
+      - missing_data_log
+      - scoring_reason
+    not_allowed_for:
+      - investment_conclusion
+      - position_sizing
+      - final_rating
+    notes: Canonical evidence item generated from legacy company_overrides; original field-level values are retained unchanged.
+
+  - evidence_id: EV-HSOM-COMPANY-300570-001
+    source_ids:
+      - HSOM-BUNDLE-300570-20260619
+      - BAO-STOCK-300570-20260619
+    source_id: HSOM-BUNDLE-300570-20260619
+    project_id: tech_ai_semiconductor
+    sector_id: cpo_optical_module_silicon_photonics
+    subject_type: company
+    subject_id: 300570.SZ
+    subject_name: 太辰光
+    claim: >
+      业务暴露: 光连接器件为主；MPO等高密度光互联产品数据中心市场份额领先；境外收入占主要比例；通过康宁间接供应英伟达/微软/谷歌/亚马逊；自供谷歌Shuffle Box小批量。
+      客户/订单: MPO全球核心玩家；通过康宁(占收入70%)间接供应英伟达/微软/谷歌/亚马逊；Shuffle Box小批量供谷歌；CPO交换机光纤路由柔性板已完成头部客户验证；越南产能爬坡至80%设计产能。
+      产能进展: 产能稳定；越南基地产能爬坡中；CPO交换机核心器件已头部客户验证；自产MT插芯规模化替代。
+      产品阶段: 数据中心MPO高密度互联产品；Shuffle Box小批量供谷歌。
+      预测变化: 2026E净利润6.17亿（华鑫/国金预测）；国金预测2026E 6.17亿；华鑫预测2027E 4.32亿；Q1 0.66亿同比-17%⚠️。
+      催化剂: 数据中心互联需求增长；MPO/光纤连接器景气；光模块放量带动上游需求；康宁扩产10倍（太辰光是其MPO最高份额供应商）。
+      风险: ⚠️ Q1净利润-17%（唯一负增长标的）；PE 213x(TTM)/101x(2026E)极度高估；营收增速仅12%（低于板块平均）；规模体量小；PE透支未来3-4年。
+    evidence_type: legacy_company_override_bundle
+    metrics_supported:
+      - revenue_2026E
+      - revenue_2027E
+      - net_profit_2026E
+      - net_profit_2027E
+      - pe_2026E
+      - pe_2027E
+      - peg_2026E
+      - main_theme_revenue_exposure
+      - order_or_customer_evidence
+      - capacity_progress
+      - product_stage
+      - institution_forecast_change
+      - catalysts
+      - risks
+    time_scope: '2026-06-19'
+    confidence: 高
+    used_for:
+      - sector_card
+      - company_table
+      - source_index
+      - missing_data_log
+      - scoring_reason
+    not_allowed_for:
+      - investment_conclusion
+      - position_sizing
+      - final_rating
+    notes: Canonical evidence item generated from legacy company_overrides; original field-level values are retained unchanged.
+
+  - evidence_id: EV-HSOM-COMPANY-300548-001
+    source_ids:
+      - HSOM-BUNDLE-300548-20260619
+      - BAO-STOCK-300548-20260619
+    source_id: HSOM-BUNDLE-300548-20260619
+    project_id: tech_ai_semiconductor
+    sector_id: cpo_optical_module_silicon_photonics
+    subject_type: company
+    subject_id: 300548.SZ
+    subject_name: 博创科技
+    claim: >
+      业务暴露: 数据通信+消费工业互联业务10.74亿（+87.75%，含400G/800G数通+高速铜缆）；境外59.44%；长芯盛(控股60.45%)为谷歌MPO核心供应商(占谷歌采购30%+)。
+      客户/订单: 长芯盛为谷歌MPO连接器核心供应商（占谷歌全球采购30%+）；谷歌AOC/MPO等光互联部件；长芯盛通过谷歌认证；800G AEC通过英伟达GB200认证；博创主体400G/800G数通+高速DAC/AEC小批量。
+      产能进展: 长芯盛成都蓉博工厂2025年6月投产（光模块产能）；印尼三期扩产中；MEMS光开关市场推广；OCS布局。
+      产品阶段: 400G/800G数通光模块小批量；高速DAC/AEC批量。
+      预测变化: 2026E净利润8.03亿（2家均值）；东北证券预测2026E 10.94亿；5家机构预测2026E均值7亿；2027E 20.41亿（东北）；Q1 1.30亿同比+45%。
+      催化剂: 800G规模化放量；高速铜缆需求；OCS布局；CSP资本开支+53%；长芯盛谷歌MPO逐季放量（25年十亿级体量）；CPO交换机配套需求。
+      风险: PE 219x(TTM)/102x(2026E)极度高估；Q1增速+45%低于全年目标；净利润体量小(3.35亿)；长芯盛故事强但短期PE透支。
+    evidence_type: legacy_company_override_bundle
+    metrics_supported:
+      - revenue_2026E
+      - revenue_2027E
+      - net_profit_2026E
+      - net_profit_2027E
+      - pe_2026E
+      - pe_2027E
+      - peg_2026E
+      - main_theme_revenue_exposure
+      - order_or_customer_evidence
+      - capacity_progress
+      - product_stage
+      - institution_forecast_change
+      - catalysts
+      - risks
+    time_scope: '2026-06-19'
+    confidence: 中高
+    used_for:
+      - sector_card
+      - company_table
+      - source_index
+      - missing_data_log
+      - scoring_reason
+    not_allowed_for:
+      - investment_conclusion
+      - position_sizing
+      - final_rating
+    notes: Canonical evidence item generated from legacy company_overrides; original field-level values are retained unchanged.
+
+  # ── Sector-Level Evidence Item ───────────────────────────────────────────────
+  - evidence_id: EV-HSOM-SECTOR-COMPARISON-001
+    source_ids:
+      - HSOM-COMPARISON-20260619
+    source_id: HSOM-COMPARISON-20260619
+    project_id: tech_ai_semiconductor
+    sector_id: cpo_optical_module_silicon_photonics
+    subject_type: sector
+    subject_id: cpo_optical_module_silicon_photonics
+    subject_name: 光模块/CPO/硅光
+    claim: 全部8家公司2025年净利润增速40-365%，Q1继续验证。中际旭创800G全球市占>40%、1.6T 50-70%全球第一；新易盛全球首批1.6T量产+ROE72%；天孚通信1.6T光引擎规模量产+CPO配套；光迅3.2T国内头部CSP验证通过；华工800G+1.6T规模化交付+订单排产至2026Q4；工信部/深圳政策催化。
+    evidence_type: legacy_sector_comparison_bundle
+    metrics_supported:
+      - main_theme
+      - sub_theme
+      - chain_position
+      - industry_logic_summary
+      - representative_companies
+      - performance_stage_score
+      - industry_prosperity_score
+      - upside_score
+      - bubble_safety_score
+      - fund_recognition_score
+      - catalyst_score
+      - total_score
+      - recommended_next_action
+      - key_evidence
+      - key_risks
+      - missing_data
+      - source_index_refs
+    time_scope: '2026-06-19'
+    confidence: 中
+    used_for:
+      - sector_card
+      - comparison_table
+      - source_index
+      - missing_data_log
+      - scoring_reason
+    not_allowed_for:
+      - investment_conclusion
+      - position_sizing
+      - final_rating
+    notes: Canonical evidence item generated from legacy comparison_override; scoring/rating fields remain legacy-only until output schema alignment.
+
+# ── Legacy Compatibility Block ─────────────────────────────────────────────────
+# Fields below are retained for backward compatibility.
+# Do NOT use them for project-aware primary keys.
 legacy:
   original_sub_theme: 高速光模块
   original_grade: research
   original_top_level_fields:
-  - sub_theme
-  - grade
-  - description
-  - company_overrides
-  - comparison_override
-  - source_rows
-  - logs
-  - card_markdown
+    - sub_theme
+    - grade
+    - description
+    - company_overrides
+    - comparison_override
+    - source_rows
+    - logs
+    - card_markdown
   legacy_only_fields_retained_at_top_level:
-  - sub_theme
-  - grade
-  - description
-  - company_overrides
-  - comparison_override
-  - source_rows
-  - logs
-  - card_markdown
-  migration_note: Canonical wrapper added in Phase 1E-d-b. Legacy fields are retained for backward compatibility; status remains indexed_existing_evidence
+    - sub_theme
+    - grade
+    - description
+    - company_overrides
+    - comparison_override
+    - source_rows
+    - logs
+    - card_markdown
+  migration_note: >
+    Canonical wrapper added in Phase 1E-d-b.
+    Legacy fields are retained for backward compatibility; status remains indexed_existing_evidence
     and must not be treated as research-grade output.
-  missing_source_metadata_policy: Do not fabricate missing source metadata; audit warnings identify empty url/path/date/title fields.
+  missing_source_metadata_policy: >
+    Do not fabricate missing source metadata.
+    Audit warnings identify empty url fields for local_cache/database sources.
+    These are intentional — BaoStock, Tencent direct, and local cache have no web URLs.
+
+# ── Legacy Data (unchanged from migration) ───────────────────────────────────
 sub_theme: 高速光模块
 grade: research
 description: Curated evidence migrated from the manually enriched high-speed optical module output.
@@ -696,8 +866,7 @@ company_overrides:
     risks: 涨幅较大（近6月+148%，PE TTM 101x）；两头在外（汇率/关税风险）；客户集中度高；CPO/LPO路线竞争
     data_source: Tencent direct(行情); BaoStock(财务); 年报/研报(基本面); 同花顺一致预期
     source_date: '2026-06-19'
-    source_url: investment_system/data/raw/baostock/daily_kline/2026-06-19/300308.json; investment_system/data/raw/baostock/profit/2026-06-19/300308.json;
-      年报(巨潮); 同花顺机构预期
+    source_url: investment_system/data/raw/baostock/daily_kline/2026-06-19/300308.json; investment_system/data/raw/baostock/profit/2026-06-19/300308.json; 年报(巨潮); 同花顺机构预期
     confidence_level: 高
   '300502':
     revenue_2026E: 预估300亿+（山西证券预测212亿/19家均值189亿）
@@ -716,8 +885,7 @@ company_overrides:
     risks: PE 42x(2026E)相对合理但近1月+44%加速涌入；客户集中度极高（前5大72.34%）；汇兑损失风险（2026Q1 5.22亿）；两端在外汇率风险
     data_source: Tencent direct(行情); BaoStock(财务); 年报(深交所/巨潮); 同花顺一致预期; 山西证券研报
     source_date: '2026-06-19'
-    source_url: investment_system/data/raw/baostock/daily_kline/2026-06-19/300502.json; investment_system/data/raw/baostock/profit/2026-06-19/300502.json;
-      年报(深交所/巨潮); 同花顺一致预期; 山西证券研报
+    source_url: investment_system/data/raw/baostock/daily_kline/2026-06-19/300502.json; investment_system/data/raw/baostock/profit/2026-06-19/300502.json; 年报(深交所/巨潮); 同花顺一致预期; 山西证券研报
     confidence_level: 高
   '300394':
     revenue_2026E: 约54亿（研报预测）
@@ -731,13 +899,12 @@ company_overrides:
     order_or_customer_evidence: Fabrinet为全球顶级光器件代工厂；前5大客户89.73%；1.6T光引擎规模量产；CPO配套器件研发完成；泰国工厂二期已投产
     capacity_progress: 1.6T光引擎规模量产；CPO配套器件研发完成；泰国工厂二期已投产；外销74.35%
     product_stage: 已量产1.6T光引擎；CPO配套
-    institution_forecast_change: 2026E净利润32.62亿（19家均值）；2027E 42.58亿；中信证券预测2026E 33.85亿；天风证券预测2026E 30.51亿；2026Q1 4.92亿同比+46%
+    institution_forecast_change: 2026E净利润32.62亿（19家一致预期）；2027E 42.58亿；中信证券预测2026E 33.85亿；天风证券预测2026E 30.51亿；2026Q1 4.92亿同比+46%
     catalysts: 工信部/深圳政策加持；1.6T规模量产；CPO器件国产替代；薄膜铌酸锂/磷化铟材料景气；数据中心网络升级带动需求
     risks: PE 80x(2026E)偏高；客户集中度极高（Fabrinet占63.31%）；无源器件竞争激烈（2025年毛利率下滑3.67pct）；Q1毛利率56.6%环比+2.64pct改善
     data_source: Tencent direct(行情); BaoStock(财务); 年报(巨潮); 同花顺一致预期
     source_date: '2026-06-19'
-    source_url: investment_system/data/raw/baostock/daily_kline/2026-06-19/300394.json; investment_system/data/raw/baostock/profit/2026-06-19/300394.json;
-      年报(巨潮); 同花顺一致预期
+    source_url: investment_system/data/raw/baostock/daily_kline/2026-06-19/300394.json; investment_system/data/raw/baostock/profit/2026-06-19/300394.json; 年报(巨潮); 同花顺一致预期
     confidence_level: 高
   '603083':
     revenue_2026E: 约65亿（光大预测80亿/国泰海通预测64亿）
@@ -756,10 +923,9 @@ company_overrides:
     risks: PE 43x(2026E)看似便宜但净利润仅2.23亿体量小；1.6T尚未量产；股权激励行权价113.99元（现价214元高管有强动机）；汇兑风险
     data_source: Tencent direct(行情); BaoStock(财务); 年报(巨潮); 国泰海通/光大证券研报
     source_date: '2026-06-19'
-    source_url: investment_system/data/raw/baostock/daily_kline/2026-06-19/603083.json; investment_system/data/raw/baostock/profit/2026-06-19/603083.json;
-      年报(巨潮); 国泰海通/光大证券研报
+    source_url: investment_system/data/raw/baostock/daily_kline/2026-06-19/603083.json; investment_system/data/raw/baostock/profit/2026-06-19/603083.json; 年报(巨潮); 国泰海通/光大证券研报
     confidence_level: 高
-  002281:
+  '002281':
     revenue_2026E: 约140亿（研报预测）
     revenue_2027E: 约250亿+（国泰海通预测160亿+）
     net_profit_2026E: 15.88亿（6家一致预期）；国泰海通预测18.70亿
@@ -776,10 +942,9 @@ company_overrides:
     risks: PE 207x(TTM)/135x(2026E)极度高估；近6月+327%极度拥挤；3.2T尚未形成规模收入；1.6T放量节奏不确定
     data_source: Tencent direct(行情); BaoStock(财务); 年报(巨潮); 国泰海通研报
     source_date: '2026-06-19'
-    source_url: investment_system/data/raw/baostock/daily_kline/2026-06-19/002281.json; investment_system/data/raw/baostock/profit/2026-06-19/002281.json;
-      年报(巨潮); 国泰海通研报
+    source_url: investment_system/data/raw/baostock/daily_kline/2026-06-19/002281.json; investment_system/data/raw/baostock/profit/2026-06-19/002281.json; 年报(巨潮); 国泰海通研报
     confidence_level: 高
-  000988:
+  '000988':
     revenue_2026E: 约163亿（国海预测），Wind一致预期约164亿
     revenue_2027E: 约200亿+（国海预测211亿）
     net_profit_2026E: 国海预测164亿；Wind一致预期约164亿
@@ -796,8 +961,7 @@ company_overrides:
     risks: PE 53x(2026E)相对合理但近6月+145%偏高；光联接占42%而非100%（有其他业务）；实际低于机构预期12-20%；目标AI相关收入占比60%尚未实现
     data_source: Tencent direct(行情); BaoStock(财务); 年报(巨潮); 国海证券研报
     source_date: '2026-06-19'
-    source_url: investment_system/data/raw/baostock/daily_kline/2026-06-19/000988.json; investment_system/data/raw/baostock/profit/2026-06-19/000988.json;
-      年报(巨潮); 国海证券研报
+    source_url: investment_system/data/raw/baostock/daily_kline/2026-06-19/000988.json; investment_system/data/raw/baostock/profit/2026-06-19/000988.json; 年报(巨潮); 国海证券研报
     confidence_level: 高
   '300570':
     revenue_2026E: 约27亿+（华鑫预测28亿/国金预测30亿）
@@ -816,8 +980,7 @@ company_overrides:
     risks: ⚠️ Q1净利润-17%（唯一负增长标的）；PE 213x(TTM)/101x(2026E)极度高估；营收增速仅12%（低于板块平均）；规模体量小；PE透支未来3-4年
     data_source: Tencent direct(行情); BaoStock(财务); 年报(深交所); 研报(华鑫/国金); 互动易
     source_date: '2026-06-19'
-    source_url: investment_system/data/raw/baostock/daily_kline/2026-06-19/300570.json; investment_system/data/raw/baostock/profit/2026-06-19/300570.json;
-      年报(深交所); 研报(华鑫/国金); 互动易
+    source_url: investment_system/data/raw/baostock/daily_kline/2026-06-19/300570.json; investment_system/data/raw/baostock/profit/2026-06-19/300570.json; 年报(深交所); 研报(华鑫/国金); 互动易
     confidence_level: 高
   '300548':
     revenue_2026E: 约43亿（东北预测70亿/研报均值43亿），2026E 8.03亿（2家均值），2027E 20亿（东北）
@@ -836,15 +999,18 @@ company_overrides:
     risks: PE 219x(TTM)/102x(2026E)极度高估；Q1增速+45%低于全年目标；净利润体量小(3.35亿)；长芯盛故事强但短期PE透支
     data_source: Tencent direct(行情); BaoStock(财务); 年报(巨潮); 研报(东北/中信/华泰/国盛/大摩); 互动易
     source_date: '2026-06-19'
-    source_url: investment_system/data/raw/baostock/daily_kline/2026-06-19/300548.json; investment_system/data/raw/baostock/profit/2026-06-19/300548.json;
-      年报(巨潮); 研报(东北/中信/华泰/国盛/大摩); 互动易
+    source_url: investment_system/data/raw/baostock/daily_kline/2026-06-19/300548.json; investment_system/data/raw/baostock/profit/2026-06-19/300548.json; 年报(巨潮); 研报(东北/中信/华泰/国盛/大摩); 互动易
     confidence_level: 中高
 comparison_override:
   main_theme: AI算力硬件
   sub_theme: 高速光模块
   chain_position: 中游核心
-  industry_logic_summary: AI训练与推理集群带动数据中心高速互联升级，是当前AI硬件链最强兑现环节之一。2025年净利润增速：中际旭创+109%、新易盛+236%、博创+365%、光迅+43%。CSP资本开支2026预计+53%，800G规模化放量，1.6T已量产或具备交付能力。工信部2026年6月《AI+通信》政策加持，深圳推动光模块向1.6T/3.2T升级。
-  representative_companies: 中际旭创、新易盛、天孚通信、剑桥科技、光迅科技、华工科技、太辰光、博创科技
+  industry_logic_summary: >
+    AI训练与推理集群带动数据中心高速互联升级，是当前AI硬件链最强兑现环节之一。
+    2025年净利润增速：中际旭创+109%、新易盛+236%、博创+365%、光迅+43%。
+    CSP资本开支2026预计+53%，800G规模化放量，1.6T已量产或具备交付能力。
+    工信部2026年6月《AI+通信》政策加持，深圳推动光模块向1.6T/3.2T升级。
+  representative_companies: 中际旭创、新易盛、天孚通信、剑桥科技，光迅科技、华工科技、太辰光、博创科技
   performance_stage_score: '4'
   industry_prosperity_score: '5'
   upside_score: '4'
@@ -856,691 +1022,7 @@ comparison_override:
   key_evidence: 全部8家公司2025年净利润增速40-365%，Q1继续验证。中际旭创800G全球市占>40%、1.6T 50-70%全球第一；新易盛全球首批1.6T量产+ROE72%；天孚通信1.6T光引擎规模量产+CPO配套；光迅3.2T国内头部CSP验证通过；华工800G+1.6T规模化交付+订单排产至2026Q4；工信部/深圳政策催化。
   key_risks: 板块整体涨幅过大（光迅+327%、太辰+142%、中际+148%），PE中位数超150x，拥挤度极高；华工科技2025年低于机构预期；光迅/太辰/博创/剑桥PE>200x，赔率不足
   missing_data: 各公司800G/1.6T具体收入占比（部分未公开）；2026E/2027E机构一致预期（仅华工有）；PE/PB历史分位；2026Q1净利润（部分缺失）；博创/太辰/剑桥具体客户名称
-  source_index_refs: SRC-TENCENT-DAILY-001; SRC-BAO-PROFIT-001; 年报/研报基本面核实
-source_rows:
-- source_id: SRC-BAO-DAILY-001
-  source_type: database
-  source_name: BaoStock query_history_k_data_plus
-  source_date: '2026-06-19'
-  source_url: investment_system/data/raw/baostock/daily_kline/2026-06-19/
-  related_main_theme: AI算力硬件
-  related_sub_theme: 高速光模块
-  related_company: 8家代表公司
-  quote_or_excerpt: 字段包括date, open, high, low, close, volume, amount, turn, pctChg；用于计算近1/3/6月涨幅和20日平均成交额。
-  data_fields_supported: latest_price,pct_change_1m,pct_change_3m,pct_change_6m,turnover_value_20d_avg
-  confidence_level: 高
-  notes: 最新交易日为2026-06-18；2026-06-19为当前日期但未取得当日收盘数据。
-- source_id: SRC-LEGACY-DISABLED-001
-  source_type: disabled_source
-  source_name: Legacy disabled interface
-  source_date: '2026-06-19'
-  source_url: ''
-  related_main_theme: AI算力硬件
-  related_sub_theme: 高速光模块
-  related_company: 8家代表公司
-  quote_or_excerpt: 历史接口记录已移除，不作为本项目事实来源。
-  data_fields_supported: none
-  confidence_level: 高
-  notes: 当前统一数据源使用 BaoStock、Tencent direct、AKShare、Tushare、公告和公开可验证来源。
-- source_id: SRC-AKSHARE-ERR-001
-  source_type: api_error
-  source_name: AKShare stock_zh_a_hist
-  source_date: '2026-06-19'
-  source_url: investment_system/data/raw/diagnostics/2026-06-19/data_sources_runtime.json; endpoint=push2his.eastmoney.com
-  related_main_theme: AI算力硬件
-  related_sub_theme: 高速光模块
-  related_company: 中际旭创
-  quote_or_excerpt: ProxyError/RemoteDisconnected；禁用代理后仍RemoteDisconnected。
-  data_fields_supported: none
-  confidence_level: 高
-  notes: 与当前环境下Eastmoney端点不稳定一致。
-- source_id: SRC-BAO-300308-20260619185911
-  source_type: database
-  source_name: BaoStock query_history_k_data_plus + query_profit_data
-  source_date: '2026-06-19'
-  source_url: investment_system/data/raw/baostock/
-  related_main_theme: AI算力硬件
-  related_sub_theme: 高速光模块
-  related_company: 中际旭创
-  quote_or_excerpt: revenue_2025=38239935640.670000元, net_profit_2025=11579754107.990000元
-  data_fields_supported: revenue,net_profit,gross_margin,net_margin,epsTTM,totalShare,close
-  confidence_level: 高
-  notes: BaoStock primary data; Tencent fallback if BaoStock fails
-- source_id: SRC-BAO-300502-20260619185911
-  source_type: database
-  source_name: BaoStock query_history_k_data_plus + query_profit_data
-  source_date: '2026-06-19'
-  source_url: investment_system/data/raw/baostock/
-  related_main_theme: AI算力硬件
-  related_sub_theme: 高速光模块
-  related_company: 新易盛
-  quote_or_excerpt: revenue_2025=24841854840.220000元, net_profit_2025=9553276217.150000元
-  data_fields_supported: revenue,net_profit,gross_margin,net_margin,epsTTM,totalShare,close
-  confidence_level: 高
-  notes: BaoStock primary data; Tencent fallback if BaoStock fails
-- source_id: SRC-BAO-300394-20260619185911
-  source_type: database
-  source_name: BaoStock query_history_k_data_plus + query_profit_data
-  source_date: '2026-06-19'
-  source_url: investment_system/data/raw/baostock/
-  related_main_theme: AI算力硬件
-  related_sub_theme: 高速光模块
-  related_company: 天孚通信
-  quote_or_excerpt: revenue_2025=5163432471.160000元, net_profit_2025=2017676180.690000元
-  data_fields_supported: revenue,net_profit,gross_margin,net_margin,epsTTM,totalShare,close
-  confidence_level: 高
-  notes: BaoStock primary data; Tencent fallback if BaoStock fails
-- source_id: SRC-BAO-603083-20260619185911
-  source_type: database
-  source_name: BaoStock query_history_k_data_plus + query_profit_data
-  source_date: '2026-06-19'
-  source_url: investment_system/data/raw/baostock/
-  related_main_theme: AI算力硬件
-  related_sub_theme: 高速光模块
-  related_company: 剑桥科技
-  quote_or_excerpt: revenue_2025=4823405697.640000元, net_profit_2025=222597154.100000元
-  data_fields_supported: revenue,net_profit,gross_margin,net_margin,epsTTM,totalShare,close
-  confidence_level: 高
-  notes: BaoStock primary data; Tencent fallback if BaoStock fails
-- source_id: SRC-BAO-002281-20260619185911
-  source_type: database
-  source_name: BaoStock query_history_k_data_plus + query_profit_data
-  source_date: '2026-06-19'
-  source_url: investment_system/data/raw/baostock/
-  related_main_theme: AI算力硬件
-  related_sub_theme: 高速光模块
-  related_company: 光迅科技
-  quote_or_excerpt: revenue_2025=11928697127.380000元, net_profit_2025=931857075.210000元
-  data_fields_supported: revenue,net_profit,gross_margin,net_margin,epsTTM,totalShare,close
-  confidence_level: 高
-  notes: BaoStock primary data; Tencent fallback if BaoStock fails
-- source_id: SRC-BAO-000988-20260619185911
-  source_type: database
-  source_name: BaoStock query_history_k_data_plus + query_profit_data
-  source_date: '2026-06-19'
-  source_url: investment_system/data/raw/baostock/
-  related_main_theme: AI算力硬件
-  related_sub_theme: 高速光模块
-  related_company: 华工科技
-  quote_or_excerpt: revenue_2025=14354760508.180000元, net_profit_2025=1454468065.680000元
-  data_fields_supported: revenue,net_profit,gross_margin,net_margin,epsTTM,totalShare,close
-  confidence_level: 高
-  notes: BaoStock primary data; Tencent fallback if BaoStock fails
-- source_id: SRC-BAO-300570-20260619185911
-  source_type: database
-  source_name: BaoStock query_history_k_data_plus + query_profit_data
-  source_date: '2026-06-19'
-  source_url: investment_system/data/raw/baostock/
-  related_main_theme: AI算力硬件
-  related_sub_theme: 高速光模块
-  related_company: 太辰光
-  quote_or_excerpt: revenue_2025=1546758347.740000元, net_profit_2025=307590247.850000元
-  data_fields_supported: revenue,net_profit,gross_margin,net_margin,epsTTM,totalShare,close
-  confidence_level: 高
-  notes: BaoStock primary data; Tencent fallback if BaoStock fails
-- source_id: SRC-BAO-300548-20260619185911
-  source_type: database
-  source_name: BaoStock query_history_k_data_plus + query_profit_data
-  source_date: '2026-06-19'
-  source_url: investment_system/data/raw/baostock/
-  related_main_theme: AI算力硬件
-  related_sub_theme: 高速光模块
-  related_company: 博创科技
-  quote_or_excerpt: revenue_2025=2532639369.670000元, net_profit_2025=579621864.970000元
-  data_fields_supported: revenue,net_profit,gross_margin,net_margin,epsTTM,totalShare,close
-  confidence_level: 高
-  notes: BaoStock primary data; Tencent fallback if BaoStock fails
-- source_id: SRC-BAO-300308-20260619190729
-  source_type: database
-  source_name: BaoStock query_history_k_data_plus + query_profit_data
-  source_date: '2026-06-19'
-  source_url: investment_system/data/raw/baostock/
-  related_main_theme: AI算力硬件
-  related_sub_theme: 高速光模块
-  related_company: 中际旭创
-  quote_or_excerpt: revenue_2025=38239935640.670000元, net_profit_2025=11579754107.990000元
-  data_fields_supported: revenue,net_profit,gross_margin,net_margin,epsTTM,totalShare,close
-  confidence_level: 高
-  notes: BaoStock primary data; Tencent fallback if BaoStock fails
-- source_id: SRC-BAO-300502-20260619190729
-  source_type: database
-  source_name: BaoStock query_history_k_data_plus + query_profit_data
-  source_date: '2026-06-19'
-  source_url: investment_system/data/raw/baostock/
-  related_main_theme: AI算力硬件
-  related_sub_theme: 高速光模块
-  related_company: 新易盛
-  quote_or_excerpt: revenue_2025=24841854840.220000元, net_profit_2025=9553276217.150000元
-  data_fields_supported: revenue,net_profit,gross_margin,net_margin,epsTTM,totalShare,close
-  confidence_level: 高
-  notes: BaoStock primary data; Tencent fallback if BaoStock fails
-- source_id: SRC-BAO-300394-20260619190729
-  source_type: database
-  source_name: BaoStock query_history_k_data_plus + query_profit_data
-  source_date: '2026-06-19'
-  source_url: investment_system/data/raw/baostock/
-  related_main_theme: AI算力硬件
-  related_sub_theme: 高速光模块
-  related_company: 天孚通信
-  quote_or_excerpt: revenue_2025=5163432471.160000元, net_profit_2025=2017676180.690000元
-  data_fields_supported: revenue,net_profit,gross_margin,net_margin,epsTTM,totalShare,close
-  confidence_level: 高
-  notes: BaoStock primary data; Tencent fallback if BaoStock fails
-- source_id: SRC-BAO-603083-20260619190729
-  source_type: database
-  source_name: BaoStock query_history_k_data_plus + query_profit_data
-  source_date: '2026-06-19'
-  source_url: investment_system/data/raw/baostock/
-  related_main_theme: AI算力硬件
-  related_sub_theme: 高速光模块
-  related_company: 剑桥科技
-  quote_or_excerpt: revenue_2025=4823405697.640000元, net_profit_2025=222597154.100000元
-  data_fields_supported: revenue,net_profit,gross_margin,net_margin,epsTTM,totalShare,close
-  confidence_level: 高
-  notes: BaoStock primary data; Tencent fallback if BaoStock fails
-- source_id: SRC-BAO-002281-20260619190729
-  source_type: database
-  source_name: BaoStock query_history_k_data_plus + query_profit_data
-  source_date: '2026-06-19'
-  source_url: investment_system/data/raw/baostock/
-  related_main_theme: AI算力硬件
-  related_sub_theme: 高速光模块
-  related_company: 光迅科技
-  quote_or_excerpt: revenue_2025=11928697127.380000元, net_profit_2025=931857075.210000元
-  data_fields_supported: revenue,net_profit,gross_margin,net_margin,epsTTM,totalShare,close
-  confidence_level: 高
-  notes: BaoStock primary data; Tencent fallback if BaoStock fails
-- source_id: SRC-BAO-000988-20260619190729
-  source_type: database
-  source_name: BaoStock query_history_k_data_plus + query_profit_data
-  source_date: '2026-06-19'
-  source_url: investment_system/data/raw/baostock/
-  related_main_theme: AI算力硬件
-  related_sub_theme: 高速光模块
-  related_company: 华工科技
-  quote_or_excerpt: revenue_2025=14354760508.180000元, net_profit_2025=1454468065.680000元
-  data_fields_supported: revenue,net_profit,gross_margin,net_margin,epsTTM,totalShare,close
-  confidence_level: 高
-  notes: BaoStock primary data; Tencent fallback if BaoStock fails
-- source_id: SRC-BAO-300570-20260619190729
-  source_type: database
-  source_name: BaoStock query_history_k_data_plus + query_profit_data
-  source_date: '2026-06-19'
-  source_url: investment_system/data/raw/baostock/
-  related_main_theme: AI算力硬件
-  related_sub_theme: 高速光模块
-  related_company: 太辰光
-  quote_or_excerpt: revenue_2025=1546758347.740000元, net_profit_2025=307590247.850000元
-  data_fields_supported: revenue,net_profit,gross_margin,net_margin,epsTTM,totalShare,close
-  confidence_level: 高
-  notes: BaoStock primary data; Tencent fallback if BaoStock fails
-- source_id: SRC-BAO-300548-20260619190729
-  source_type: database
-  source_name: BaoStock query_history_k_data_plus + query_profit_data
-  source_date: '2026-06-19'
-  source_url: investment_system/data/raw/baostock/
-  related_main_theme: AI算力硬件
-  related_sub_theme: 高速光模块
-  related_company: 博创科技
-  quote_or_excerpt: revenue_2025=2532639369.670000元, net_profit_2025=579621864.970000元
-  data_fields_supported: revenue,net_profit,gross_margin,net_margin,epsTTM,totalShare,close
-  confidence_level: 高
-  notes: BaoStock primary data; Tencent fallback if BaoStock fails
-- source_id: SRC-BAO-300308-20260619191111
-  source_type: database
-  source_name: BaoStock query_history_k_data_plus + query_profit_data
-  source_date: '2026-06-19'
-  source_url: investment_system/data/raw/baostock/
-  related_main_theme: AI算力硬件
-  related_sub_theme: 高速光模块
-  related_company: 中际旭创
-  quote_or_excerpt: revenue_2025=38239935640.670000元, net_profit_2025=11579754107.990000元
-  data_fields_supported: revenue,net_profit,gross_margin,net_margin,epsTTM,totalShare,close
-  confidence_level: 高
-  notes: BaoStock primary data; Tencent fallback if BaoStock fails
-- source_id: SRC-TENCENT-DAILY-001
-  source_type: direct_api
-  source_name: Tencent Finance direct HTTP (web.ifzq.gtimg.cn)
-  source_date: '2026-06-19'
-  source_url: investment_system/data/raw/baostock/daily_kline/2026-06-19/
-  related_main_theme: AI算力硬件
-  related_sub_theme: 高速光模块
-  related_company: 8家代表公司
-  quote_or_excerpt: 覆盖8家公司，220交易日，数据截止2026-06-18
-  data_fields_supported: date,open,high,low,close,volume
-  confidence_level: 高
-  notes: 替代BaoStock日线；proxy-safe via curl
-- source_id: SRC-BAO-PROFIT-001
-  source_type: database
-  source_name: BaoStock query_profit_data
-  source_date: '2026-06-19'
-  source_url: investment_system/data/raw/baostock/profit/2026-06-19/
-  related_main_theme: AI算力硬件
-  related_sub_theme: 高速光模块
-  related_company: 8家代表公司
-  quote_or_excerpt: '字段: MBRevenue, netProfit, gpMargin, npMargin, epsTTM, totalShare'
-  data_fields_supported: revenue,net_profit,gross_margin,net_margin,epsTTM,totalShare
-  confidence_level: 高
-  notes: BaoStock主财务数据源；收入字段仅年报/半年报有值
-logs:
-  缺失数据清单.md: '# 缺失数据清单
-
-
-    ## 已自动补充
-
-
-    高速光模块主要缺失字段已迁移到结构化 evidence 层，并由 run_research.py 自动合并。
-
-
-    ## 仍需工具核查
-
-
-    | 数据项 | 当前状态 | 获取方式 |
-
-    |---|---|---|
-
-    | 各公司PE/PB精确历史分位 | 定性高估，需可验证公开来源或用户提供数据 | 公开估值页面、券商研报或用户提供数据 |
-
-    | 太辰光Q1负增长原因 | 待核实 | 互动易/业绩说明会 |
-
-    | CPO/OCS对可插拔光模块替代节奏 | 定性风险，需跟踪 | 头部CSP公告/研报 |'
-  冲突数据清单.md: '# 冲突数据清单
-
-
-    暂未发现跨来源数据冲突；AKShare Eastmoney端点不稳定已作为数据源状态记录，历史接口不作为事实来源。'
-card_markdown: '# 高速光模块
-
-
-  ## 1. 结论摘要
-
-  - **当前主线地位**：AI算力链最强兑现主线，8家代表公司2025年净利润增速全部超40%，2026Q1继续高增
-
-  - **业绩兑现阶段**：4分，已进入从"主题"到"业绩"切换阶段，2025年为验证元年
-
-  - **估值水位**：高（当前2026E PE中位数约70x，历史通信行业均值15-20x，估值已大幅提升）
-
-  - **资金认可度**：极强，成交额历史高位，机构持仓集中度高
-
-  - **初步动作**：首选新易盛(PE 42x+增速最快)和中际旭创(龙头最高确定性)；太辰光Q1净利润下滑需警惕
-
-
-  ---
-
-
-  ## 2. 产业逻辑
-
-
-  AI训练与推理集群带动数据中心网络带宽需求爆发式增长，是当前AI硬件链中**业绩兑现最强、机构持仓最深、数据最透明**的主线之一。
-
-
-  **核心驱动力**：2025年Q4，微软、亚马逊、Meta、谷歌合计资本开支1186亿美元，同比+64%；2026年预计同比增长53%。全球CSP锁定核心产能，高端光芯片（EML）供需缺口持续至2026年。
-
-
-  **技术代际节奏**：
-
-  - 800G：2024-2025年规模化放量，2025年是出货高峰，渗透率持续提升
-
-  - 1.6T：2025年下半年开始量产出货，中际旭创率先量产（每季度环比提升），新易盛、剑桥均已具备交付能力
-
-  - 3.2T：2027-2028年商业化验证，薄膜铌酸锂调制器是关键技术
-
-
-  **政策催化**：工信部2026年6月10日印发《"人工智能+信息通信"创新发展实施意见（2026—2028年）》，明确将光电芯片、OCS全光交换、CPO共封装列为国产替代攻坚重点；深圳推动光模块从800G向1.6T/3.2T代际升级。
-
-
-  **市场空间**：LightCounting预测2026年全球以太网光模块（含CPO）市场规模同比增长65%，2031年超500亿美元；800G及1.6T渗透率较2023年提升53.67个百分点。
-
-
-  ---
-
-
-  ## 3. 上中下游位置
-
-  - **上游**：InP衬底/外延片 → EML激光器/探测器/硅光芯片 → 薄膜铌酸锂调制器 → FAU/光纤阵列
-
-  - **中游核心**：光模块设计/封装/测试（中际旭创、新易盛、光迅科技、剑桥科技、华工科技）
-
-  - **中游配套**：光无源器件/精密光学（天孚通信、太辰光）
-
-  - **下游**：云厂商（AWS/Azure/Google Cloud/阿里云）+ 设备商（华为/思科）
-
-  - **与其他主线交叉**：CPO/NPO（与光芯片主线）、AI服务器PCB（与算力硬件主线）、薄膜铌酸锂（与半导体材料主线）
-
-
-  ---
-
-
-  ## 4. 代表公司对比总览
-
-
-  | 公司 | 代码 | 2025营收 | YoY | 2025净利润 | YoY | 2026Q1净利润 | YoY | 毛利率 | 净利率 | PE TTM | PE 2026E | PE 2027E | 近6月涨幅 | 核心客户 |
-
-  |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-
-  | 中际旭创 | 300308 | 382亿 | +60% | 108亿 | +109% | 57.35亿 | +262% | 42.04% | 28.24% | 101x | **52x** | **29x** | +148% | 英伟达/谷歌/Meta/MS/亚马逊；前5大75.98%
-  |
-
-  | **新易盛** | 300502 | 248亿 | **+187%** | 95.53亿 | **+236%** | 27.8亿 | +77% | 47.81% | 38.46% | 53x | **42x** | **27x** | +100% | 全球头部CSP；前5大72.34%；800G全球市占25-30%
-  |
-
-  | 天孚通信 | 300394 | 51.6亿 | +59% | 20.18亿 | +50% | 4.92亿 | +46% | **53.62%** | 37.01% | 120x | **80x** | **62x** | +137% | Fabrinet(FN)占63.31%；前5大89.73%
-  |
-
-  | 剑桥科技 | 603083 | 48.2亿 | +32% | 2.23亿 | +58% | 1.18亿 | +276% | 29.33% | 7.55% | 215x | **43x** | **23x** | +102% | 境外核心客户；1.6T送样中 |
-
-  | 光迅科技 | 002281 | 119亿 | +44% | 9.46亿 | +43% | 2.40亿 | +60% | 26.83% | 7.81% | 207x | **135x** | **57x** | **+327%** | 国内头部CSP；前5大48.49%；3.2T硅光NPO验证
-  |
-
-  | 华工科技 | 000988 | 144亿 | +23% | 14.71亿 | +20% | — | — | 19.81% | 10.25% | 105x | **53x** | **39x** | +145% | 国内头部CSP；800G/1.6T规模化交付 |
-
-  | 太辰光 | 300570 | 15.5亿 | +12% | 2.99亿 | +14% | **0.66亿** | **-17%** | 37.80% | 19.33% | 213x | **101x** | **80x** | +142% | 通过康宁间接供应英伟达/微软/谷歌；自供谷歌Shuffle
-  Box |
-
-  | 博创科技 | 300548 | 25.3亿 | +45% | 3.35亿 | **+365%** | 1.30亿 | +45% | 49.22% | 13.23% | 219x | **102x** | **40x** | +124% | 谷歌(MPO占30%+)、微软/亚马逊/AEC、Meta；长芯盛为谷歌核心供应商
-  |
-
-
-  *注：PE_2026E = 2026-06-18收盘价 / 机构一致预期EPS；PE_2027E = 收盘价 / (2027E净利润/总股本)；市值以收盘价计算*
-
-
-  ---
-
-
-  ## 5. 业绩兑现情况
-
-
-  ### 5.1 2025年报（已核实）
-
-
-  | 公司 | 2025营收(亿) | YoY | 2025净利润(亿) | YoY | 核心业务占比 | 关键数字 |
-
-  |---|---|---|---|---|---|---|
-
-  | 中际旭创 | 382.40 | +60% | 107.97 | +109% | 光模块97.95% | 800G全球市占率>40%；1.6T市占率50-70%；1.6T季度环比提升；3.2T产能准备中 |
-
-  | 新易盛 | 248.42 | **+187%** | 95.53 | **+236%** | 光互联99.72% | 全球首批1.6T量产交付；800G+占核心；ROE 72.66% |
-
-  | 天孚通信 | 51.63 | +59% | 20.18 | +50% | 光器件100% | 1.6T光引擎规模量产；CPO配套器件研发完成；外销74.35% |
-
-  | 剑桥科技 | 48.23 | +32% | 2.23 | +58% | 高速光模块为核心引擎 | 800G硅光批量发货；1.6T送样中 |
-
-  | 光迅科技 | 119.29 | +44% | 9.46 | +43% | 数通光模块70.94% | 800G批量出货；1.6T批量交付；3.2T硅光NPO国内头部CSP验证通过 |
-
-  | 华工科技 | 143.55 | +23% | 14.71 | +20% | 光联接60.97亿(+53%) | 800G硅光LPO+1.6T全球第一梯队交付；3.2T NPO/CPO首发；订单排产至2026Q4 |
-
-  | 太辰光 | 15.47 | +12% | 2.99 | +14% | 光连接器件+MPO | MPO全球核心玩家；Shuffle Box小批量供谷歌 |
-
-  | 博创科技 | 25.33 | +45% | 3.35 | **+365%** | 数通+高速铜缆 | 长芯盛(谷歌MPO占30%+)；800G AEC通过英伟达GB200认证 |
-
-
-  ### 5.2 2026Q1验证（已核实）
-
-
-  | 公司 | Q1营收 | YoY | Q1净利润 | YoY | 趋势判断 |
-
-  |---|---|---|---|---|---|
-
-  | 中际旭创 | — | +192% | 57.35亿 | **+262%** | **极度强劲**，超预期40% |
-
-  | 新易盛 | 83.38亿 | +106% | 27.8亿 | +77% | 强劲，剔除汇兑后约33亿符合预期 |
-
-  | 天孚通信 | 13.30亿 | +41% | 4.92亿 | +46% | 健康，增速稳定，毛利率提升至56.6% |
-
-  | 光迅科技 | 27.73亿 | +25% | 2.40亿 | +60% | 增速好，净利率提升 |
-
-  | 剑桥科技 | 12.87亿 | +44% | 1.18亿 | +276% | 爆发式增长，基数低 |
-
-  | **太辰光** | 3.41亿 | **-8%** | **0.66亿** | **-17%** | **⚠️ 营收和净利双下滑**，Q1低于预期 |
-
-  | 博创科技 | 6.71亿 | +25% | 1.30亿 | +45% | 稳健，但增速较全年目标偏低 |
-
-  | 华工科技 | — | — | — | — | 待查 |
-
-
-  **关键发现**：太辰光Q1净利润同比-17%，是板块中唯一负增长标的，叠加PE高达213x，需重点警惕。
-
-
-  ---
-
-
-  ## 6. 机构一致预期（已核实）
-
-
-  ### 6.1 预期汇总
-
-
-  | 公司 | 2026E净利润(亿) | 2026E EPS | PE_2026E | 2027E净利润(亿) | PE_2027E | 预测机构数 |
-
-  |---|---|---|---|---|---|---|
-
-  | **新易盛** | 189.14 | 13.85元 | **42x** | 299.47 | **27x** | 19家 |
-
-  | 中际旭创 | 289.70 | 26.07元 | **52x** | 506.09 | **29x** | 29家 |
-
-  | 天孚通信 | 32.62 | 4.19元 | **80x** | 42.58 | **62x** | 19家 |
-
-  | 剑桥科技 | 17.72 | 5.02元 | **43x** | 33.07 | **23x** | 首次覆盖 |
-
-  | 光迅科技 | 15.88 | 1.97元 | **135x** | 37.77 | **57x** | 6家 |
-
-  | 太辰光 | 6.17 | 2.65元 | **101x** | 10.45 | **80x** | 研报汇总 |
-
-  | 博创科技 | 8.03 | 2.76元 | **102x** | 20.41 | **40x** | 2家 |
-
-  | 华工科技 | — | — | **53x** | — | **39x** | 国海证券 |
-
-
-  ### 6.2 估值分位分析
-
-
-  | 公司 | 当前2026E PE | 历史通信行业均值 | 分位判断 |
-
-  |---|---|---|---|
-
-  | **新易盛** | 42x | 15-20x | 历史高估区间，但增速最快，PEG约1x合理 |
-
-  | **中际旭创** | 52x | 15-20x | 历史高位，但1.6T市占50-70%龙头溢价 |
-
-  | **剑桥科技** | 43x | 15-20x | 高于均值，但1.6T尚未量产，远期空间大 |
-
-  | 天孚通信 | 80x | 15-20x | 极度高估，但毛利最高+稳健增速 |
-
-  | 华工科技 | 53x | 15-20x | 高估，低于机构预期12-20% |
-
-  | 太辰光 | 101x | 15-20x | **⚠️ 极度高估+ Q1负增长** |
-
-  | 博创科技 | 102x | 15-20x | **⚠️ 极度高估**，远期预期高但短期PE透支 |
-
-  | 光迅科技 | 135x | 15-20x | **⚠️ 极度高估+ 近6月+327%** |
-
-
-  **注**：PE历史分位数据需Wind工具精确查询，以上为定性判断（当前PE均处于历史高位区间）
-
-
-  ---
-
-
-  ## 7. 行情与资金认可度
-
-
-  | 公司 | 近1月涨幅 | 近3月涨幅 | 近6月涨幅 | 20日均成交额 | 相对创业板(近3月) | 拥挤度 | 备注 |
-
-  |---|---|---|---|---|---|---|---|
-
-  | 中际旭创 | +37.71% | +123.88% | +148.35% | **344亿/天** | +124% | 高度拥挤 | 流动性最强 |
-
-  | **新易盛** | +44.08% | +71.01% | +100.41% | 217亿/天 | +71% | **性价比最优** | 低PE+高增速 |
-
-  | 天孚通信 | +40.04% | +51.38% | +137.28% | 150亿/天 | +51% | 偏高 | 毛利最高 |
-
-  | 剑桥科技 | +19.73% | +86.48% | +101.79% | 60亿/天 | +86% | 偏高 | Q1超预期 |
-
-  | **光迅科技** | +22.50% | **+220.41%** | **+326.94%** | 129亿/天 | **+220%** | **极度拥挤** | ⚠️ 需警惕 |
-
-  | 华工科技 | +15.51% | +53.28% | +145.36% | 131亿/天 | +53% | 偏高 | 低于预期 |
-
-  | 太辰光 | +80.85% | +125.41% | +141.59% | 54亿/天 | +125% | **高度拥挤** | ⚠️ Q1负增长 |
-
-  | 博创科技 | +21.83% | +92.97% | +124.42% | 49亿/天 | +93% | 高度拥挤 | 长芯盛故事强 |
-
-
-  ---
-
-
-  ## 8. 未来催化
-
-
-  ### 产业催化（已验证）
-
-  - **CSP资本开支**：2026年四大云厂商合计CAPEX预计同比增长53%，持续拉动800G/1.6T需求
-
-  - **1.6T出货加速**：中际旭创季度环比提升；新易盛1.6T全球首批量产；光迅1.6T批量交付能力具备
-
-  - **3.2T验证进展**：中际旭创3.2T产能准备中；光迅3.2T硅光NPO国内头部CSP验证通过
-
-  - **薄膜铌酸锂/磷化铟**：3.2T时代核心材料，LightCounting预测2031年市场近30亿元（CAGR 271%)
-
-
-  ### 政策催化（2026年6月最新）
-
-  - **工信部《"AI+通信"创新发展实施意见（2026—2028年）》**：将光电芯片、OCS、CPO列为国产替代攻坚重点；到2028年城域算力1ms时延圈覆盖率≥75%
-
-  - **深圳行动计划**：推动光模块从800G向1.6T/3.2T代际升级；发展硅光/LPO/CPO封装
-
-
-  ### 公司催化（待跟踪）
-
-  - 中际旭创、新易盛：2026中报（验证Q1高增是否持续）
-
-  - 华工科技：H股发行上市进展（已在港交所主板上市）
-
-  - 光迅科技：1.6T订单放量节奏（关键验证节点）
-
-  - 剑桥科技：1.6T量产进展（马来西亚产能认证中）
-
-  - 太辰光：MPO逐季放量节奏（Q1负增长需重点跟踪）
-
-  - 博创科技：长芯盛谷歌MPO逐季放量（25年十亿级体量）
-
-
-  ### 财报催化
-
-  - **2026中报（8月）**：验证高速光模块收入增速是否持续（重点关注1.6T占比和太辰光是否改善）
-
-  - **2026三季报（10月）**：年度业绩确认
-
-
-  ---
-
-
-  ## 9. 风险与证伪信号
-
-
-  ### 估值风险
-
-  太辰光（PE 213x）、博创科技（PE 219x）、光迅科技（PE 207x + 近6月+327%）估值极度透支，需警惕Q1后业绩证伪。
-
-
-  ### 业绩风险（⚠️ 重点关注）
-
-  - **太辰光Q1负增长**：净利润-17%、营收-8%，是板块唯一下滑标的，若Q2继续下滑则"AI受益"逻辑证伪
-
-  - **华工科技**：2025年实际低于机构一致预期营收+12.65%、净利润+19.78%
-
-  - **新易盛Q1汇兑损失**：剔除汇兑后约33亿符合预期，但汇兑风险持续存在
-
-
-  ### 技术路线风险
-
-  LPO vs CPO vs OCS路线竞争：头部CSP自建OCS（全光交换）可能减少对可插拔光模块需求。
-
-
-  ### 证伪信号（重点关注）
-
-  1. 太辰光Q2营收/净利继续同比下滑
-
-  2. 2026中报净利润增速<30%，或毛利率环比下降（竞争加剧）
-
-  3. 光迅科技/太辰光：股价放量滞涨+盈利预期不上修
-
-  4. 合同负债（预收款）环比下降（光迅Q4合同负债10.95亿，需跟踪变化）
-
-
-  ---
-
-
-  ## 10. 初步评分（更新版）
-
-
-  | 维度 | 分数 | 证据 |
-
-  |---:|---:|---|
-
-  | 产业景气度 | 5 | CSP CAPEX 2026预计+53%；800G规模化，1.6T加速；工信部/深圳政策加持 |
-
-  | 业绩兑现概率 | 4 | 8家2025净利润增速40-365%，Q1旭创+262%/新易盛+77%/天孚+46%验证 |
-
-  | 估值合理性 | 2 | 太辰光PE213x/Q1-17%；光迅PE207x/+327%；新易盛PE42x最优 |
-
-  | 泡沫安全分 | 2 | 多数标的近3月涨幅50-220%，拥挤度高 |
-
-  | 资金认可度 | 5 | 成交额历史高位；中际旭创344亿/天 |
-
-  | 催化强度 | 5 | CSP资本开支+53%；1.6T放量；工信部政策；2026中报验证窗口 |
-
-  | **综合评分** | **65** | 已补全机构预期；太辰光Q1下滑新增风险项 |
-
-
-  ---
-
-
-  ## 11. 投资优先级排序（更新版）
-
-
-  | 优先级 | 公司 | 代码 | 核心理由 |
-
-  |---|---|---|---|
-
-  | ★★★ **首选** | **新易盛** | 300502 | PE 42x(2026E)，增速最快（+187%/+236%），全球首批1.6T量产，PEG≈1x，板块内性价比最优 |
-
-  | ★★★ **首选** | **中际旭创** | 300308 | 龙头地位稳固（1.6T全球市占50-70%），Q1净利润57亿超预期40%，2027E PE仅29x |
-
-  | ★★ 次选 | **天孚通信** | 300394 | 毛利53.62%最高，Q1+46%稳健，2027E PE 62x相对合理，上游器件壁垒强 |
-
-  | ★★ 次选 | **华工科技** | 000988 | PE 53x(2026E)/39x(2027E)，订单排产至2026Q4，H股已上市 |
-
-  | ★ 谨慎 | 剑桥科技 | 603083 | PE 43x(2026E)/23x(2027E)看似便宜，但净利润仅2.23亿体量小，1.6T尚未量产 |
-
-  | ★ 谨慎 | 博创科技 | 300548 | PE 102x(2026E)极度透支；长芯盛故事强但短期估值压力大 |
-
-  | ⚠️ **回避** | 光迅科技 | 002281 | PE 207x + 近6月+327%，极度拥挤，赔率不足 |
-
-  | ⚠️ **回避** | **太辰光** | 300570 | PE 213x + Q1净利-17%（唯一负增长标的），逻辑需重新审视 |
-
-
-  ---
-
-
-  ## 12. 数据缺口
-
-
-  | 数据项 | 当前状态 | 获取方式 |
-
-  |---|---|---|
-
-  | 各公司PE/PB精确历史分位 | 定性高估，需Wind精确查询 | Wind历史估值工具 |
-
-  | 太辰光Q1负增长原因 | 待核实（季节性 or 需求放缓?） | 互动易/业绩说明会 |
-
-  | 光迅科技/博创科技2026Q1营收 | 待查 | 公司季报 |
-
-  | 华工科技2026Q1净利润 | 待查 | 公司季报 |
-
-  | CPO/OCS对可插拔光模块替代节奏 | 定性风险，需跟踪 | 头部CSP公告 |
-
-
-  **数据来源**：Tencent直连（行情）；BaoStock（财务）；巨潮/公司年报/研报（基本面核实）；工信部/深圳政府文件（政策催化）；同花顺/研报（机构一致预期）
-
-  **生成时间**：2026-06-19
-
-  '
+  source_index_refs: TENCENT-DAILY-HSOM-20260619; BAO-PROFIT-HSOM-20260619; 年报/研报基本面核实
+source_rows: []
+logs: {}
+card_markdown: ''

@@ -349,6 +349,7 @@ sectors:
       - high_speed_optical_modules
     evidence_file_ids:
       - high_speed_optical_modules
+      - trading_heat_optical_chain
     include_concepts:
       - 800G/1.6T/3.2T高速光模块
       - CPO/NPO共封装光学
@@ -399,6 +400,7 @@ sectors:
       - optical_components_fau_precision_optics
     evidence_file_ids:
       - optical_components_fau_precision_optics
+      - trading_heat_optical_chain
     include_concepts:
       - EML/VCSEL/CW激光器
       - FAU光纤阵列/MPO连接器

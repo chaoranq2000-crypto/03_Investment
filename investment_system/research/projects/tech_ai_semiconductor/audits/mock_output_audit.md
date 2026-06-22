@@ -1,4 +1,7 @@
-# Mock Output Audit
+# Mock Output Audit — Phase 1E-e-b
+
+Project: `tech_ai_semiconductor`
+Sector ID: `cpo_optical_module_silicon_photonics`
 
 Scope: engineering mock-output audit only. No formal research output is generated.
 

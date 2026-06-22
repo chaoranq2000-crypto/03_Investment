@@ -1,0 +1,3 @@
+﻿project_id,output_type,sector_id,stock_code,field,conflicting_values,source_ids,severity,resolution_status,notes,stock_name,resolution_note,handling,evidence_ids
+tech_ai_semiconductor,company_table,cpo_optical_module_silicon_photonics,MOCK,revenue_2024,N/A,"BAO-DAILY-HSOM-20260619,TENCENT-DAILY-HSOM-20260619,BAO-PROFIT-HSOM-20260619,BAO-STOCK-300308-20260619,BAO-STOCK-300502-20260619",low,dry_run,DRY_RUN_ONLY_NOT_FOR_INVESTMENT,中际旭创,,,
+tech_ai_semiconductor,company_table,cpo_optical_module_silicon_photonics,MOCK,revenue_2024,N/A,"BAO-DAILY-HSOM-20260619,TENCENT-DAILY-HSOM-20260619,BAO-PROFIT-HSOM-20260619,BAO-STOCK-300308-20260619,BAO-STOCK-300502-20260619",low,dry_run,DRY_RUN_ONLY_NOT_FOR_INVESTMENT,新易盛,,,

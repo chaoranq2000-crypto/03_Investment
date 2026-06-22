@@ -69,10 +69,15 @@ def _field_order(config: ProjectConfig, output_type: str) -> list[str]:
     return fields
 
 
-def _sector(config: ProjectConfig) -> dict[str, Any]:
-    for sector_id in PREFERRED_SECTORS:
+def _sector(config: ProjectConfig, sector_id: str | None) -> dict[str, Any]:
+    if sector_id:
         try:
             return get_sector(config, sector_id)
+        except KeyError:
+            raise RuntimeError(f"Sector '{sector_id}' not found in project.")
+    for preferred in PREFERRED_SECTORS:
+        try:
+            return get_sector(config, preferred)
         except KeyError:
             continue
     sectors = config.raw.get("sectors", []) or []
@@ -99,10 +104,10 @@ def _stock(config: ProjectConfig, sector_id: str) -> dict[str, Any]:
     }
 
 
-def build_mock_records(config: ProjectConfig) -> dict[str, dict[str, Any]]:
-    sector = _sector(config)
-    sector_id = sector.get("sector_id", PREFERRED_SECTORS[0])
-    stock = _stock(config, sector_id)
+def build_mock_records(config: ProjectConfig, sector_id: str | None = None) -> dict[str, dict[str, Any]]:
+    sector = _sector(config, sector_id)
+    sector_id_resolved = sector.get("sector_id", PREFERRED_SECTORS[0])
+    stock = _stock(config, sector_id_resolved)
     stock_code = stock.get("code", "MOCK.STK")
     stock_name = stock.get("name", "MOCK_STOCK")
     generated_at = _now_iso()
@@ -114,8 +119,8 @@ def build_mock_records(config: ProjectConfig) -> dict[str, dict[str, Any]]:
 
     common = {
         "project_id": config.project_id,
-        "sector_id": sector_id,
-        "sector_name": sector.get("sector_name", sector_id),
+        "sector_id": sector_id_resolved,
+        "sector_name": sector.get("sector_name", sector_id_resolved),
         "research_group_id": sector.get("research_group_id", ""),
         "source_ids": source_ids,
         "evidence_ids": evidence_ids,
@@ -186,9 +191,9 @@ def build_mock_records(config: ProjectConfig) -> dict[str, dict[str, Any]]:
             "project_id": config.project_id,
             "source_id": source_id,
             "subject_type": "sector",
-            "subject_id": sector_id,
-            "subject_name": sector.get("sector_name", sector_id),
-            "sector_id": sector_id,
+            "subject_id": sector_id_resolved,
+            "subject_name": sector.get("sector_name", sector_id_resolved),
+            "sector_id": sector_id_resolved,
             "claim_supported": MOCK_MARKER,
             "source_type": "other",
             "source_title": MOCK_MARKER,
@@ -204,7 +209,7 @@ def build_mock_records(config: ProjectConfig) -> dict[str, dict[str, Any]]:
         "missing_data_log": {
             "project_id": config.project_id,
             "output_type": "company_table",
-            "sector_id": sector_id,
+            "sector_id": sector_id_resolved,
             "missing_field": "mock_missing_field",
             "severity": "mock",
             "reason": MOCK_MARKER,
@@ -222,7 +227,7 @@ def build_mock_records(config: ProjectConfig) -> dict[str, dict[str, Any]]:
         "conflict_data_log": {
             "project_id": config.project_id,
             "output_type": "company_table",
-            "sector_id": sector_id,
+            "sector_id": sector_id_resolved,
             "field": "mock_conflict_field",
             "conflicting_values": "mock_a|mock_b",
             "source_ids": source_ids,
@@ -237,8 +242,8 @@ def build_mock_records(config: ProjectConfig) -> dict[str, dict[str, Any]]:
         },
         "score_table": {
             "project_id": config.project_id,
-            "sector_id": sector_id,
-            "sector_name": sector.get("sector_name", sector_id),
+            "sector_id": sector_id_resolved,
+            "sector_name": sector.get("sector_name", sector_id_resolved),
             "prosperity_score": "5",
             "prosperity_reason": MOCK_MARKER,
             "earnings_certainty_score": "5",
@@ -333,6 +338,8 @@ def validate_records(config: ProjectConfig, records: dict[str, dict[str, Any]]) 
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description="Build project-aware mock output records.")
     parser.add_argument("--project", required=True)
+    parser.add_argument("--sector-id", default=None, help="Canonical sector_id for mock output. Defaults to preferred sectors.")
+    parser.add_argument("--clean", action="store_true", help="Remove existing mock files before writing.")
     parser.add_argument("--dry-run", action="store_true", help="Print records only; no files written.")
     parser.add_argument("--write-audit-mock-files", action="store_true", help="Write mock files under audits/mock_outputs only.")
     args = parser.parse_args(argv)
@@ -341,14 +348,26 @@ def main(argv: list[str] | None = None) -> int:
         args.dry_run = True
 
     config = load_project(args.project, create_dirs=False, strict=False, silent=True)
-    records = build_mock_records(config)
+    records = build_mock_records(config, args.sector_id)
     results = validate_records(config, records)
 
     print(f"Mock output builder project: {config.project_id}")
+    print(f"sector_id: {args.sector_id or 'default_preferred'}")
     print(f"output_type_count: {len(list_output_types(config))}")
     print(f"mock_record_count: {len(records)}")
     print(f"record_shape_pass_count: {sum(1 for item in results.values() if item.get('ok'))}")
     print(f"record_shape_fail_count: {sum(1 for item in results.values() if not item.get('ok'))}")
+
+    if args.clean:
+        mock_dir = get_mock_output_dir(config)
+        if mock_dir.exists():
+            import shutil
+            for name in MOCK_FILENAMES.values():
+                path = mock_dir / name
+                if path.exists():
+                    path.unlink()
+                    print(f"removed: {path}")
+        print("clean: done")
 
     if args.dry_run:
         print("dry_run: true")

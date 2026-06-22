@@ -40,6 +40,20 @@ def _sector_required(sector: dict[str, Any]) -> bool:
     )
 
 
+def _manifest_sector_ids(ef: dict[str, Any]) -> set[str]:
+    ids: set[str] = set()
+    sid = str(ef.get("sector_id", "") or "")
+    if sid:
+        ids.add(sid)
+    for key in ("sector_ids", "sectors"):
+        raw = ef.get(key, []) or []
+        if isinstance(raw, str):
+            ids.add(raw)
+        else:
+            ids.update(str(item) for item in raw if item)
+    return ids
+
+
 def audit_project(project_id: str) -> tuple[list[Finding], dict[str, Any]]:
     config = load_project(project_id, silent=True, strict=False)
     sectors = config.raw.get("sectors", [])
@@ -65,19 +79,25 @@ def audit_project(project_id: str) -> tuple[list[Finding], dict[str, Any]]:
     for ef_id in sorted(duplicate_ids):
         findings.append(Finding("ERROR", "EVIDENCE_FILE_ID_DUPLICATE", f"duplicate evidence_file_id: {ef_id}"))
 
-    sector_ref_ids: dict[str, str] = {}
+    sector_ref_ids: dict[str, set[str]] = {}
     for sector in sectors:
         sid = sector.get("sector_id", "")
         for ef_id in sector.get("evidence_file_ids", []) or []:
-            if ef_id in sector_ref_ids and sector_ref_ids[ef_id] != sid:
-                findings.append(
-                    Finding(
-                        "ERROR",
-                        "EVIDENCE_FILE_ID_MULTI_BOUND",
-                        f"evidence_file_id '{ef_id}' referenced by both {sector_ref_ids[ef_id]} and {sid}.",
+            refs = sector_ref_ids.setdefault(ef_id, set())
+            if refs and sid not in refs:
+                manifest_ref = ef_id_to_manifest.get(ef_id, {})
+                allowed_refs = _manifest_sector_ids(manifest_ref)
+                proposed_refs = set(refs)
+                proposed_refs.add(sid)
+                if not proposed_refs.issubset(allowed_refs):
+                    findings.append(
+                        Finding(
+                            "ERROR",
+                            "EVIDENCE_FILE_ID_MULTI_BOUND",
+                            f"evidence_file_id '{ef_id}' referenced by both {sorted(refs)} and {sid}.",
+                        )
                     )
-                )
-            sector_ref_ids[ef_id] = sid
+            refs.add(sid)
             if ef_id not in ef_id_to_manifest:
                 findings.append(
                     Finding(
@@ -117,15 +137,17 @@ def audit_project(project_id: str) -> tuple[list[Finding], dict[str, Any]]:
                     Finding("ERROR", "EVIDENCE_SECTOR_ID_INVALID", f"evidence_file_id '{ef_id}' has invalid sector_id '{sid}'.")
                 )
 
-        if ef_id and ef_id in sector_ref_ids and sector_ref_ids[ef_id] != sid:
+        allowed_refs = _manifest_sector_ids(ef)
+        refs = sector_ref_ids.get(ef_id, set())
+        if ef_id and refs and not refs.issubset(allowed_refs):
             findings.append(
                 Finding(
                     "ERROR",
                     "EVIDENCE_FILE_ID_SECTOR_MISMATCH",
-                    f"evidence_file_id '{ef_id}' bound to {sid} but sector_universe references {sector_ref_ids[ef_id]}.",
+                    f"evidence_file_id '{ef_id}' bound to {sorted(allowed_refs)} but sector_universe references {sorted(refs)}.",
                 )
             )
-        elif ef_id and ef_id not in sector_ref_ids:
+        elif ef_id and not refs:
             findings.append(
                 Finding(
                     "ERROR",
@@ -213,7 +235,7 @@ def audit_project(project_id: str) -> tuple[list[Finding], dict[str, Any]]:
         "coverage": coverage,
         "duplicate_ids": sorted(duplicate_ids),
         "manifest_ids": sorted(ef_id_to_manifest),
-        "sector_ref_ids": dict(sorted(sector_ref_ids.items())),
+        "sector_ref_ids": {key: sorted(value) for key, value in sorted(sector_ref_ids.items())},
     }
     return findings, summary
 
