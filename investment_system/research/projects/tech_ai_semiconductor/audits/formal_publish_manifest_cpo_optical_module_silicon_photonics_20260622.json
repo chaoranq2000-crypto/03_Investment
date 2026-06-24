@@ -1,14 +1,15 @@
 {
   "project_id": "tech_ai_semiconductor",
   "sector_id": "cpo_optical_module_silicon_photonics",
-  "created_at": "2026-06-21T18:22:26+00:00",
-  "stage": "formal_publish_readiness_rehearsal",
-  "dry_run": true,
-  "confirm_publish_requested": false,
-  "confirm_publish_supported_in_this_phase": false,
-  "publish_executed": false,
-  "manual_confirmation_required": true,
-  "publish_status": "awaiting_manual_confirmation",
+  "created_at": "2026-06-22T10:15:06+00:00",
+  "stage": "formal_publish_sector_card_only",
+  "publish_scope": "sector_card_only",
+  "dry_run": false,
+  "confirm_publish_requested": true,
+  "confirm_publish_supported_in_this_phase": true,
+  "publish_executed": true,
+  "manual_confirmation_required": false,
+  "publish_status": "published_sector_card_only",
   "gated_formal_root": "C:\\Projects\\03_Investment\\investment_system\\research\\projects\\tech_ai_semiconductor\\audits\\gated_formal_outputs",
   "gated_metadata_path": "C:\\Projects\\03_Investment\\investment_system\\research\\projects\\tech_ai_semiconductor\\audits\\gated_formal_outputs\\gated_formal_cpo_optical_module_silicon_photonics_20260622_metadata.json",
   "release_manifest_path": "C:\\Projects\\03_Investment\\investment_system\\research\\projects\\tech_ai_semiconductor\\audits\\formal_publish_manifest_cpo_optical_module_silicon_photonics_20260622.json",
@@ -133,5 +134,9 @@
     "requires_release_manifest": true,
     "refuse_non_sector_overwrite": true,
     "refuse_unexpected_final_output_writes": true
+  },
+  "publish_log_path": "C:\\Projects\\03_Investment\\investment_system\\research\\projects\\tech_ai_semiconductor\\audits\\formal_publish_log_cpo_optical_module_silicon_photonics_20260622.json",
+  "published_files": {
+    "sector_card": "C:\\Projects\\03_Investment\\科技主线调研输出\\3_光通信\\高速互连\\P0_光模块_CPO_硅光.md"
   }
 }

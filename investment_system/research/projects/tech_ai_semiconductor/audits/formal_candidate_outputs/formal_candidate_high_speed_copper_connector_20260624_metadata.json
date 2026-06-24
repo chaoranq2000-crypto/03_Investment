@@ -1,0 +1,90 @@
+{
+  "project_id": "tech_ai_semiconductor",
+  "sector_id": "high_speed_copper_connector",
+  "run_id": "20260624",
+  "updated_at": "2026-06-23T17:57:53+00:00",
+  "candidate_only": true,
+  "candidate_scope": "sector_card_only",
+  "candidate_status": "content_enriched",
+  "old_file_handling": "overwritten_in_place",
+  "simplified_flow": "Evidence Gate -> Generate Candidate -> Candidate Gate -> Publish Gate -> manual confirmation -> sector-card-only publish -> Post-publish Check",
+  "formal_candidate_files": {
+    "sector_card": "C:\\Projects\\03_Investment\\investment_system\\research\\projects\\tech_ai_semiconductor\\audits\\formal_candidate_outputs\\formal_candidate_high_speed_copper_connector_20260624_sector_card.md"
+  },
+  "source_ids": [
+    "TUSHARE-DAILY-BASIC-HSCC-20260624",
+    "TUSHARE-DAILY-HSCC-20260624",
+    "TUSHARE-INCOME-HSCC-20260624",
+    "CNINFO-AR-HSCC-002475-20260415",
+    "CNINFO-AR-HSCC-002130-20260401"
+  ],
+  "evidence_ids": [
+    "EV-HSCC-SECTOR-MARKET-20260624",
+    "EV-HSCC-FIN-002475-20260624",
+    "EV-HSCC-FIN-002130-20260624",
+    "EV-HSCC-FIN-300563-20260624",
+    "EV-HSCC-FIN-300913-20260624",
+    "EV-HSCC-FIN-605277-20260624",
+    "EV-TH-HSCC-002475-20260624",
+    "EV-TH-HSCC-002130-20260624",
+    "EV-TH-HSCC-300563-20260624",
+    "EV-TH-HSCC-300913-20260624",
+    "EV-TH-HSCC-605277-20260624",
+    "EV-HSCC-PRODUCT-002475-20260624",
+    "EV-HSCC-FINSEG-002475-20260624",
+    "EV-HSCC-PRODUCT-002130-20260624",
+    "EV-HSCC-FINSEG-002130-20260624",
+    "EV-HSCC-INDUSTRY-CONTEXT-20260624"
+  ],
+  "new_source_ids": [
+    "CNINFO-AR-HSCC-002475-20260415",
+    "CNINFO-AR-HSCC-002130-20260401"
+  ],
+  "new_evidence_ids": [
+    "EV-HSCC-PRODUCT-002475-20260624",
+    "EV-HSCC-FINSEG-002475-20260624",
+    "EV-HSCC-PRODUCT-002130-20260624",
+    "EV-HSCC-FINSEG-002130-20260624",
+    "EV-HSCC-INDUSTRY-CONTEXT-20260624"
+  ],
+  "evidence_strength": {
+    "strong": [
+      "EV-HSCC-PRODUCT-002475-20260624",
+      "EV-HSCC-FINSEG-002475-20260624",
+      "EV-HSCC-PRODUCT-002130-20260624",
+      "EV-HSCC-FINSEG-002130-20260624"
+    ],
+    "supporting": [
+      "EV-HSCC-INDUSTRY-CONTEXT-20260624"
+    ],
+    "context_only": []
+  },
+  "company_coverage": {
+    "002475.SZ": "strong_product_and_segment_evidence",
+    "002130.SZ": "strong_product_segment_capacity_evidence",
+    "300563.SZ": "financial_trading_only_primary_source_missing",
+    "300913.SZ": "financial_trading_only_primary_source_missing",
+    "605277.SH": "financial_trading_only_primary_source_missing"
+  },
+  "missing_evidence_fields": [
+    "company_primary_source_300563",
+    "company_primary_source_300913",
+    "company_primary_source_605277",
+    "named_customer_order_certification"
+  ],
+  "publish_gate_recommendation": false,
+  "publish_gate_recommendation_reason": "content_enriched but three companies still lack parsed primary-source industry evidence and named customer/order/certification evidence is incomplete",
+  "forbidden_outputs_generated": [],
+  "gated_formal_generated": false,
+  "release_manifest_generated": false,
+  "formal_output_root_written": false,
+  "validate_outputs_exit_code": 0,
+  "gate": {
+    "result": "PASS",
+    "ERROR": 0,
+    "WARNING": 0,
+    "INFO": 9,
+    "recommend_publish_gate": false,
+    "candidate_status_after_gate": "content_enriched"
+  }
+}

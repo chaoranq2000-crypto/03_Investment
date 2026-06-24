@@ -1,0 +1,304 @@
+schema_version: '1.1'
+evidence_file_id: high_speed_copper_connector_product_validation
+status: schema_normalized
+project_ids:
+  - tech_ai_semiconductor
+canonical_sector_ids:
+  - high_speed_copper_connector
+_audit_metadata:
+  created_for_phase: 1E-j-d
+  created_date: '2026-06-24'
+  source_id_convention_version: '1.1'
+  extraction_method: MinerU local API 3.3.1, backend=pipeline, parse_method=txt
+  note: >
+    Product-validation evidence for high_speed_copper_connector. The current
+    refresh only uses official annual reports that were locally downloaded and
+    parsed by MinerU. Companies without locally parsed primary-source material
+    remain in missing_evidence and must not be promoted to deterministic
+    product/customer/order conclusions.
+
+source_index:
+  - source_id: CNINFO-AR-HSCC-002475-20260415
+    source_type: annual_report
+    title: 立讯精密工业股份有限公司2025年年度报告
+    publisher: 巨潮资讯/立讯精密工业股份有限公司
+    date: '2026-04-15'
+    url: http://static.cninfo.com.cn/finalpage/2026-04-15/1225104908.PDF
+    access_method: web_download
+    local_path: investment_system/data/raw/mineru/high_speed_copper_connector/2026-06-24/002475.SZ_1225104908/mineru_text_0.md
+    reliability_level: 高
+    notes: >
+      Local PDF cache:
+      investment_system/data/raw/cninfo/high_speed_copper_connector/2026-06-24/002475.SZ_1225104908_2025_annual_report.pdf.
+      MinerU task_id=c20706fb-566f-4bfc-bb06-8f8ef3315dee.
+  - source_id: CNINFO-AR-HSCC-002130-20260401
+    source_type: annual_report
+    title: 深圳市沃尔核材股份有限公司2025年年度报告
+    publisher: 巨潮资讯/深圳市沃尔核材股份有限公司
+    date: '2026-04-01'
+    url: http://static.cninfo.com.cn/finalpage/2026-04-01/1225067232.PDF
+    access_method: web_download
+    local_path: investment_system/data/raw/mineru/high_speed_copper_connector/2026-06-24/002130.SZ_1225067232/mineru_text_0.md
+    reliability_level: 高
+    notes: >
+      Local PDF cache:
+      investment_system/data/raw/cninfo/high_speed_copper_connector/2026-06-24/002130.SZ_1225067232_2025_annual_report.pdf.
+      MinerU task_id=eebf5b46-6bf2-4b82-bcfc-39ea09f0fdf2.
+
+evidence_items:
+  - evidence_id: EV-HSCC-PRODUCT-002475-20260624
+    source_id: CNINFO-AR-HSCC-002475-20260415
+    source_ids:
+      - CNINFO-AR-HSCC-002475-20260415
+    project_id: tech_ai_semiconductor
+    sector_id: high_speed_copper_connector
+    subject_type: company
+    subject_id: 002475.SZ
+    subject_name: 立讯精密
+    claim: >
+      The 2025 annual report lists data-center copper high-speed interconnect
+      solutions including Intrepid high-speed backplane, CPC/NPC, external
+      interconnect products such as DAC/ACC/Lite Active Cable and related
+      connectors, and internal interconnect products such as high-speed internal
+      cable, SSIO and Riser Cable. It also reports that 224G KOOLIO CPC/NPC,
+      224G Intrepid NEXUS backplane connector, and Intrepid Cable Cartridge
+      high-speed cable backplane solutions have been commercialized in some
+      mainstream domestic and overseas AI clusters.
+    evidence_type: company_product_validation
+    evidence_strength: strong
+    metrics_supported:
+      - product_stage
+      - dac_acc_exposure
+      - high_speed_connector_exposure
+      - ai_data_center_interconnect
+      - industrial_chain_position
+      - customer_validation_partial
+    time_scope: '2025FY'
+    confidence: 高
+    used_for:
+      - sector_card
+      - source_index
+      - missing_data_log
+      - risk_review
+    not_allowed_for:
+      - investment_conclusion
+      - position_sizing
+      - final_rating
+    notes: >
+      Strong evidence for product existence, product-stage progress, and partial
+      customer/product validation. It is not a quantified order backlog,
+      named-customer contract, or position-sizing basis.
+
+  - evidence_id: EV-HSCC-FINSEG-002475-20260624
+    source_id: CNINFO-AR-HSCC-002475-20260415
+    source_ids:
+      - CNINFO-AR-HSCC-002475-20260415
+    project_id: tech_ai_semiconductor
+    sector_id: high_speed_copper_connector
+    subject_type: company
+    subject_id: 002475.SZ
+    subject_name: 立讯精密
+    claim: >
+      The 2025 annual report discloses the communications and data-center
+      business segment revenue as 24,567,610,128.22 yuan, 7.39% of total
+      revenue, up 33.81% year on year, with segment gross margin of 18.40%.
+      The segment includes AI server parts, high-speed electrical interconnect,
+      optical interconnect, thermal management, power management, server systems
+      and communication infrastructure products; the report does not isolate
+      DAC/AEC revenue.
+    evidence_type: company_segment_financial_disclosure
+    evidence_strength: strong
+    metrics_supported:
+      - segment_revenue
+      - segment_gross_margin
+      - industrial_chain_position
+      - revenue_context
+    time_scope: '2025FY'
+    confidence: 高
+    used_for:
+      - sector_card
+      - source_index
+      - missing_data_log
+      - risk_review
+    not_allowed_for:
+      - investment_conclusion
+      - position_sizing
+      - final_rating
+    notes: >
+      Segment disclosure supports scale/context for communications and
+      data-center activity, but not product-level copper-cable revenue.
+
+  - evidence_id: EV-HSCC-PRODUCT-002130-20260624
+    source_id: CNINFO-AR-HSCC-002130-20260401
+    source_ids:
+      - CNINFO-AR-HSCC-002130-20260401
+    project_id: tech_ai_semiconductor
+    sector_id: high_speed_copper_connector
+    subject_type: company
+    subject_id: 002130.SZ
+    subject_name: 沃尔核材
+    claim: >
+      The 2025 annual report states that the communications-cable business
+      includes high-speed communication cables, automotive cables and industrial
+      cables, with low signal attenuation, strong anti-interference ability and
+      high-speed data transmission. It reports stable delivery of multiple
+      224G high-speed communication cable products, sample development of 448G
+      high-speed communication cable products submitted to key customers for
+      validation, PCIe 7.0 high-speed cable development with validation
+      completed and small-batch trial production, and capacity expansion at
+      Huizhou and Vietnam production bases.
+    evidence_type: company_product_validation
+    evidence_strength: strong
+    metrics_supported:
+      - product_stage
+      - high_speed_copper_cable_exposure
+      - customer_validation_partial
+      - capacity_progress
+      - industrial_chain_position
+    time_scope: '2025FY'
+    confidence: 高
+    used_for:
+      - sector_card
+      - source_index
+      - missing_data_log
+      - risk_review
+    not_allowed_for:
+      - investment_conclusion
+      - position_sizing
+      - final_rating
+    notes: >
+      Strong evidence for high-speed communications-cable exposure, 224G/448G
+      product stage and capacity progress. The annual report does not provide
+      a named DAC/AEC product line, named end customer, or signed order amount.
+
+  - evidence_id: EV-HSCC-FINSEG-002130-20260624
+    source_id: CNINFO-AR-HSCC-002130-20260401
+    source_ids:
+      - CNINFO-AR-HSCC-002130-20260401
+    project_id: tech_ai_semiconductor
+    sector_id: high_speed_copper_connector
+    subject_type: company
+    subject_id: 002130.SZ
+    subject_name: 沃尔核材
+    claim: >
+      The 2025 annual report reports communications-cable business revenue of
+      2,551 million yuan, up 49.83% year on year, and high-speed communications
+      cable revenue of 1,017 million yuan, up 237.99% year on year. Segment
+      reporting also discloses communications-cable segment revenue of
+      2,582,822,622.53 yuan and segment cost of 1,986,039,709.16 yuan.
+    evidence_type: company_segment_financial_disclosure
+    evidence_strength: strong
+    metrics_supported:
+      - segment_revenue
+      - product_revenue_partial
+      - high_speed_cable_revenue
+      - revenue_growth
+      - revenue_context
+    time_scope: '2025FY'
+    confidence: 高
+    used_for:
+      - sector_card
+      - source_index
+      - missing_data_log
+      - risk_review
+    not_allowed_for:
+      - investment_conclusion
+      - position_sizing
+      - final_rating
+    notes: >
+      Strong evidence for revenue scale and high-speed cable growth. The
+      disclosure is not a forecast, rating, or investment recommendation.
+
+  - evidence_id: EV-HSCC-INDUSTRY-CONTEXT-20260624
+    source_id: CNINFO-AR-HSCC-002475-20260415
+    source_ids:
+      - CNINFO-AR-HSCC-002475-20260415
+      - CNINFO-AR-HSCC-002130-20260401
+    project_id: tech_ai_semiconductor
+    sector_id: high_speed_copper_connector
+    subject_type: sector
+    subject_id: high_speed_copper_connector
+    subject_name: 高速铜缆/DAC/AEC/连接器
+    claim: >
+      Annual-report industry discussion from the two companies describes AI
+      data-center buildout, short-distance server/switch interconnect, and the
+      role of high-speed copper cable or copper/optical interconnect as industry
+      background. This item is supporting context only for sector chain
+      positioning and cannot substitute for company-level product, customer,
+      order, certification or capacity evidence.
+    evidence_type: industry_chain_context
+    evidence_strength: supporting
+    metrics_supported:
+      - industrial_chain_position
+      - sector_level_claim
+      - risk_evidence
+    time_scope: '2025FY'
+    confidence: 中高
+    used_for:
+      - sector_card
+      - source_index
+      - missing_data_log
+      - risk_review
+    not_allowed_for:
+      - investment_conclusion
+      - position_sizing
+      - final_rating
+      - company_product_validation
+    notes: >
+      Supporting evidence only. Deterministic company exposure must rely on
+      company-specific evidence items above.
+
+missing_evidence:
+  - missing_field: company_primary_source_300563
+    reason: >
+      神宇股份 official annual-report PDF was identified but could not be
+      downloaded in this run because the required network-download approval was
+      rejected. No MinerU-parsed primary-source product evidence was collected.
+    affected_subjects:
+      - 300563.SZ
+    required_source_types:
+      - annual_report
+      - announcement
+      - exchange_qna
+      - investor_relations
+  - missing_field: company_primary_source_300913
+    reason: >
+      兆龙互连 official annual-report PDF was identified but could not be
+      downloaded in this run because the required network-download approval was
+      rejected. No MinerU-parsed primary-source product evidence was collected.
+    affected_subjects:
+      - 300913.SZ
+    required_source_types:
+      - annual_report
+      - announcement
+      - exchange_qna
+      - investor_relations
+  - missing_field: company_primary_source_605277
+    reason: >
+      新亚电子 official annual-report PDF was identified but could not be
+      downloaded in this run because the required network-download approval was
+      rejected. No MinerU-parsed primary-source product evidence was collected.
+    affected_subjects:
+      - 605277.SH
+    required_source_types:
+      - annual_report
+      - announcement
+      - exchange_qna
+      - investor_relations
+  - missing_field: named_customer_order_certification
+    reason: >
+      The current strong evidence improves product-stage, partial validation,
+      capacity and segment-revenue visibility for 002475.SZ and 002130.SZ, but
+      does not provide named customer contracts, order amounts, certification
+      certificates, or backlog details for the sector stock pool.
+    affected_subjects:
+      - 002475.SZ
+      - 002130.SZ
+      - 300563.SZ
+      - 300913.SZ
+      - 605277.SH
+    required_source_types:
+      - announcement
+      - exchange_qna
+      - investor_relations
+      - annual_report

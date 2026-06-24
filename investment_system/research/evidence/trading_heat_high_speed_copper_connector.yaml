@@ -1,0 +1,208 @@
+schema_version: '1.1'
+evidence_file_id: trading_heat_high_speed_copper_connector
+status: schema_normalized
+project_ids:
+  - tech_ai_semiconductor
+canonical_sector_ids:
+  - high_speed_copper_connector
+_audit_metadata:
+  created_for_phase: 1E-j-b
+  created_date: '2026-06-24'
+  source_id_convention_version: '1.1'
+  note: >
+    Trading heat facts only. Tushare Pro is the priority source for this phase.
+    These facts must not be used as standalone investment conclusions, final
+    ratings, or position-sizing basis.
+
+source_index:
+  - source_id: TUSHARE-DAILY-HSCC-20260624
+    source_type: market_data
+    title: Tushare Pro daily k-line for high_speed_copper_connector stock pool
+    publisher: Tushare Pro
+    date: '2026-06-24'
+    url: ''
+    access_method: script_query
+    local_path: ''
+    dataset_ref: tushare:daily(ts_code,start_date=20260301,end_date=20260623)
+    reliability_level: 高
+    notes: >
+      Queried through investment_system.pipelines.tushare_client.get_tushare_pro().
+      Fields used: trade_date, open, high, low, close, pre_close, pct_chg,
+      vol, amount. Tushare daily amount is recorded in thousand yuan. Last
+      available trade date in this query: 2026-06-23.
+
+evidence_items:
+  - evidence_id: EV-TH-HSCC-002475-20260624
+    source_id: TUSHARE-DAILY-HSCC-20260624
+    source_ids:
+      - TUSHARE-DAILY-HSCC-20260624
+    project_id: tech_ai_semiconductor
+    sector_id: high_speed_copper_connector
+    subject_type: company
+    subject_id: 002475.SZ
+    subject_name: 立讯精密
+    claim: >
+      trading_heat fact from Tushare daily: as_of_date=2026-06-23;
+      close_price=69.36; pct_chg=1.4035; return_20d_pct=-7.15;
+      return_60d_pct=49.68; amount_thousand_yuan=18109829.0426.
+    evidence_type: trading_heat_fact
+    metrics_supported:
+      - price_data
+      - close_price
+      - return_20d
+      - return_60d
+      - trading_amount
+      - momentum_data
+    time_scope: '2026-06-23'
+    confidence: 高
+    used_for:
+      - sector_card
+      - company_table
+      - comparison_table
+      - source_index
+      - risk_review
+    not_allowed_for:
+      - investment_conclusion
+      - position_sizing
+      - final_rating
+    notes: Source row count=77; query window=20260301-20260623.
+
+  - evidence_id: EV-TH-HSCC-002130-20260624
+    source_id: TUSHARE-DAILY-HSCC-20260624
+    source_ids:
+      - TUSHARE-DAILY-HSCC-20260624
+    project_id: tech_ai_semiconductor
+    sector_id: high_speed_copper_connector
+    subject_type: company
+    subject_id: 002130.SZ
+    subject_name: 沃尔核材
+    claim: >
+      trading_heat fact from Tushare daily: as_of_date=2026-06-23;
+      close_price=19.71; pct_chg=-3.5714; return_20d_pct=-9.04;
+      return_60d_pct=-16.84; amount_thousand_yuan=770073.36369.
+    evidence_type: trading_heat_fact
+    metrics_supported:
+      - price_data
+      - close_price
+      - return_20d
+      - return_60d
+      - trading_amount
+      - momentum_data
+    time_scope: '2026-06-23'
+    confidence: 高
+    used_for:
+      - sector_card
+      - company_table
+      - comparison_table
+      - source_index
+      - risk_review
+    not_allowed_for:
+      - investment_conclusion
+      - position_sizing
+      - final_rating
+    notes: Source row count=77; query window=20260301-20260623.
+
+  - evidence_id: EV-TH-HSCC-300563-20260624
+    source_id: TUSHARE-DAILY-HSCC-20260624
+    source_ids:
+      - TUSHARE-DAILY-HSCC-20260624
+    project_id: tech_ai_semiconductor
+    sector_id: high_speed_copper_connector
+    subject_type: company
+    subject_id: 300563.SZ
+    subject_name: 神宇股份
+    claim: >
+      trading_heat fact from Tushare daily: as_of_date=2026-06-23;
+      close_price=28.46; pct_chg=-2.4005; return_20d_pct=-7.45;
+      return_60d_pct=-5.45; amount_thousand_yuan=94938.9391.
+    evidence_type: trading_heat_fact
+    metrics_supported:
+      - price_data
+      - close_price
+      - return_20d
+      - return_60d
+      - trading_amount
+      - momentum_data
+    time_scope: '2026-06-23'
+    confidence: 高
+    used_for:
+      - sector_card
+      - company_table
+      - comparison_table
+      - source_index
+      - risk_review
+    not_allowed_for:
+      - investment_conclusion
+      - position_sizing
+      - final_rating
+    notes: Source row count=77; query window=20260301-20260623.
+
+  - evidence_id: EV-TH-HSCC-300913-20260624
+    source_id: TUSHARE-DAILY-HSCC-20260624
+    source_ids:
+      - TUSHARE-DAILY-HSCC-20260624
+    project_id: tech_ai_semiconductor
+    sector_id: high_speed_copper_connector
+    subject_type: company
+    subject_id: 300913.SZ
+    subject_name: 兆龙互连
+    claim: >
+      trading_heat fact from Tushare daily: as_of_date=2026-06-23;
+      close_price=57.23; pct_chg=-1.8353; return_20d_pct=5.01;
+      return_60d_pct=23.39; amount_thousand_yuan=613551.3361.
+    evidence_type: trading_heat_fact
+    metrics_supported:
+      - price_data
+      - close_price
+      - return_20d
+      - return_60d
+      - trading_amount
+      - momentum_data
+    time_scope: '2026-06-23'
+    confidence: 高
+    used_for:
+      - sector_card
+      - company_table
+      - comparison_table
+      - source_index
+      - risk_review
+    not_allowed_for:
+      - investment_conclusion
+      - position_sizing
+      - final_rating
+    notes: Source row count=77; query window=20260301-20260623.
+
+  - evidence_id: EV-TH-HSCC-605277-20260624
+    source_id: TUSHARE-DAILY-HSCC-20260624
+    source_ids:
+      - TUSHARE-DAILY-HSCC-20260624
+    project_id: tech_ai_semiconductor
+    sector_id: high_speed_copper_connector
+    subject_type: company
+    subject_id: 605277.SH
+    subject_name: 新亚电子
+    claim: >
+      trading_heat fact from Tushare daily: as_of_date=2026-06-23;
+      close_price=17.73; pct_chg=-3.1148; return_20d_pct=-23.11;
+      return_60d_pct=-19.15; amount_thousand_yuan=165677.3230.
+    evidence_type: trading_heat_fact
+    metrics_supported:
+      - price_data
+      - close_price
+      - return_20d
+      - return_60d
+      - trading_amount
+      - momentum_data
+    time_scope: '2026-06-23'
+    confidence: 高
+    used_for:
+      - sector_card
+      - company_table
+      - comparison_table
+      - source_index
+      - risk_review
+    not_allowed_for:
+      - investment_conclusion
+      - position_sizing
+      - final_rating
+    notes: Source row count=77; query window=20260301-20260623.

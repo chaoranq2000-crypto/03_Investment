@@ -1,0 +1,339 @@
+schema_version: '1.1'
+evidence_file_id: high_speed_copper_connector
+status: schema_normalized
+project_ids:
+  - tech_ai_semiconductor
+canonical_sector_ids:
+  - high_speed_copper_connector
+_audit_metadata:
+  created_for_phase: 1E-j-b
+  created_date: '2026-06-24'
+  source_id_convention_version: '1.1'
+  note: >
+    Evidence for high_speed_copper_connector uses Tushare Pro as the priority
+    financial and market-data source. Product/customer/order evidence is not
+    inferred from stock_universe notes or seed documents; missing source-backed
+    product evidence is recorded in missing_evidence.
+
+source_index:
+  - source_id: TUSHARE-INCOME-HSCC-20260624
+    source_type: financial_data
+    title: Tushare Pro income statements for high_speed_copper_connector stock pool
+    publisher: Tushare Pro
+    date: '2026-06-24'
+    url: ''
+    access_method: script_query
+    local_path: ''
+    dataset_ref: tushare:income(ts_code,start_date=20250101,end_date=20260624)
+    reliability_level: 高
+    notes: >
+      Queried through investment_system.pipelines.tushare_client.get_tushare_pro().
+      Fields used: ts_code, ann_date, f_ann_date, end_date, report_type,
+      total_revenue, n_income, n_income_attr_p. No token is stored in this file.
+  - source_id: TUSHARE-DAILY-BASIC-HSCC-20260624
+    source_type: market_data
+    title: Tushare Pro daily_basic valuation fields for high_speed_copper_connector stock pool
+    publisher: Tushare Pro
+    date: '2026-06-24'
+    url: ''
+    access_method: script_query
+    local_path: ''
+    dataset_ref: tushare:daily_basic(ts_code,start_date=20260301,end_date=20260623)
+    reliability_level: 高
+    notes: >
+      Queried through investment_system.pipelines.tushare_client.get_tushare_pro().
+      Fields used: trade_date, turnover_rate, volume_ratio, pe_ttm, pb,
+      total_mv, circ_mv. Last available trade date in this query: 2026-06-23.
+
+evidence_items:
+  - evidence_id: EV-HSCC-SECTOR-MARKET-20260624
+    source_id: TUSHARE-DAILY-BASIC-HSCC-20260624
+    source_ids:
+      - TUSHARE-DAILY-BASIC-HSCC-20260624
+    project_id: tech_ai_semiconductor
+    sector_id: high_speed_copper_connector
+    subject_type: sector
+    subject_id: high_speed_copper_connector
+    subject_name: 高速铜缆/DAC/AEC/连接器
+    claim: >
+      Sector-level market/valuation evidence: Tushare daily_basic returned
+      valuation and turnover fields for all 5 stock_universe representatives
+      on 2026-06-23. This verifies that the current stock pool has usable
+      market-data coverage for valuation/trading-risk review, but it does not
+      by itself prove DAC/AEC product exposure or customer/order status.
+    evidence_type: sector_level_market_valuation_evidence
+    metrics_supported:
+      - sector_level_claim
+      - valuation
+      - pe_ttm
+      - pb
+      - turnover_data
+      - risk_evidence
+    time_scope: '2026-06-23'
+    confidence: 中高
+    used_for:
+      - sector_card
+      - source_index
+      - missing_data_log
+      - risk_review
+    not_allowed_for:
+      - investment_conclusion
+      - position_sizing
+      - final_rating
+    notes: >
+      This item is a market/valuation evidence item, not a product-validation
+      evidence item. Product/customer/order evidence remains missing until
+      annual reports, announcements, exchange Q&A, or IR records are collected.
+
+  - evidence_id: EV-HSCC-FIN-002475-20260624
+    source_id: TUSHARE-INCOME-HSCC-20260624
+    source_ids:
+      - TUSHARE-INCOME-HSCC-20260624
+      - TUSHARE-DAILY-BASIC-HSCC-20260624
+    project_id: tech_ai_semiconductor
+    sector_id: high_speed_copper_connector
+    subject_type: company
+    subject_id: 002475.SZ
+    subject_name: 立讯精密
+    claim: >
+      Tushare income statement facts: 2025 annual total_revenue=332344443143.39
+      yuan, n_income=18170236828.67 yuan, n_income_attr_p=16599769785.64 yuan,
+      ann_date=20260415. 2026Q1 total_revenue=83888491960.13 yuan,
+      n_income=3967636788.13 yuan, n_income_attr_p=3659643487.30 yuan,
+      ann_date=20260429. Tushare daily_basic on 2026-06-23 reports
+      pe_ttm=29.4841, pb=5.7459, turnover_rate=3.5355,
+      total_mv=50759436.2673 (Tushare unit). These facts support financial,
+      valuation, and trading-risk review only; they do not verify DAC/AEC
+      product exposure.
+    evidence_type: company_financial_valuation_evidence
+    metrics_supported:
+      - revenue_2025_actual
+      - revenue_2026Q1_actual
+      - profit_data
+      - net_profit_2025_actual
+      - net_profit_2026Q1_actual
+      - valuation
+      - pe_ttm
+      - pb
+      - turnover_data
+      - risk_evidence
+    time_scope: '2025FY;2026Q1;2026-06-23'
+    confidence: 高
+    used_for:
+      - sector_card
+      - company_table
+      - source_index
+      - missing_data_log
+      - risk_review
+    not_allowed_for:
+      - investment_conclusion
+      - position_sizing
+      - final_rating
+    notes: Product/customer/order validation remains missing.
+
+  - evidence_id: EV-HSCC-FIN-002130-20260624
+    source_id: TUSHARE-INCOME-HSCC-20260624
+    source_ids:
+      - TUSHARE-INCOME-HSCC-20260624
+      - TUSHARE-DAILY-BASIC-HSCC-20260624
+    project_id: tech_ai_semiconductor
+    sector_id: high_speed_copper_connector
+    subject_type: company
+    subject_id: 002130.SZ
+    subject_name: 沃尔核材
+    claim: >
+      Tushare income statement facts: 2025 annual total_revenue=8450660581.14
+      yuan, n_income=1220654011.24 yuan, n_income_attr_p=1143868383.15 yuan,
+      ann_date=20260401. 2026Q1 total_revenue=2032119346.79 yuan,
+      n_income=243207408.13 yuan, n_income_attr_p=231285868.64 yuan,
+      ann_date=20260424. Tushare daily_basic on 2026-06-23 reports
+      pe_ttm=24.5311, pb=3.0153, turnover_rate=3.3349,
+      total_mv=2759177.9905 (Tushare unit). These facts support financial,
+      valuation, and trading-risk review only; they do not verify DAC/AEC
+      product exposure.
+    evidence_type: company_financial_valuation_evidence
+    metrics_supported:
+      - revenue_2025_actual
+      - revenue_2026Q1_actual
+      - profit_data
+      - net_profit_2025_actual
+      - net_profit_2026Q1_actual
+      - valuation
+      - pe_ttm
+      - pb
+      - turnover_data
+      - risk_evidence
+    time_scope: '2025FY;2026Q1;2026-06-23'
+    confidence: 高
+    used_for:
+      - sector_card
+      - company_table
+      - source_index
+      - missing_data_log
+      - risk_review
+    not_allowed_for:
+      - investment_conclusion
+      - position_sizing
+      - final_rating
+    notes: Product/customer/order validation remains missing.
+
+  - evidence_id: EV-HSCC-FIN-300563-20260624
+    source_id: TUSHARE-INCOME-HSCC-20260624
+    source_ids:
+      - TUSHARE-INCOME-HSCC-20260624
+      - TUSHARE-DAILY-BASIC-HSCC-20260624
+    project_id: tech_ai_semiconductor
+    sector_id: high_speed_copper_connector
+    subject_type: company
+    subject_id: 300563.SZ
+    subject_name: 神宇股份
+    claim: >
+      Tushare income statement facts: 2025 annual total_revenue=844632723.49
+      yuan, n_income=73180035.00 yuan, n_income_attr_p=73988589.78 yuan,
+      ann_date=20260421. 2026Q1 total_revenue=203581897.88 yuan,
+      n_income=13463690.08 yuan, n_income_attr_p=13494706.43 yuan,
+      ann_date=20260424. Tushare daily_basic on 2026-06-23 reports
+      pe_ttm=68.7781, pb=4.4976, turnover_rate=2.5722,
+      total_mv=518360.4790 (Tushare unit). These facts support financial,
+      valuation, and trading-risk review only; they do not verify DAC/AEC
+      product exposure.
+    evidence_type: company_financial_valuation_evidence
+    metrics_supported:
+      - revenue_2025_actual
+      - revenue_2026Q1_actual
+      - profit_data
+      - net_profit_2025_actual
+      - net_profit_2026Q1_actual
+      - valuation
+      - pe_ttm
+      - pb
+      - turnover_data
+      - risk_evidence
+    time_scope: '2025FY;2026Q1;2026-06-23'
+    confidence: 高
+    used_for:
+      - sector_card
+      - company_table
+      - source_index
+      - missing_data_log
+      - risk_review
+    not_allowed_for:
+      - investment_conclusion
+      - position_sizing
+      - final_rating
+    notes: Product/customer/order validation remains missing.
+
+  - evidence_id: EV-HSCC-FIN-300913-20260624
+    source_id: TUSHARE-INCOME-HSCC-20260624
+    source_ids:
+      - TUSHARE-INCOME-HSCC-20260624
+      - TUSHARE-DAILY-BASIC-HSCC-20260624
+    project_id: tech_ai_semiconductor
+    sector_id: high_speed_copper_connector
+    subject_type: company
+    subject_id: 300913.SZ
+    subject_name: 兆龙互连
+    claim: >
+      Tushare income statement facts: 2025 annual total_revenue=2123930905.00
+      yuan, n_income=231363263.59 yuan, n_income_attr_p=231363263.59 yuan,
+      ann_date=20260428. 2026Q1 total_revenue=508488452.66 yuan,
+      n_income=48548763.99 yuan, n_income_attr_p=48548763.99 yuan,
+      ann_date=20260428. Tushare daily_basic on 2026-06-23 reports
+      pe_ttm=79.3199, pb=7.4060, turnover_rate=4.1432,
+      total_mv=1961736.8076 (Tushare unit). These facts support financial,
+      valuation, and trading-risk review only; they do not verify DAC/AEC
+      product exposure.
+    evidence_type: company_financial_valuation_evidence
+    metrics_supported:
+      - revenue_2025_actual
+      - revenue_2026Q1_actual
+      - profit_data
+      - net_profit_2025_actual
+      - net_profit_2026Q1_actual
+      - valuation
+      - pe_ttm
+      - pb
+      - turnover_data
+      - risk_evidence
+    time_scope: '2025FY;2026Q1;2026-06-23'
+    confidence: 高
+    used_for:
+      - sector_card
+      - company_table
+      - source_index
+      - missing_data_log
+      - risk_review
+    not_allowed_for:
+      - investment_conclusion
+      - position_sizing
+      - final_rating
+    notes: Product/customer/order validation remains missing.
+
+  - evidence_id: EV-HSCC-FIN-605277-20260624
+    source_id: TUSHARE-INCOME-HSCC-20260624
+    source_ids:
+      - TUSHARE-INCOME-HSCC-20260624
+      - TUSHARE-DAILY-BASIC-HSCC-20260624
+    project_id: tech_ai_semiconductor
+    sector_id: high_speed_copper_connector
+    subject_type: company
+    subject_id: 605277.SH
+    subject_name: 新亚电子
+    claim: >
+      Tushare income statement facts: 2025 annual total_revenue=3923121480.91
+      yuan, n_income=220583562.08 yuan, n_income_attr_p=220583562.08 yuan,
+      ann_date=20260429. 2026Q1 total_revenue=998427111.67 yuan,
+      n_income=44474345.69 yuan, n_income_attr_p=44474345.69 yuan,
+      ann_date=20260429. Tushare daily_basic on 2026-06-23 reports
+      pe_ttm=31.6504, pb=3.9501, turnover_rate=2.4235,
+      total_mv=689316.5142 (Tushare unit). These facts support financial,
+      valuation, and trading-risk review only; they do not verify DAC/AEC
+      product exposure.
+    evidence_type: company_financial_valuation_evidence
+    metrics_supported:
+      - revenue_2025_actual
+      - revenue_2026Q1_actual
+      - profit_data
+      - net_profit_2025_actual
+      - net_profit_2026Q1_actual
+      - valuation
+      - pe_ttm
+      - pb
+      - turnover_data
+      - risk_evidence
+    time_scope: '2025FY;2026Q1;2026-06-23'
+    confidence: 高
+    used_for:
+      - sector_card
+      - company_table
+      - source_index
+      - missing_data_log
+      - risk_review
+    not_allowed_for:
+      - investment_conclusion
+      - position_sizing
+      - final_rating
+    notes: Product/customer/order validation remains missing.
+
+missing_evidence:
+  - missing_field: product_stage
+    reason: Tushare financial and market datasets do not verify DAC/AEC/high-speed connector product stage.
+    required_source_types:
+      - annual_report
+      - announcement
+      - exchange_qna
+      - investor_relations
+  - missing_field: order_or_customer_evidence
+    reason: No source-backed customer, order, certification, or capacity evidence was collected in this phase.
+    required_source_types:
+      - announcement
+      - exchange_qna
+      - investor_relations
+      - annual_report
+  - missing_field: industrial_chain_position
+    reason: Do not use taxonomy seed or stock_universe notes as formal evidence.
+    required_source_types:
+      - annual_report
+      - company_website
+      - announcement
+      - exchange_qna

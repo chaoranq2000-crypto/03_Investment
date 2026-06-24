@@ -470,7 +470,10 @@ sectors:
     legacy_sector_ids: []
     legacy_theme_names: []
     aliases: []
-    evidence_file_ids: []
+    evidence_file_ids:
+      - high_speed_copper_connector
+      - trading_heat_high_speed_copper_connector
+      - high_speed_copper_connector_product_validation
     include_concepts:
       - DAC直连电缆
       - AEC有源电缆

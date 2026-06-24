@@ -8,7 +8,6 @@ P1,ai_server_rack_supernode_switch,AI服务器/整机柜/超节点/交换机,5,0
 P1,aidc_data_center_compute_leasing,AIDC/数据中心/算力租赁,5,0,0,0,0,N,N,N,N,N,N,N,missing,无evidence文件绑定; 仅0家公司有证据(需要>=3); 无收入或利润证据; 无估值来源; 无交易热度来源; 无风险证据,创建evidence YAML文件
 P1,ccl_high_frequency_materials,CCL/高频高速材料/铜箔/树脂,5,0,0,0,0,N,N,N,N,N,N,N,missing,无evidence文件绑定; 仅0家公司有证据(需要>=3); 无收入或利润证据; 无估值来源; 无交易热度来源; 无风险证据,创建evidence YAML文件
 P1,data_center_power_hvdc_ups,电源/UPS/HVDC/配电,5,0,0,0,0,N,N,N,N,N,N,N,missing,无evidence文件绑定; 仅0家公司有证据(需要>=3); 无收入或利润证据; 无估值来源; 无交易热度来源; 无风险证据,创建evidence YAML文件
-P1,high_speed_copper_connector,高速铜缆/DAC/AEC/连接器,5,0,0,0,0,N,N,N,N,N,N,N,missing,无evidence文件绑定; 仅0家公司有证据(需要>=3); 无收入或利润证据; 无估值来源; 无交易热度来源; 无风险证据,创建evidence YAML文件
 P1,ic_substrate_abf_glass_tgv,IC载板/ABF/玻璃基板/TGV,5,0,0,0,0,N,N,N,N,N,N,N,missing,无evidence文件绑定; 仅0家公司有证据(需要>=3); 无收入或利润证据; 无估值来源; 无交易热度来源; 无风险证据,创建evidence YAML文件
 P1,liquid_cooling_thermal,液冷/温控/散热,5,0,0,0,0,N,N,N,N,N,N,N,missing,无evidence文件绑定; 仅0家公司有证据(需要>=3); 无收入或利润证据; 无估值来源; 无交易热度来源; 无风险证据,创建evidence YAML文件
 P1,memory_hbm_ddr5,存储芯片/HBM/DDR5,5,0,0,0,0,N,N,N,N,N,N,N,missing,无evidence文件绑定; 仅0家公司有证据(需要>=3); 无收入或利润证据; 无估值来源; 无交易热度来源; 无风险证据,创建evidence YAML文件
@@ -16,3 +15,4 @@ P1,semiconductor_components_parts,半导体零部件,5,0,0,0,0,N,N,N,N,N,N,N,mis
 P1,semiconductor_frontend_equipment,半导体前道设备,7,0,0,0,0,N,N,N,N,N,N,N,missing,无evidence文件绑定; 仅0家公司有证据(需要>=3); 无收入或利润证据; 无估值来源; 无交易热度来源; 无风险证据,创建evidence YAML文件
 P1,semiconductor_materials,半导体材料,5,0,0,0,0,N,N,N,N,N,N,N,missing,无evidence文件绑定; 仅0家公司有证据(需要>=3); 无收入或利润证据; 无估值来源; 无交易热度来源; 无风险证据,创建evidence YAML文件
 P1,semiconductor_metrology_test_equipment,半导体检测/量测/测试设备,5,0,0,0,0,N,N,N,N,N,N,N,missing,无evidence文件绑定; 仅0家公司有证据(需要>=3); 无收入或利润证据; 无估值来源; 无交易热度来源; 无风险证据,创建evidence YAML文件
+P1,high_speed_copper_connector,高速铜缆/DAC/AEC/连接器,5,2,3,11,10,Y,Y,Y,N,Y,Y,Y,ok,所有最低要求已满足,可进行正式sector card生成

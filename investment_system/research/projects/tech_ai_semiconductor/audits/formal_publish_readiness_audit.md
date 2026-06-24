@@ -1,24 +1,27 @@
 # Formal Publish Readiness Audit
 
-- audit_time: 2026-06-21T18:22:25+00:00
+- audit_time: 2026-06-22T17:02:20+00:00
 - project_id: `tech_ai_semiconductor`
-- sector_id: `cpo_optical_module_silicon_photonics`
+- sector_id: `optical_chip_components`
 - gated formal source: `C:\Projects\03_Investment\investment_system\research\projects\tech_ai_semiconductor\audits\gated_formal_outputs`
-- release manifest: `C:\Projects\03_Investment\investment_system\research\projects\tech_ai_semiconductor\audits\formal_publish_manifest_cpo_optical_module_silicon_photonics_20260622.json`
+- release manifest: `C:\Projects\03_Investment\investment_system\research\projects\tech_ai_semiconductor\audits\formal_publish_manifest_optical_chip_components_20260622.json`
+- publish_scope: `sector_card_only`
 - dry_run: True
 - manual_confirmation_required: True
 - confirm_publish_requested: False
 - publish_executed: False
 
 ## 最终正式发布目标路径清单
-- sector_card: `C:\Projects\03_Investment\科技主线调研输出\3_光通信\高速互连\P0_光模块_CPO_硅光.md`
-- company_table: `C:\Projects\03_Investment\科技主线调研输出\00_总表\代表公司财务估值总表.csv`
-- sector_comparison_table: `C:\Projects\03_Investment\科技主线调研输出\00_总表\科技细分方向横向比较表.csv`
-- source_index: `C:\Projects\03_Investment\科技主线调研输出\00_总表\数据来源索引.csv`
-- missing_data_log: `C:\Projects\03_Investment\科技主线调研输出\99_日志\缺失数据清单.md`
-- conflict_data_log: `C:\Projects\03_Investment\科技主线调研输出\99_日志\冲突数据清单.md`
-- score_table: `C:\Projects\03_Investment\科技主线调研输出\00_总表\科技细分方向横向比较表.csv`
-- release_manifest: `C:\Projects\03_Investment\科技主线调研输出\99_日志\formal_publish_manifest_cpo_optical_module_silicon_photonics_20260622.json`
+- sector_card: `C:\Projects\03_Investment\科技主线调研输出\3_光通信\高速互连\P0_光芯片_激光器_光器件.md`
+
+## 明确排除的正式输出动作
+- company_table: publish_action=False; target=`C:\Projects\03_Investment\科技主线调研输出\00_总表\代表公司财务估值总表.csv`
+- sector_comparison_table: publish_action=False; target=`C:\Projects\03_Investment\科技主线调研输出\00_总表\科技细分方向横向比较表.csv`
+- source_index: publish_action=False; target=`C:\Projects\03_Investment\科技主线调研输出\00_总表\数据来源索引.csv`
+- missing_data_log: publish_action=False; target=`C:\Projects\03_Investment\科技主线调研输出\99_日志\缺失数据清单.md`
+- conflict_data_log: publish_action=False; target=`C:\Projects\03_Investment\科技主线调研输出\99_日志\冲突数据清单.md`
+- score_table: publish_action=False; target=`C:\Projects\03_Investment\科技主线调研输出\00_总表\科技细分方向横向比较表.csv`
+- release_manifest: publish_action=False; target=`C:\Projects\03_Investment\科技主线调研输出\99_日志\formal_publish_manifest_optical_chip_components_20260622.json`
 
 ## 门禁结果
 - source_id_closure: True
@@ -32,16 +35,17 @@
 ## ERROR/WARNING/INFO 汇总
 - ERROR: 0
 - WARNING: 0
-- INFO: 7
+- INFO: 8
 - recommend_next_stage: True
 
 ## Findings
 
 ### INFO
 
-- `RELEASE_MANIFEST_PRESENT` (`C:\Projects\03_Investment\investment_system\research\projects\tech_ai_semiconductor\audits\formal_publish_manifest_cpo_optical_module_silicon_photonics_20260622.json`): release manifest exists.
-- `FINAL_TARGET_PATHS_RESOLVED`: target_count=8
-- `SOURCE_HASH_SIZE_OK`: verified 7 source files.
+- `RELEASE_MANIFEST_PRESENT` (`C:\Projects\03_Investment\investment_system\research\projects\tech_ai_semiconductor\audits\formal_publish_manifest_optical_chip_components_20260622.json`): release manifest exists.
+- `FINAL_TARGET_PATHS_RESOLVED`: target_count=1
+- `SOURCE_HASH_SIZE_OK`: verified 1 source files.
+- `SECTOR_CARD_ONLY_SCOPE_OK`: Only sector_card is mapped for potential publish; other outputs are excluded/no-action.
 - `VALIDATE_OUTPUTS_OK`: validate_outputs exit_code=0.
 - `NO_INVESTMENT_CONCLUSION_OK`: No forbidden investment wording found in gated files.
 - `SCORE_PLACEHOLDER_OK`: score remains placeholder/not_applicable.

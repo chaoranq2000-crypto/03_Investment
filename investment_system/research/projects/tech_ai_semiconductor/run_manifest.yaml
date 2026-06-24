@@ -174,6 +174,46 @@ evidence_files:
       涨跌幅、换手率、成交额、成交额分位和 MA 距离等事实；不得作为
       投资结论、建仓评级或正式评分使用。
 
+  - path: investment_system/research/evidence/high_speed_copper_connector.yaml
+    type: evidence_yaml
+    sector_id: high_speed_copper_connector
+    evidence_file_id: high_speed_copper_connector
+    status: schema_normalized
+    action: index_only
+    notes: >
+      [INDEXED — DO NOT DELETE] 1E-j-b 新增 high_speed_copper_connector
+      evidence。优先使用 Tushare Pro income 与 daily_basic 查询结果，
+      记录财务、估值、换手率与市场风险事实。产品阶段、客户/订单、
+      产能或 DAC/AEC 具体业务暴露未由 Tushare 证明，已在 evidence
+      文件 missing_evidence 中列为后续公告/年报/互动问答补强项。
+      本文件不得作为投资结论、建仓评级或正式评分使用。
+
+  - path: investment_system/research/evidence/trading_heat_high_speed_copper_connector.yaml
+    type: evidence_yaml
+    sector_id: high_speed_copper_connector
+    evidence_file_id: trading_heat_high_speed_copper_connector
+    status: schema_normalized
+    action: index_only
+    notes: >
+      [INDEXED — DO NOT DELETE] 1E-j-b 新增 high_speed_copper_connector
+      trading_heat evidence。优先使用 Tushare Pro daily 查询结果，
+      记录 2026-06-23 收盘价、20/60 日涨跌幅、成交额与动量事实；
+      不得作为投资结论、建仓评级、目标价或仓位建议使用。
+
+  - path: investment_system/research/evidence/high_speed_copper_connector_product_validation.yaml
+    type: evidence_yaml
+    sector_id: high_speed_copper_connector
+    evidence_file_id: high_speed_copper_connector_product_validation
+    status: schema_normalized
+    action: index_only
+    notes: >
+      [INDEXED — DO NOT DELETE] 1E-j-d 新增 high_speed_copper_connector
+      product-validation evidence。使用本地 MinerU 解析的巨潮资讯 2025 年报，
+      补强立讯精密、沃尔核材的产品阶段、产业链位置、部分客户验证、
+      产能和分部收入证据。未解析到原始强证据的公司继续保留在
+      missing_evidence 中。本文件不得作为投资结论、建仓评级、
+      目标价、仓位建议或正式评分使用。
+
 # ── Seed Documents (from user copy, NOT research-grade) ────────────────────
 # These are user-copied draft notes. They must pass evidence + source
 # verification before being upgraded. Do NOT treat as completed sector cards.
