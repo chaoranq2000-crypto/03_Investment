@@ -1,14 +1,14 @@
 # Quality Gates
 
-For the simplified sector-card-only workflow, run gates through the standardized stage runner:
+For the simplified sector-card-only workflow, run gates through skill CLIs:
 
 ```powershell
-& "C:\Projects\03_Investment\.conda\investment-system\python.exe" -m investment_system.pipelines.sector_research.run_sector_stage --project tech_ai_semiconductor --sector-id <sector_id> --stage evidence_gate
-& "C:\Projects\03_Investment\.conda\investment-system\python.exe" -m investment_system.pipelines.sector_research.run_sector_stage --project tech_ai_semiconductor --sector-id <sector_id> --stage candidate_gate
-& "C:\Projects\03_Investment\.conda\investment-system\python.exe" -m investment_system.pipelines.sector_research.run_sector_stage --project tech_ai_semiconductor --sector-id <sector_id> --stage publish_gate
+& "C:\Projects\03_Investment\.conda\investment-system\python.exe" .codex\skills\quality-auditor\scripts\cli.py evidence-gate --project tech_ai_semiconductor --sector-id <sector_id>
+& "C:\Projects\03_Investment\.conda\investment-system\python.exe" .codex\skills\quality-auditor\scripts\cli.py candidate-gate --project tech_ai_semiconductor --sector-id <sector_id>
+& "C:\Projects\03_Investment\.conda\investment-system\python.exe" .codex\skills\sector-research-orchestrator\scripts\cli.py publish-gate --project tech_ai_semiconductor --sector-id <sector_id> --publish-scope sector_card_only
 ```
 
-Use direct `validate_outputs.py --grade pipeline/research` only when debugging the underlying output contract.
+Use `quality-auditor validate-outputs --grade pipeline/research` only when debugging the underlying output contract.
 
 Evidence Gate checks:
 

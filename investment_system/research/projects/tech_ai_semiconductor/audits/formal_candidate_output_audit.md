@@ -1,24 +1,24 @@
 # Formal Candidate Output Audit
 
-- audit_time: 2026-06-27T14:40:43+00:00
+- audit_time: 2026-06-28T14:18:18+00:00
 - project_id: `tech_ai_semiconductor`
-- sector_id: `high_speed_copper_connector`
+- sector_id: `ai_server_pcb_high_speed_board`
 - output_dir: `C:\Projects\03_Investment\investment_system\research\projects\tech_ai_semiconductor\audits\formal_candidate_outputs`
 
 ## 前置门禁结果
 - load_project: actual_exit_code=1, warning_count=9, error_count=0, expected_warning_exit_code=3
-- readiness: exit_code=0, counts={'BLOCKER': 0, 'HIGH': 0, 'MEDIUM': 30, 'LOW': 31}
+- readiness: exit_code=0, counts={'BLOCKER': 0, 'HIGH': 0, 'MEDIUM': 0, 'LOW': 26}
 - evidence coverage: ok
 - P0/P1 coverage counts: {}
 
 ## 生成文件清单
-- sector_card: `C:\Projects\03_Investment\investment_system\research\projects\tech_ai_semiconductor\audits\formal_candidate_outputs\formal_candidate_high_speed_copper_connector_20260624_sector_card.md`
-- metadata: `C:\Projects\03_Investment\investment_system\research\projects\tech_ai_semiconductor\audits\formal_candidate_outputs\formal_candidate_high_speed_copper_connector_20260624_metadata.json`
+- sector_card: `C:\Projects\03_Investment\investment_system\research\projects\tech_ai_semiconductor\audits\formal_candidate_outputs\formal_candidate_ai_server_pcb_high_speed_board_20260628_sector_card.md`
+- metadata: `C:\Projects\03_Investment\investment_system\research\projects\tech_ai_semiconductor\audits\formal_candidate_outputs\formal_candidate_ai_server_pcb_high_speed_board_20260628_metadata.json`
 
 ## Evidence 解析结果
-- evidence_file_count: 3
-- source_count: 8
-- evidence_item_count: 24
+- evidence_file_count: 1
+- source_count: 6
+- evidence_item_count: 6
 - source_id_closure: True
 - evidence_id_closure: True
 
@@ -42,11 +42,11 @@
 
 ### INFO
 
-- `READINESS_GATE_PASSED`: readiness={'BLOCKER': 0, 'HIGH': 0, 'MEDIUM': 30, 'LOW': 31}
-- `TARGET_SECTOR_COVERAGE_OK`: high_speed_copper_connector coverage OK.
-- `SOURCE_EVIDENCE_CLOSURE_OK`: source_ids=8, evidence_ids=24
+- `READINESS_GATE_PASSED`: readiness={'BLOCKER': 0, 'HIGH': 0, 'MEDIUM': 0, 'LOW': 26}
+- `TARGET_SECTOR_COVERAGE_OK`: ai_server_pcb_high_speed_board coverage OK.
+- `SOURCE_EVIDENCE_CLOSURE_OK`: source_ids=6, evidence_ids=6
 - `CANDIDATE_GATE_PASS`: Candidate Gate status=PASS and error_count=0.
 - `NO_INVESTMENT_CONCLUSION_OK`: No forbidden buy/sell/add/reduce/build-position wording found.
-- `MISSING_EVIDENCE_RETAINED`: Customer/order/certification gaps and Shenyu named AI-server customer gap remain explicit.
+- `MISSING_EVIDENCE_SECTION_PRESENT`: Generic missing/counter-evidence markers are present.
 - `FORMAL_DIRECTORY_POLLUTION_OK`: No formal_candidate files found in formal output root.
 - `VALIDATE_OUTPUTS_OK`: validate_outputs exit_code=0.

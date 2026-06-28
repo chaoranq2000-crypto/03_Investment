@@ -9,9 +9,9 @@ Use this as the final gate before presenting investment research outputs.
 
 ## Entry Points
 
-- Validation: `investment_system/pipelines/validate_outputs.py`
-- Standard sector stage gate: `investment_system/pipelines/sector_research/run_sector_stage.py`
-- Curated evidence validation: `investment_system/pipelines/sector_research/validate_curated_evidence.py`
+- Validation: `.codex/skills/quality-auditor/scripts/cli.py validate-outputs`
+- Standard sector stage gates: `.codex/skills/quality-auditor/scripts/cli.py evidence-gate|candidate-gate|publish-gate|post-publish-check`
+- Curated evidence validation: `.codex/skills/evidence-miner/scripts/cli.py validate-curated`
 - Project stage policy: `investment_system/research/projects/tech_ai_semiconductor/workflow_stages.yaml`
 - Diagnostics: `investment_system/scripts/validate_research_client.py`
 - Contract: read `references/contract.md` before adding audit checks.
@@ -21,13 +21,13 @@ Use this as the final gate before presenting investment research outputs.
 
 ```powershell
 # Project-aware mode (recommended):
-& "C:\Projects\03_Investment\.conda\investment-system\python.exe" -m investment_system.pipelines.sector_research.run_sector_stage --project tech_ai_semiconductor --sector-id <sector_id> --stage evidence_gate
-& "C:\Projects\03_Investment\.conda\investment-system\python.exe" -m investment_system.pipelines.sector_research.run_sector_stage --project tech_ai_semiconductor --sector-id <sector_id> --stage candidate_gate
-& "C:\Projects\03_Investment\.conda\investment-system\python.exe" -m investment_system.pipelines.sector_research.run_sector_stage --project tech_ai_semiconductor --sector-id <sector_id> --stage publish_gate --publish-scope sector_card_only
-& "C:\Projects\03_Investment\.conda\investment-system\python.exe" -m investment_system.pipelines.sector_research.run_sector_stage --project tech_ai_semiconductor --sector-id <sector_id> --stage post_publish_check
+& "C:\Projects\03_Investment\.conda\investment-system\python.exe" .codex\skills\quality-auditor\scripts\cli.py evidence-gate --project tech_ai_semiconductor --sector-id <sector_id>
+& "C:\Projects\03_Investment\.conda\investment-system\python.exe" .codex\skills\quality-auditor\scripts\cli.py candidate-gate --project tech_ai_semiconductor --sector-id <sector_id>
+& "C:\Projects\03_Investment\.conda\investment-system\python.exe" .codex\skills\sector-research-orchestrator\scripts\cli.py publish-gate --project tech_ai_semiconductor --sector-id <sector_id> --publish-scope sector_card_only
+& "C:\Projects\03_Investment\.conda\investment-system\python.exe" .codex\skills\quality-auditor\scripts\cli.py post-publish-check --project tech_ai_semiconductor --sector-id <sector_id>
 ```
 
-Use direct `validate_outputs.py` only when debugging the underlying contract or when a stage runner step reports that output validation failed.
+Use direct `validate-outputs` only when debugging the underlying contract or when a stage gate reports that output validation failed.
 
 ## Gate Responsibilities
 
@@ -49,6 +49,6 @@ Use direct `validate_outputs.py` only when debugging the underlying contract or 
 - Treat stage policy from `workflow_stages.yaml` as the source of truth for warning-only exit handling and formal-output write boundaries.
 - Fail candidate or research-grade outputs containing `DRAFT_PLACEHOLDER`, `TODO_MANUAL_EXTRACTION`, `draft_source_skeleton`, or `EV-DRAFT-` references.
 - Fail candidate or formal outputs that contain buy/sell/build/add/reduce/clear-position wording, target price, position sizing, A/B/C/D/E ratings, or formal scoring unless a separate explicit scoring/investment process is in scope.
-- Do not use legacy broad validation as the default workflow entry point; use `run_sector_stage.py` stages first.
+- Do not use legacy broad validation as the default workflow entry point; use skill CLI gates first.
 - For research-grade output, fail reports that contain debug placeholders outside the data-gap section.
 - For research-grade output, fail source rows that have neither a local cache path nor an http(s) URL.

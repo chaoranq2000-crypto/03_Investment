@@ -9,11 +9,11 @@ This file is the current operational workflow reference.
    - Read `investment_system/research/projects/<project_id>/sector_universe.yaml` for canonical sector definitions.
    - Read `investment_system/research/projects/<project_id>/stock_universe.yaml` for project-aware stock pools.
    - Inspect current outputs before writing.
-   - For data-source health, run `investment_system/scripts/check_data_sources.py`; use `investment_system/pipelines/tushare_client.py --ping` only when Tushare connectivity matters.
-   - Prefer the standardized stage runner:
+   - For data-source health, run `investment_system/scripts/check_data_sources.py`; use `market-data-router tushare-ping` or `financial-data-router tushare-ping` only when Tushare connectivity matters.
+   - Prefer the skill CLI scope check:
 
 ```powershell
-& "C:\Projects\03_Investment\.conda\investment-system\python.exe" -m investment_system.pipelines.sector_research.run_sector_stage --project tech_ai_semiconductor --sector-id <canonical_sector_id> --stage scope_check
+& "C:\Projects\03_Investment\.conda\investment-system\python.exe" .codex\skills\sector-research-orchestrator\scripts\cli.py scope-check --project tech_ai_semiconductor --sector-id <canonical_sector_id>
 ```
 
 1. Market data step: call `market-data-router`.
@@ -24,7 +24,7 @@ This file is the current operational workflow reference.
 
 2. Financial data step: call `financial-data-router`.
    - Purpose: revenue, net profit, gross margin, net margin, EPS, total shares, PE TTM, PS TTM.
-   - Script boundary: `investment_system/scripts/research_client.py`, `investment_system/pipelines/tushare_client.py`, and project-aware output writers/validators.
+   - Script boundary: `investment_system/scripts/research_client.py`, `market-data-router` / `financial-data-router` Tushare CLI diagnostics, and project-aware output writers/validators.
    - Raw output: `investment_system/data/raw/baostock/profit/<date>/`.
    - Acceptance: financial units are normalized and derived valuation fields are filled or logged as missing.
 
@@ -38,21 +38,21 @@ This file is the current operational workflow reference.
    - For bundled Tushare JSON caches, first split by dataset before drafting:
 
 ```powershell
-& "C:\Projects\03_Investment\.conda\investment-system\python.exe" -m investment_system.pipelines.sector_research.split_tushare_cache --project tech_ai_semiconductor --sector-id <canonical_sector_id> --cache-path investment_system/data/raw/tushare/<cache>.json
+& "C:\Projects\03_Investment\.conda\investment-system\python.exe" .codex\skills\evidence-miner\scripts\cli.py split-tushare-cache --project tech_ai_semiconductor --sector-id <canonical_sector_id> --cache-path investment_system/data/raw/tushare/<cache>.json
 ```
 
    - Add `--write-split --write-manifest` only when writing dataset-level raw cache files and a source manifest is intended.
    - Source-manifest collection command:
 
 ```powershell
-& "C:\Projects\03_Investment\.conda\investment-system\python.exe" -m investment_system.pipelines.sector_research.run_sector_stage --project tech_ai_semiconductor --sector-id <canonical_sector_id> --stage evidence_collect --local-dir investment_system/data/raw/cninfo/<source_set>/<date> --extensions .pdf
+& "C:\Projects\03_Investment\.conda\investment-system\python.exe" .codex\skills\evidence-miner\scripts\cli.py collect --project tech_ai_semiconductor --sector-id <canonical_sector_id> --local-dir investment_system/data/raw/cninfo/<source_set>/<date> --extensions .pdf
 ```
 
    - Add `--write-manifest` only when writing a raw source manifest under `investment_system/data/raw/official_evidence/` is intended.
    - Draft skeleton command:
 
 ```powershell
-& "C:\Projects\03_Investment\.conda\investment-system\python.exe" -m investment_system.pipelines.sector_research.run_sector_stage --project tech_ai_semiconductor --sector-id <canonical_sector_id> --stage evidence_draft --source-manifest investment_system/data/raw/official_evidence/<project_id>/<sector_id>/<date>/source_manifest_<sector_id>_<source_set>_<date>.json
+& "C:\Projects\03_Investment\.conda\investment-system\python.exe" .codex\skills\evidence-miner\scripts\cli.py draft --project tech_ai_semiconductor --sector-id <canonical_sector_id> --source-manifest investment_system/data/raw/official_evidence/<project_id>/<sector_id>/<date>/source_manifest_<sector_id>_<source_set>_<date>.json
 ```
 
    - Add `--write-draft` only when writing a draft YAML skeleton under the project audit directory is intended.
@@ -60,16 +60,16 @@ This file is the current operational workflow reference.
    - Curated evidence can be checked directly before registration:
 
 ```powershell
-& "C:\Projects\03_Investment\.conda\investment-system\python.exe" -m investment_system.pipelines.sector_research.validate_curated_evidence --evidence-path investment_system/research/evidence/<file>.yaml
+& "C:\Projects\03_Investment\.conda\investment-system\python.exe" .codex\skills\evidence-miner\scripts\cli.py validate-curated --evidence-path investment_system/research/evidence/<file>.yaml
 ```
 
    - Registration command:
 
 ```powershell
-& "C:\Projects\03_Investment\.conda\investment-system\python.exe" -m investment_system.pipelines.sector_research.run_sector_stage --project tech_ai_semiconductor --sector-id <canonical_sector_id> --stage evidence_register --evidence-path investment_system/research/evidence/<file>.yaml
+& "C:\Projects\03_Investment\.conda\investment-system\python.exe" .codex\skills\evidence-miner\scripts\cli.py register --project tech_ai_semiconductor --sector-id <canonical_sector_id> --path investment_system/research/evidence/<file>.yaml
 ```
 
-   - Add `--apply-registration` only when the intended writes to `run_manifest.yaml` and `sector_universe.yaml` are in scope.
+   - Use `register-apply` only when the intended writes to `run_manifest.yaml` and `sector_universe.yaml` are in scope.
 
    - Acceptance: material claims have active evidence rows with local cache paths or webpage URLs, or remain in missing evidence / risk / conflict notes.
 
@@ -78,7 +78,7 @@ This file is the current operational workflow reference.
    - Evidence output: update `company_overrides` in the evidence YAML.
    - Acceptance: public-source, user-provided, single-broker, and judgment values are clearly labeled. Do not claim Wind/iFind consensus unless the user supplies the source data.
 
-5. Candidate step: call `research-writer` through the standardized stage runner.
+5. Candidate step: call `research-writer` through its skill CLI.
    - Purpose: generate candidate-only review artifacts under the project audit directory.
    - It must not generate gated formal files, release manifests, formal score tables, or formal output-root files.
    - It must not turn missing evidence into deterministic claims.
@@ -86,7 +86,7 @@ This file is the current operational workflow reference.
    - Candidate-only command:
 
 ```powershell
-& "C:\Projects\03_Investment\.conda\investment-system\python.exe" -m investment_system.pipelines.sector_research.run_sector_stage --project tech_ai_semiconductor --sector-id <canonical_sector_id> --stage generate_candidate
+& "C:\Projects\03_Investment\.conda\investment-system\python.exe" .codex\skills\research-writer\scripts\cli.py generate-candidate --write-candidate --project tech_ai_semiconductor --sector-id <canonical_sector_id>
 ```
 
 6. Candidate Gate and Publish Gate: call `quality-auditor`.
@@ -94,8 +94,8 @@ This file is the current operational workflow reference.
    - `publish_gate` is dry-run only. It checks target path, no-overwrite, source hash, excluded outputs, and `sector_card_only`.
 
 ```powershell
-& "C:\Projects\03_Investment\.conda\investment-system\python.exe" -m investment_system.pipelines.sector_research.run_sector_stage --project tech_ai_semiconductor --sector-id <canonical_sector_id> --stage candidate_gate
-& "C:\Projects\03_Investment\.conda\investment-system\python.exe" -m investment_system.pipelines.sector_research.run_sector_stage --project tech_ai_semiconductor --sector-id <canonical_sector_id> --stage publish_gate --publish-scope sector_card_only
+& "C:\Projects\03_Investment\.conda\investment-system\python.exe" .codex\skills\quality-auditor\scripts\cli.py candidate-gate --project tech_ai_semiconductor --sector-id <canonical_sector_id>
+& "C:\Projects\03_Investment\.conda\investment-system\python.exe" .codex\skills\sector-research-orchestrator\scripts\cli.py publish-gate --project tech_ai_semiconductor --sector-id <canonical_sector_id> --publish-scope sector_card_only
 ```
 
 7. Formal sector-card-only publish, only after explicit user confirmation.
@@ -104,14 +104,14 @@ This file is the current operational workflow reference.
    - Do not publish total tables, formal source indexes, score tables, comparison tables, release manifests, or investment advice.
 
 ```powershell
-& "C:\Projects\03_Investment\.conda\investment-system\python.exe" -m investment_system.pipelines.sector_research.run_sector_stage --project tech_ai_semiconductor --sector-id <canonical_sector_id> --stage publish_sector_card_only --confirm-publish
+& "C:\Projects\03_Investment\.conda\investment-system\python.exe" .codex\skills\sector-research-orchestrator\scripts\cli.py publish-sector-card-only --project tech_ai_semiconductor --sector-id <canonical_sector_id> --confirm-publish
 ```
 
 8. Post-publish Check: call `quality-auditor`.
    - Verifies source hash equals target hash, formal card count, forbidden artifact absence, publish log, `validate_outputs`, and readiness.
 
 ```powershell
-& "C:\Projects\03_Investment\.conda\investment-system\python.exe" -m investment_system.pipelines.sector_research.run_sector_stage --project tech_ai_semiconductor --sector-id <canonical_sector_id> --stage post_publish_check
+& "C:\Projects\03_Investment\.conda\investment-system\python.exe" .codex\skills\quality-auditor\scripts\cli.py post-publish-check --project tech_ai_semiconductor --sector-id <canonical_sector_id>
 ```
 
 9. Legacy broad command, only when the user explicitly asks for broad generation:
@@ -120,7 +120,7 @@ This file is the current operational workflow reference.
 # Project-aware single sector:
 & "C:\Projects\03_Investment\.conda\investment-system\python.exe" investment_system\pipelines\run_research.py --project tech_ai_semiconductor --sector-id <canonical_sector_id> --skip-guosen
 # After generation, validate the structural contract:
-& "C:\Projects\03_Investment\.conda\investment-system\python.exe" -m investment_system.pipelines.validate_outputs --project tech_ai_semiconductor
+& "C:\Projects\03_Investment\.conda\investment-system\python.exe" .codex\skills\quality-auditor\scripts\cli.py validate-outputs --project tech_ai_semiconductor
 ```
 
 10. Repair loop.
@@ -146,7 +146,7 @@ This file is the current operational workflow reference.
 
 ## Output Files
 
-Output paths are resolved dynamically from project config via `load_project --project <id> --dry-run-paths`. Do not hard-code fixed paths in skill logic.
+Output paths are resolved dynamically from project config via `python -m investment_system.core.project_loader --project <id> --dry-run-paths`. Do not hard-code fixed paths in skill logic.
 
 Typical output structure (resolved from project config):
 - `<output_root>/00_总表/代表公司财务估值总表.csv`

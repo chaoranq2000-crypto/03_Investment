@@ -23,7 +23,7 @@ Use `market-data-router`, `financial-data-router`, `evidence-miner`, and `foreca
 ## Rate Limits
 
 - Use `research_client.py` instead of direct ad hoc requests.
-- Use `investment_system/pipelines/tushare_client.py` for Tushare so the configured HTTP bridge, token, and proxy-clearing policy are applied.
+- Use `market-data-router tushare-ping` or `financial-data-router tushare-ping` for Tushare diagnostics so the configured HTTP bridge, token, and proxy-clearing policy are applied through the shared facade.
 - AKShare public web calls: wait 8-12 seconds between calls by default.
 - Tencent direct calls: use small batches and add waiting in looped jobs.
 - BaoStock: use one session for a batch and avoid repeated login/logout.
@@ -40,14 +40,24 @@ Use read-only checks before broad collection:
 Use the Tushare ping only when Tushare connectivity matters:
 
 ```powershell
-& "C:\Projects\03_Investment\.conda\investment-system\python.exe" investment_system\pipelines\tushare_client.py --ping
+& "C:\Projects\03_Investment\.conda\investment-system\python.exe" .codex\skills\market-data-router\scripts\cli.py tushare-ping
 ```
+
+Use dry-run data routing previews before focused pulls:
+
+```powershell
+& "C:\Projects\03_Investment\.conda\investment-system\python.exe" .codex\skills\market-data-router\scripts\cli.py daily-kline --project tech_ai_semiconductor --sector-id <sector_id>
+& "C:\Projects\03_Investment\.conda\investment-system\python.exe" .codex\skills\financial-data-router\scripts\cli.py profit --project tech_ai_semiconductor --sector-id <sector_id>
+& "C:\Projects\03_Investment\.conda\investment-system\python.exe" .codex\skills\financial-data-router\scripts\cli.py normalize-financials --project tech_ai_semiconductor --sector-id <sector_id>
+```
+
+Pass `--fetch` only for focused live pulls. These commands write to stdout by default and do not write raw-data cache files.
 
 ## Failure Handling
 
 - If a data source fails, save the failure type in raw diagnostics.
 - Do not infer that an API key is invalid from TLS/proxy errors.
-- Do not infer that the Tushare token is invalid from HTTP-bridge or proxy failures; verify the bridge with `tushare_client.py --ping`.
+- Do not infer that the Tushare token is invalid from HTTP-bridge or proxy failures; verify the bridge with `market-data-router tushare-ping` or `financial-data-router tushare-ping`.
 - Guosen skills are disabled; do not route tasks to `gs-*` skills or require `GS_API_KEY`.
 - Do not silently replace a high-priority source with a low-priority source; record the fallback in `数据来源索引.csv`.
 - If all configured interfaces fail for a required field, search the web for primary or high-quality secondary evidence.

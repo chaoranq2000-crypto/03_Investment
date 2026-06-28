@@ -1,0 +1,76 @@
+{
+  "project_id": "tech_ai_semiconductor",
+  "sector_id": "ai_server_pcb_high_speed_board",
+  "run_id": "20260628",
+  "promotion_time": "2026-06-28T12:07:44+00:00",
+  "stage": "gated_formal_staging",
+  "candidate_metadata_path": "C:\\Projects\\03_Investment\\investment_system\\research\\projects\\tech_ai_semiconductor\\audits\\formal_candidate_outputs\\formal_candidate_ai_server_pcb_high_speed_board_20260628_metadata.json",
+  "candidate_root": "C:\\Projects\\03_Investment\\investment_system\\research\\projects\\tech_ai_semiconductor\\audits\\formal_candidate_outputs",
+  "gated_formal_root": "C:\\Projects\\03_Investment\\investment_system\\research\\projects\\tech_ai_semiconductor\\audits\\gated_formal_outputs",
+  "candidate_audit": {
+    "ERROR": 0,
+    "WARNING": 1,
+    "INFO": 8,
+    "project_id": "tech_ai_semiconductor",
+    "sector_id": "ai_server_pcb_high_speed_board",
+    "audit_time": "2026-06-28T12:07:44+00:00",
+    "output_dir": "C:\\Projects\\03_Investment\\investment_system\\research\\projects\\tech_ai_semiconductor\\audits\\formal_candidate_outputs",
+    "generated_files": {
+      "sector_card": "C:\\Projects\\03_Investment\\investment_system\\research\\projects\\tech_ai_semiconductor\\audits\\formal_candidate_outputs\\formal_candidate_ai_server_pcb_high_speed_board_20260628_sector_card.md",
+      "metadata": "C:\\Projects\\03_Investment\\investment_system\\research\\projects\\tech_ai_semiconductor\\audits\\formal_candidate_outputs\\formal_candidate_ai_server_pcb_high_speed_board_20260628_metadata.json"
+    },
+    "load_project_warning_count": 9,
+    "load_project_error_count": 0,
+    "load_project_actual_exit_code": 1,
+    "load_project_expected_warning_exit_code": 3,
+    "readiness_exit_code": 0,
+    "readiness_counts": {
+      "BLOCKER": 0,
+      "HIGH": 0,
+      "MEDIUM": 0,
+      "LOW": 26
+    },
+    "validate_outputs_exit_code": 0,
+    "coverage_status": "ok",
+    "p0p1_coverage_counts": {},
+    "evidence_file_count": 1,
+    "source_count": 6,
+    "evidence_item_count": 6,
+    "source_id_closure": true,
+    "evidence_id_closure": true,
+    "shape_errors": 0,
+    "shape_warnings": 0,
+    "recommend_next_stage": true
+  },
+  "source_candidate_files": {
+    "company_table": "C:\\Projects\\03_Investment\\investment_system\\research\\projects\\tech_ai_semiconductor\\audits\\formal_candidate_outputs\\formal_candidate_ai_server_pcb_high_speed_board_20260628_company_table.csv",
+    "sector_comparison_table": "C:\\Projects\\03_Investment\\investment_system\\research\\projects\\tech_ai_semiconductor\\audits\\formal_candidate_outputs\\formal_candidate_ai_server_pcb_high_speed_board_20260628_sector_comparison_table.csv",
+    "source_index": "C:\\Projects\\03_Investment\\investment_system\\research\\projects\\tech_ai_semiconductor\\audits\\formal_candidate_outputs\\formal_candidate_ai_server_pcb_high_speed_board_20260628_source_index.csv",
+    "missing_data_log": "C:\\Projects\\03_Investment\\investment_system\\research\\projects\\tech_ai_semiconductor\\audits\\formal_candidate_outputs\\formal_candidate_ai_server_pcb_high_speed_board_20260628_missing_data_log.csv",
+    "conflict_data_log": "C:\\Projects\\03_Investment\\investment_system\\research\\projects\\tech_ai_semiconductor\\audits\\formal_candidate_outputs\\formal_candidate_ai_server_pcb_high_speed_board_20260628_conflict_data_log.csv",
+    "score_table": "C:\\Projects\\03_Investment\\investment_system\\research\\projects\\tech_ai_semiconductor\\audits\\formal_candidate_outputs\\formal_candidate_ai_server_pcb_high_speed_board_20260628_score_table.csv",
+    "sector_card": "C:\\Projects\\03_Investment\\investment_system\\research\\projects\\tech_ai_semiconductor\\audits\\formal_candidate_outputs\\formal_candidate_ai_server_pcb_high_speed_board_20260628_sector_card.md"
+  },
+  "gated_formal_files": {
+    "sector_card": "C:\\Projects\\03_Investment\\investment_system\\research\\projects\\tech_ai_semiconductor\\audits\\gated_formal_outputs\\gated_formal_ai_server_pcb_high_speed_board_20260628_sector_card.md",
+    "company_table": "C:\\Projects\\03_Investment\\investment_system\\research\\projects\\tech_ai_semiconductor\\audits\\gated_formal_outputs\\gated_formal_ai_server_pcb_high_speed_board_20260628_company_table.csv",
+    "sector_comparison_table": "C:\\Projects\\03_Investment\\investment_system\\research\\projects\\tech_ai_semiconductor\\audits\\gated_formal_outputs\\gated_formal_ai_server_pcb_high_speed_board_20260628_sector_comparison_table.csv",
+    "source_index": "C:\\Projects\\03_Investment\\investment_system\\research\\projects\\tech_ai_semiconductor\\audits\\gated_formal_outputs\\gated_formal_ai_server_pcb_high_speed_board_20260628_source_index.csv",
+    "missing_data_log": "C:\\Projects\\03_Investment\\investment_system\\research\\projects\\tech_ai_semiconductor\\audits\\gated_formal_outputs\\gated_formal_ai_server_pcb_high_speed_board_20260628_missing_data_log.csv",
+    "conflict_data_log": "C:\\Projects\\03_Investment\\investment_system\\research\\projects\\tech_ai_semiconductor\\audits\\gated_formal_outputs\\gated_formal_ai_server_pcb_high_speed_board_20260628_conflict_data_log.csv",
+    "score_table": "C:\\Projects\\03_Investment\\investment_system\\research\\projects\\tech_ai_semiconductor\\audits\\gated_formal_outputs\\gated_formal_ai_server_pcb_high_speed_board_20260628_score_table.csv"
+  },
+  "action_rating": "NOT_RATED",
+  "suggested_action": "FORMAL_GATED_REVIEW_ONLY",
+  "investment_conclusion": "NOT_INVESTMENT_ADVICE",
+  "score_status": "score_placeholder_not_applicable",
+  "future_formal_publish_paths_read_only": {
+    "sector_card": "C:\\Projects\\03_Investment\\科技主线调研输出\\4_PCB\\CCL\\载板\\P1_AI服务器PCB_高速通信板.md",
+    "company_table": "C:\\Projects\\03_Investment\\科技主线调研输出\\00_总表\\代表公司财务估值总表.csv",
+    "sector_comparison_table": "C:\\Projects\\03_Investment\\科技主线调研输出\\00_总表\\科技细分方向横向比较表.csv",
+    "source_index": "C:\\Projects\\03_Investment\\科技主线调研输出\\00_总表\\数据来源索引.csv",
+    "missing_data_log": "C:\\Projects\\03_Investment\\科技主线调研输出\\99_日志\\缺失数据清单.md",
+    "conflict_data_log": "C:\\Projects\\03_Investment\\科技主线调研输出\\99_日志\\冲突数据清单.md",
+    "score_table": "C:\\Projects\\03_Investment\\科技主线调研输出\\00_总表\\科技细分方向横向比较表.csv"
+  }
+}

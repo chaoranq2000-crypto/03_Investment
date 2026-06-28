@@ -10,7 +10,13 @@ Use this as the market-data layer for sector research. Keep collection and analy
 ## Entry Points
 
 - Primary code: `investment_system/scripts/research_client.py`
-- Tushare bridge: `investment_system/pipelines/tushare_client.py`
+- Skill CLI:
+  - `.codex/skills/market-data-router/scripts/cli.py daily-kline --project tech_ai_semiconductor --sector-id <sector_id>`
+  - `.codex/skills/market-data-router/scripts/cli.py tencent-daily --code <6_digit_code> --market SZ`
+  - `.codex/skills/market-data-router/scripts/cli.py fund-flow --stock <6_digit_code>`
+  - `.codex/skills/market-data-router/scripts/cli.py index-daily --symbol sh000001`
+  - `.codex/skills/market-data-router/scripts/cli.py stock-info`
+  - `.codex/skills/market-data-router/scripts/cli.py tushare-ping`
 - Standard pipeline: `investment_system/pipelines/run_research.py`
 - Diagnostics: `investment_system/scripts/validate_research_client.py`
 - Contract: read `references/contract.md` when changing routes or rate limits.
@@ -31,3 +37,4 @@ Use this as the market-data layer for sector research. Keep collection and analy
 - Tencent direct calls must be rate-limited in loops.
 - Save raw data under `investment_system/data/raw/<source>/<dataset>/<date>/`.
 - Record source fallback or failures in `数据来源索引.csv` or diagnostics.
+- CLI data commands are dry-run by default; pass `--fetch` only for focused live pulls.

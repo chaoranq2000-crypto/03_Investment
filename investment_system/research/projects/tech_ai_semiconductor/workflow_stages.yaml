@@ -2,6 +2,42 @@ project_id: tech_ai_semiconductor
 workflow_name: simplified_sector_research_gate_flow
 workflow_version: 1
 
+skill_cli_routing:
+  preferred_interface: skill_cli
+  compatibility_interface: investment_system.pipelines_wrappers
+  note: Skill CLIs are the preferred human-facing entry points; old investment_system.pipelines.* commands remain compatibility wrappers for one validation cycle.
+  stages:
+    scope_check:
+      preferred_cli: ".codex/skills/sector-research-orchestrator/scripts/cli.py scope-check --project {project_id} --sector-id {sector_id}"
+      compatibility_cli: "python -m investment_system.pipelines.sector_research.run_sector_stage --project {project_id} --sector-id {sector_id} --stage scope_check"
+    evidence_collect:
+      preferred_cli: ".codex/skills/evidence-miner/scripts/cli.py collect --project {project_id} --sector-id {sector_id}"
+      compatibility_cli: "python -m investment_system.pipelines.sector_research.run_sector_stage --project {project_id} --sector-id {sector_id} --stage evidence_collect"
+    evidence_draft:
+      preferred_cli: ".codex/skills/evidence-miner/scripts/cli.py draft --project {project_id} --sector-id {sector_id}"
+      compatibility_cli: "python -m investment_system.pipelines.sector_research.run_sector_stage --project {project_id} --sector-id {sector_id} --stage evidence_draft"
+    evidence_register:
+      preferred_cli: ".codex/skills/evidence-miner/scripts/cli.py register --project {project_id} --sector-id {sector_id} --path {evidence_path}"
+      compatibility_cli: "python -m investment_system.pipelines.sector_research.run_sector_stage --project {project_id} --sector-id {sector_id} --stage evidence_register --evidence-path {evidence_path}"
+    evidence_gate:
+      preferred_cli: ".codex/skills/quality-auditor/scripts/cli.py evidence-gate --project {project_id} --sector-id {sector_id}"
+      compatibility_cli: "python -m investment_system.pipelines.sector_research.run_sector_stage --project {project_id} --sector-id {sector_id} --stage evidence_gate"
+    generate_candidate:
+      preferred_cli: ".codex/skills/research-writer/scripts/cli.py generate-candidate --write-candidate --project {project_id} --sector-id {sector_id}"
+      compatibility_cli: "python -m investment_system.pipelines.sector_research.run_sector_stage --project {project_id} --sector-id {sector_id} --stage generate_candidate"
+    candidate_gate:
+      preferred_cli: ".codex/skills/quality-auditor/scripts/cli.py candidate-gate --project {project_id} --sector-id {sector_id}"
+      compatibility_cli: "python -m investment_system.pipelines.sector_research.run_sector_stage --project {project_id} --sector-id {sector_id} --stage candidate_gate"
+    publish_gate:
+      preferred_cli: ".codex/skills/sector-research-orchestrator/scripts/cli.py publish-gate --project {project_id} --sector-id {sector_id} --publish-scope sector_card_only"
+      compatibility_cli: "python -m investment_system.pipelines.sector_research.run_sector_stage --project {project_id} --sector-id {sector_id} --stage publish_gate --publish-scope sector_card_only"
+    publish_sector_card_only:
+      preferred_cli: ".codex/skills/sector-research-orchestrator/scripts/cli.py publish-sector-card-only --project {project_id} --sector-id {sector_id} --confirm-publish"
+      compatibility_cli: "python -m investment_system.pipelines.sector_research.run_sector_stage --project {project_id} --sector-id {sector_id} --stage publish_sector_card_only --confirm-publish"
+    post_publish_check:
+      preferred_cli: ".codex/skills/quality-auditor/scripts/cli.py post-publish-check --project {project_id} --sector-id {sector_id}"
+      compatibility_cli: "python -m investment_system.pipelines.sector_research.run_sector_stage --project {project_id} --sector-id {sector_id} --stage post_publish_check"
+
 global_forbidden_outputs:
   - 科技主线调研输出/00_总表/**
   - 科技主线调研输出/99_日志/**

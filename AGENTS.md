@@ -96,66 +96,80 @@ When writing commands, use the project runtime explicitly unless the surrounding
 
 ## Common validation commands
 
+Preferred Phase 5 entry points use the shared core facade or skill CLIs.
+Old `python -m investment_system.pipelines.*` commands remain compatibility wrappers for the current validation cycle.
+
 Load the project configuration:
 
 ```powershell
-C:\Projects\03_Investment\.conda\investment-system\python.exe -m investment_system.pipelines.sector_research.load_project --project tech_ai_semiconductor --json
+C:\Projects\03_Investment\.conda\investment-system\python.exe -m investment_system.core.project_loader --project tech_ai_semiconductor --json
 
 ```
 
 Preview output path resolution:
 
 ```powershell
-C:\Projects\03_Investment\.conda\investment-system\python.exe -m investment_system.pipelines.sector_research.load_project --project tech_ai_semiconductor --dry-run-paths
+C:\Projects\03_Investment\.conda\investment-system\python.exe -m investment_system.core.project_loader --project tech_ai_semiconductor --dry-run-paths
 
 ```
 
 Run pipeline readiness audit:
 
 ```powershell
-C:\Projects\03_Investment\.conda\investment-system\python.exe -m investment_system.pipelines.sector_research.audit_pipeline_readiness --project tech_ai_semiconductor
+C:\Projects\03_Investment\.conda\investment-system\python.exe .codex\skills\quality-auditor\scripts\cli.py pipeline-readiness --project tech_ai_semiconductor
 
 ```
 
 Run stock universe audit:
 
 ```powershell
-C:\Projects\03_Investment\.conda\investment-system\python.exe -m investment_system.pipelines.sector_research.audit_stock_universe --project tech_ai_semiconductor
+C:\Projects\03_Investment\.conda\investment-system\python.exe .codex\skills\quality-auditor\scripts\cli.py stock-universe --project tech_ai_semiconductor
 
 ```
 
 Run evidence binding audit when evidence bindings are changed:
 
 ```powershell
-C:\Projects\03_Investment\.conda\investment-system\python.exe -m investment_system.pipelines.sector_research.audit_evidence_bindings --project tech_ai_semiconductor
+C:\Projects\03_Investment\.conda\investment-system\python.exe .codex\skills\quality-auditor\scripts\cli.py evidence-bindings --project tech_ai_semiconductor
 
 ```
 
 Run evidence schema audit when evidence schema or evidence YAML files are changed:
 
 ```powershell
-C:\Projects\03_Investment\.conda\investment-system\python.exe -m investment_system.pipelines.sector_research.audit_evidence_schema --project tech_ai_semiconductor
+C:\Projects\03_Investment\.conda\investment-system\python.exe .codex\skills\quality-auditor\scripts\cli.py evidence-schema --project tech_ai_semiconductor
 
 ```
 
 Run output schema audit when output contracts are changed:
 
 ```powershell
-C:\Projects\03_Investment\.conda\investment-system\python.exe -m investment_system.pipelines.sector_research.audit_output_schema --project tech_ai_semiconductor
+C:\Projects\03_Investment\.conda\investment-system\python.exe .codex\skills\quality-auditor\scripts\cli.py output-schema --project tech_ai_semiconductor
 
 ```
 
 Run mock output audit when mock output generation changes:
 
 ```powershell
-C:\Projects\03_Investment\.conda\investment-system\python.exe -m investment_system.pipelines.sector_research.audit_mock_outputs --project tech_ai_semiconductor
+C:\Projects\03_Investment\.conda\investment-system\python.exe .codex\skills\quality-auditor\scripts\cli.py mock-outputs --project tech_ai_semiconductor
 
 ```
 
 Run output validation:
 
 ```powershell
-C:\Projects\03_Investment\.conda\investment-system\python.exe -m investment_system.pipelines.validate_outputs --project tech_ai_semiconductor
+C:\Projects\03_Investment\.conda\investment-system\python.exe .codex\skills\quality-auditor\scripts\cli.py validate-outputs --project tech_ai_semiconductor
+
+```
+
+Run the simplified non-formal sector chain:
+
+```powershell
+C:\Projects\03_Investment\.conda\investment-system\python.exe .codex\skills\sector-research-orchestrator\scripts\cli.py scope-check --project tech_ai_semiconductor --sector-id <canonical_sector_id>
+C:\Projects\03_Investment\.conda\investment-system\python.exe .codex\skills\quality-auditor\scripts\cli.py evidence-gate --project tech_ai_semiconductor --sector-id <canonical_sector_id>
+C:\Projects\03_Investment\.conda\investment-system\python.exe .codex\skills\research-writer\scripts\cli.py generate-candidate --write-candidate --project tech_ai_semiconductor --sector-id <canonical_sector_id>
+C:\Projects\03_Investment\.conda\investment-system\python.exe .codex\skills\quality-auditor\scripts\cli.py candidate-gate --project tech_ai_semiconductor --sector-id <canonical_sector_id>
+C:\Projects\03_Investment\.conda\investment-system\python.exe .codex\skills\sector-research-orchestrator\scripts\cli.py publish-gate --project tech_ai_semiconductor --sector-id <canonical_sector_id> --publish-scope sector_card_only
 
 ```
 

@@ -1,0 +1,82 @@
+{
+  "project_id": "tech_ai_semiconductor",
+  "sector_id": "ai_server_pcb_high_speed_board",
+  "run_id": "20260628",
+  "generated_at": "2026-06-28T14:16:05+00:00",
+  "candidate_only": true,
+  "investment_conclusion": "NOT_INVESTMENT_ADVICE",
+  "action_rating": "NOT_RATED",
+  "suggested_action": "FORMAL_CANDIDATE_REVIEW_ONLY",
+  "files": {
+    "company_table": "C:\\Projects\\03_Investment\\investment_system\\research\\projects\\tech_ai_semiconductor\\audits\\formal_candidate_outputs\\formal_candidate_ai_server_pcb_high_speed_board_20260628_company_table.csv",
+    "sector_comparison_table": "C:\\Projects\\03_Investment\\investment_system\\research\\projects\\tech_ai_semiconductor\\audits\\formal_candidate_outputs\\formal_candidate_ai_server_pcb_high_speed_board_20260628_sector_comparison_table.csv",
+    "source_index": "C:\\Projects\\03_Investment\\investment_system\\research\\projects\\tech_ai_semiconductor\\audits\\formal_candidate_outputs\\formal_candidate_ai_server_pcb_high_speed_board_20260628_source_index.csv",
+    "missing_data_log": "C:\\Projects\\03_Investment\\investment_system\\research\\projects\\tech_ai_semiconductor\\audits\\formal_candidate_outputs\\formal_candidate_ai_server_pcb_high_speed_board_20260628_missing_data_log.csv",
+    "conflict_data_log": "C:\\Projects\\03_Investment\\investment_system\\research\\projects\\tech_ai_semiconductor\\audits\\formal_candidate_outputs\\formal_candidate_ai_server_pcb_high_speed_board_20260628_conflict_data_log.csv",
+    "score_table": "C:\\Projects\\03_Investment\\investment_system\\research\\projects\\tech_ai_semiconductor\\audits\\formal_candidate_outputs\\formal_candidate_ai_server_pcb_high_speed_board_20260628_score_table.csv",
+    "sector_card": "C:\\Projects\\03_Investment\\investment_system\\research\\projects\\tech_ai_semiconductor\\audits\\formal_candidate_outputs\\formal_candidate_ai_server_pcb_high_speed_board_20260628_sector_card.md"
+  },
+  "evidence_files": [
+    {
+      "evidence_file_id": "ai_server_pcb_high_speed_board",
+      "path": "C:\\Projects\\03_Investment\\investment_system\\research\\evidence\\ai_server_pcb_high_speed_board.yaml",
+      "source_count": 6,
+      "evidence_item_count": 6
+    }
+  ],
+  "shape_validation": {
+    "sector_card": {
+      "errors": [],
+      "warnings": []
+    },
+    "company_table": {
+      "errors": [],
+      "warnings": []
+    },
+    "sector_comparison_table": {
+      "errors": [],
+      "warnings": []
+    },
+    "source_index": {
+      "errors": [],
+      "warnings": []
+    },
+    "missing_data_log": {
+      "errors": [],
+      "warnings": []
+    },
+    "conflict_data_log": {
+      "errors": [],
+      "warnings": []
+    },
+    "score_table": {
+      "errors": [],
+      "warnings": [
+        "score_table required field 'prosperity_score' uses placeholder value 'not_applicable'",
+        "score_table required field 'earnings_certainty_score' uses placeholder value 'not_applicable'",
+        "score_table required field 'valuation_score' uses placeholder value 'not_applicable'",
+        "score_table required field 'trading_comfort_score' uses placeholder value 'not_applicable'",
+        "score_table required field 'catalyst_score' uses placeholder value 'not_applicable'",
+        "score_table required field 'purity_score' uses placeholder value 'not_applicable'",
+        "score_table required field 'risk_control_score' uses placeholder value 'not_applicable'",
+        "score_table required field 'total_score' uses placeholder value 'not_applicable'"
+      ]
+    }
+  },
+  "candidate_status": "publish_gate_ready",
+  "candidate_scope": "sector_card_only",
+  "gated_formal_generated": false,
+  "release_manifest_generated": false,
+  "formal_output_root_written": false,
+  "candidate_gate": {
+    "status": "PASS",
+    "error_count": 0,
+    "warning_count": 1,
+    "validate_outputs_exit_code": 0,
+    "readiness_exit_code": 0,
+    "readiness_blocker": 0,
+    "readiness_high": 0,
+    "recommend_publish_gate": true
+  },
+  "candidate_gate_updated_at": "2026-06-28T14:16:21+00:00"
+}

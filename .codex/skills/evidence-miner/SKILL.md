@@ -10,11 +10,11 @@ Use this as the fundamental-evidence layer. Store curated evidence as inputs, no
 ## Entry Points
 
 - Evidence directory: `investment_system/research/evidence/`
-- Source manifest stage: `run_sector_stage.py --stage evidence_collect`
-- Draft evidence skeleton stage: `run_sector_stage.py --stage evidence_draft`
-- Evidence registration stage: `run_sector_stage.py --stage evidence_register`
-- Curated evidence validator: `investment_system.pipelines.sector_research.validate_curated_evidence`
-- Tushare cache splitter: `investment_system.pipelines.sector_research.split_tushare_cache`
+- Source manifest stage: `.codex/skills/evidence-miner/scripts/cli.py collect`
+- Draft evidence skeleton stage: `.codex/skills/evidence-miner/scripts/cli.py draft`
+- Evidence registration stage: `.codex/skills/evidence-miner/scripts/cli.py register` or `register-apply`
+- Curated evidence validator: `.codex/skills/evidence-miner/scripts/cli.py validate-curated`
+- Tushare cache splitter: `.codex/skills/evidence-miner/scripts/cli.py split-tushare-cache`
 - Evidence merge code: `investment_system/pipelines/evidence_overrides.py`
 - Standard output builder: `investment_system/pipelines/run_research.py`
 - Contract: read `references/contract.md` before changing evidence schema.
@@ -47,7 +47,7 @@ Use three distinct layers. Do not skip directly from raw files to active evidenc
 For bundled Tushare JSON caches keyed by stock code and dataset, first split them into dataset-level cache files:
 
 ```powershell
-& "C:\Projects\03_Investment\.conda\investment-system\python.exe" -m investment_system.pipelines.sector_research.split_tushare_cache --project tech_ai_semiconductor --sector-id <sector_id> --cache-path investment_system/data/raw/tushare/<cache>.json
+& "C:\Projects\03_Investment\.conda\investment-system\python.exe" .codex\skills\evidence-miner\scripts\cli.py split-tushare-cache --project tech_ai_semiconductor --sector-id <sector_id> --cache-path investment_system/data/raw/tushare/<cache>.json
 ```
 
 Add `--write-split --write-manifest` only when writing raw split files and the source manifest is intended. Then feed the generated source manifest into `evidence_draft`; do not register the resulting draft until it has been manually curated.

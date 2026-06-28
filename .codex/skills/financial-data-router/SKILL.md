@@ -10,9 +10,13 @@ Use this as the financial-data layer. It should provide normalized fields, not i
 ## Entry Points
 
 - Primary code: `investment_system/scripts/research_client.py`
-- Tushare bridge: `investment_system/pipelines/tushare_client.py`
+- Skill CLI:
+  - `.codex/skills/financial-data-router/scripts/cli.py profit --project tech_ai_semiconductor --sector-id <sector_id>`
+  - `.codex/skills/financial-data-router/scripts/cli.py financial-indicator --code <6_digit_code>`
+  - `.codex/skills/financial-data-router/scripts/cli.py normalize-financials --project tech_ai_semiconductor --sector-id <sector_id>`
+  - `.codex/skills/financial-data-router/scripts/cli.py tushare-ping`
 - Standard pipeline: `investment_system/pipelines/run_research.py`
-- Derived metrics should be normalized before output generation and checked through `investment_system/pipelines/validate_outputs.py`
+- Derived metrics should be normalized before output generation and checked through `.codex/skills/quality-auditor/scripts/cli.py validate-outputs`
 - Contract: read `references/contract.md` before adding financial fields.
 
 ## Route Order
@@ -31,3 +35,4 @@ Use this as the financial-data layer. It should provide normalized fields, not i
 - Use `get_tushare_pro()` for Tushare access; do not set `_DataApi__http_url` in scattered scripts.
 - Do not call disabled Guosen `gs-*` skills or require `GS_API_KEY`.
 - Do not write API keys into logs, CSVs, cards, or evidence YAML.
+- CLI data commands are dry-run by default; pass `--fetch` only for focused live pulls.

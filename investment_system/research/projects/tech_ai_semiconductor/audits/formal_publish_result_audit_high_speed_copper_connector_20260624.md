@@ -1,6 +1,6 @@
 # Formal Publish Result Audit
 
-- audit_time: 2026-06-25T07:34:45+00:00
+- audit_time: 2026-06-28T14:16:20+00:00
 - project_id: `tech_ai_semiconductor`
 - sector_id: `high_speed_copper_connector`
 - publish_scope: `sector_card_only`

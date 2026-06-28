@@ -9,22 +9,22 @@ Use this as the output-generation layer. It writes deliverables from collected d
 
 ## Entry Points
 
-- Candidate-only sector card generation: `run_sector_stage.py --stage generate_candidate`
+- Candidate-only sector card generation: `.codex/skills/research-writer/scripts/cli.py generate-candidate --write-candidate`
 - Legacy broad pipeline: `investment_system/pipelines/run_research.py`
 - Evidence merge: `investment_system/pipelines/evidence_overrides.py`
-- Output validation: `investment_system/pipelines/validate_outputs.py`
+- Output validation: `.codex/skills/quality-auditor/scripts/cli.py validate-outputs`
 - Contract: read `references/contract.md` before changing output schemas.
 
 ## Standard Command
 
 ```powershell
 # Candidate-only mode for the current simplified workflow:
-& "C:\Projects\03_Investment\.conda\investment-system\python.exe" -m investment_system.pipelines.sector_research.run_sector_stage --project tech_ai_semiconductor --sector-id <sector_id> --stage generate_candidate
+& "C:\Projects\03_Investment\.conda\investment-system\python.exe" .codex\skills\research-writer\scripts\cli.py generate-candidate --write-candidate --project tech_ai_semiconductor --sector-id <sector_id>
 
 # Legacy broad mode, only when the user explicitly asks for broad generation:
 & "C:\Projects\03_Investment\.conda\investment-system\python.exe" investment_system\pipelines\run_research.py --project tech_ai_semiconductor --sector-id <sector_id> --skip-guosen
 # After generation, validate the structural contract:
-& "C:\Projects\03_Investment\.conda\investment-system\python.exe" -m investment_system.pipelines.validate_outputs --project tech_ai_semiconductor
+& "C:\Projects\03_Investment\.conda\investment-system\python.exe" .codex\skills\quality-auditor\scripts\cli.py validate-outputs --project tech_ai_semiconductor
 ```
 
 ## Rules

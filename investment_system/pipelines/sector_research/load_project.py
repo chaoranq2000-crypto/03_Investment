@@ -29,13 +29,49 @@ from __future__ import annotations
 import argparse
 import json
 import os
-import re
 import sys
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any, Optional
 
-import yaml
+from investment_system.core.audit_types import ValidationWarning
+from investment_system.core.output_contracts import (
+    get_output_contract as _core_get_output_contract,
+    get_output_schema as _core_get_output_schema,
+    get_output_spec as _core_get_output_spec,
+    list_output_types as _core_list_output_types,
+    resolve_output_path as _core_resolve_output_path,
+    validate_output_record_shape as _core_validate_output_record_shape,
+)
+from investment_system.core.evidence_registry import (
+    build_legacy_sector_map as _core_build_legacy_sector_map,
+    get_sector as _core_get_sector,
+    get_stocks_for_sector as _core_get_stocks_for_sector,
+    list_scoring_sectors as _core_list_scoring_sectors,
+    resolve_evidence_files_for_sector as _core_resolve_evidence_files_for_sector,
+    resolve_sector_id as _core_resolve_sector_id,
+)
+from investment_system.core.path_resolver import (
+    resolve_output_paths as _core_resolve_output_paths,
+    resolve_sector_card_path as _core_resolve_sector_card_path,
+    safe_filename as _core_safe_filename,
+)
+from investment_system.core.project_contracts import (
+    AI_APP_FORBIDDEN_PARENTCHAINS,
+    MD_SCAN_EXCLUDE_DIRS,
+    MD_SCAN_EXCLUDE_FILES,
+    REQUIRED_OUTPUT_SPEC_FIELDS,
+    REQUIRED_PROJECT_FILES,
+    SEED_FORBIDDEN_ACTIONS,
+    SEED_FORBIDDEN_STATUSES,
+    SEED_FORBIDDEN_TYPES,
+    SEED_MANDATORY_NOT_ALLOWED,
+    STOCK_CODE_PATTERN,
+)
+from investment_system.core.schema_registry import (
+    get_nested as _core_get_nested,
+    load_yaml as _core_load_yaml,
+)
 
 
 # ── Constants ────────────────────────────────────────────────────────────────
@@ -44,64 +80,7 @@ WORKSPACE_ROOT = Path(__file__).resolve().parents[3]
 PROJECTS_ROOT = WORKSPACE_ROOT / "investment_system" / "research" / "projects"
 SCHEMAS_ROOT = WORKSPACE_ROOT / "investment_system" / "research" / "schemas"
 
-REQUIRED_PROJECT_FILES = [
-    "project.yaml",
-    "sector_universe.yaml",
-    "stock_universe.yaml",
-    "scoring_rules.yaml",
-    "output_spec.yaml",
-    "run_manifest.yaml",
-]
-
-REQUIRED_OUTPUT_SPEC_FIELDS = [
-    "directories",
-    "company_table_fields",
-    "comparison_table_fields",
-    "source_index_fields",
-]
-
-SEED_FORBIDDEN_STATUSES = frozenset({
-    "completed", "research-grade", "sector_card",
-    "verified", "research",
-})
-SEED_FORBIDDEN_TYPES = frozenset({"sector_card", "company_financial_valuation_table"})
-SEED_FORBIDDEN_ACTIONS = frozenset({"expand_into_sector_universe", "generated", "pending"})
-STOCK_CODE_PATTERN = re.compile(r"^\d{6}\.(SH|SZ|BJ)$")
-AI_APP_FORBIDDEN_PARENTCHAINS = frozenset({"AI算力硬件", "AI算力基础设施"})
-
-# Directories excluded from unregistered MD scan
-MD_SCAN_EXCLUDE_DIRS = frozenset({
-    "docs", "templates", "schemas", ".git", ".conda",
-    "node_modules", "__pycache__", ".codex",
-    "projects",  # project config dirs are not sector seeds
-    "pipelines", "scripts", "tools", "research",
-    "decisions", "risk", "portfolio", "data",
-})
-# Files excluded from unregistered MD scan
-MD_SCAN_EXCLUDE_FILES = frozenset({
-    "AGENTS.md", "README.md", "README_CN.md",
-    "调研日志.md", "缺失数据清单.md", "冲突数据清单.md",
-    "run_manifest.yaml", "project.yaml", "sector_universe.yaml",
-    "stock_universe.yaml", "scoring_rules.yaml", "output_spec.yaml",
-})
-
-# Seed document mandatory not_allowed_for items
-SEED_MANDATORY_NOT_ALLOWED = frozenset({
-    "evidence", "score", "rating", "investment_conclusion",
-})
-
-
 # ── Data Classes ────────────────────────────────────────────────────────────
-
-@dataclass
-class ValidationWarning:
-    code: str
-    message: str
-    severity: str = "warning"  # warning | error
-
-    def to_dict(self) -> dict[str, str]:
-        return {"code": self.code, "message": self.message, "severity": self.severity}
-
 
 @dataclass
 class ProjectConfig:
@@ -192,12 +171,7 @@ class ProjectConfig:
 
 def safe_filename(s: str) -> str:
     """Convert a string to a safe filename (ASCII-compatible)."""
-    s = s.replace("/", "_").replace("\\", "_")
-    s = s.replace(":", "_").replace("*", "_")
-    s = s.replace("?", "_").replace('"', "_")
-    s = s.replace("<", "_").replace(">", "_")
-    s = s.replace("|", "_").replace(" ", "_")
-    return s
+    return _core_safe_filename(s)
 
 
 def resolve_sector_card_path(
@@ -216,56 +190,7 @@ def resolve_sector_card_path(
     When called with a sector_id string, resolves it via legacy_sector_map first.
     Returns the path WITHOUT creating any files.
     """
-    # ── Resolve sector dict ────────────────────────────────────────────
-    if isinstance(sector_or_id, str):
-        # String: look up via get_sector helper
-        sid = sector_or_id
-        sector_dict = _get_sector_by_id(config, sid)
-        if sector_dict is None:
-            raise ValueError(
-                f"sector_id '{sid}' not found in sector_universe.yaml "
-                f"(checked legacy aliases as well)"
-            )
-    else:
-        sector_dict = sector_or_id
-        sid = sector_dict.get("sector_id", "")
-
-    # ── Get output_spec (prefer arg, else from config) ─────────────────
-    if output_spec is None:
-        output_spec = config.raw.get("output_spec", {})
-
-    # ── Build path ──────────────────────────────────────────────────────
-    dirs = output_spec.get("directories", {})
-    sc_cfg = dirs.get("sector_cards", {})
-
-    path_template = sc_cfg.get("path_template", "{group_order}_{group_name}")
-    filename_pattern = sc_cfg.get(
-        "filename_pattern", "{priority}_{sector_name_safe}.md"
-    )
-
-    # Resolve group directory
-    research_groups = config.raw.get("research_groups", [])
-    rg_id = sector_dict.get("research_group_id", "")
-    group_order = str(sector_dict.get("group_order", "99"))
-    group_name = ""
-    for g in research_groups:
-        if g.get("group_id") == rg_id:
-            group_name = g.get("group_name", "")
-            break
-
-    group_dir = (path_template
-                 .replace("{group_order}", group_order)
-                 .replace("{group_name}", group_name))
-
-    # Resolve filename
-    sector_name = sector_dict.get("sector_name", "")
-    priority = sector_dict.get("priority", "P9")
-    sector_name_safe = safe_filename(sector_name)
-    filename = (filename_pattern
-                .replace("{priority}", priority)
-                .replace("{sector_name_safe}", sector_name_safe))
-
-    return config.sector_cards_root / group_dir / filename
+    return _core_resolve_sector_card_path(config, sector_or_id, output_spec)
 
 
 def resolve_output_paths(
@@ -285,78 +210,17 @@ def resolve_output_paths(
                         and optionally (when sector given):
                         sector_card_path, raw_data_dir, sector_id_resolved
     """
-    output_spec = config.raw.get("output_spec", {})
-    dirs = output_spec.get("directories", {})
-
-    result: dict[str, Any] = {
-        "output_root": str(config.output_root),
-        "sector_cards_root": str(config.sector_cards_root),
-        "total_tables_dir": str(config.total_tables_dir),
-        "logs_dir": str(config.logs_dir),
-        "raw_data_root": str(config.raw_data_root),
-    }
-
-    # Total table files
-    tt_cfg = dirs.get("total_tables", {})
-    if isinstance(tt_cfg, dict):
-        tt_path = tt_cfg.get("path", "00_总表")
-        for f in tt_cfg.get("files", []):
-            fname = f.get("name", "?")
-            result[f"table_{fname}"] = str(config.total_tables_dir / fname)
-        result["source_index_path"] = str(config.total_tables_dir / "数据来源索引.csv")
-        result["company_table_path"] = str(config.total_tables_dir / "代表公司财务估值总表.csv")
-        result["comparison_table_path"] = str(config.total_tables_dir / "科技细分方向横向比较表.csv")
-
-    # Log files
-    lg_cfg = dirs.get("logs", {})
-    if isinstance(lg_cfg, dict):
-        lg_path = lg_cfg.get("path", "99_日志")
-        for f in lg_cfg.get("files", []):
-            fname = f.get("name", "?")
-            result[f"log_{fname}"] = str(config.logs_dir / fname)
-        result["missing_data_log_path"] = str(config.logs_dir / "缺失数据清单.md")
-        result["conflict_data_log_path"] = str(config.logs_dir / "冲突数据清单.md")
-        result["research_log_path"] = str(config.logs_dir / "调研日志.md")
-
-    # Sector-specific paths
-    if sector_id_or_legacy:
-        sector = _get_sector_by_id(config, sector_id_or_legacy)
-        if sector:
-            sector_id = sector.get("sector_id", sector_id_or_legacy)
-            result["sector_id_resolved"] = sector_id
-            result["sector_card_path"] = str(resolve_sector_card_path(config, sector, output_spec))
-
-            # Raw data dir for this sector
-            raw_cfg = dirs.get("raw_data", {})
-            if isinstance(raw_cfg, dict):
-                raw_path_template = raw_cfg.get(
-                    "path_template", "00_原始数据/{sector_name_safe}"
-                )
-                sector_name_safe = safe_filename(sector.get("sector_name", sector_id))
-                raw_subdir = raw_path_template.replace(
-                    "{sector_name_safe}", sector_name_safe
-                )
-                result["raw_data_dir"] = str(config.output_root / raw_subdir)
-
-    return result
+    return _core_resolve_output_paths(config, sector_id_or_legacy)
 
 
 # ── YAML Helpers ────────────────────────────────────────────────────────────
 
 def load_yaml(path: Path) -> dict[str, Any]:
-    if not path.exists():
-        return {}
-    with path.open("r", encoding="utf-8") as f:
-        data = yaml.safe_load(f)
-    return data if data is not None else {}
+    return _core_load_yaml(path)
 
 
 def get_nested(data: dict[str, Any], *keys: str, default: Any = None) -> Any:
-    for key in keys:
-        if not isinstance(data, dict):
-            return default
-        data = data.get(key, default)
-    return data
+    return _core_get_nested(data, *keys, default=default)
 
 
 # ── Legacy Sector Map ────────────────────────────────────────────────────────
@@ -366,16 +230,7 @@ def build_legacy_sector_map(sectors: list[dict]) -> dict[str, str]:
     Build reverse mapping: legacy_id -> canonical sector_id.
     Collects from legacy_sector_ids[], aliases[], and legacy_theme_names[].
     """
-    legacy_map: dict[str, str] = {}
-    for s in sectors:
-        sid = s.get("sector_id", "")
-        for lid in s.get("legacy_sector_ids", []):
-            legacy_map[str(lid)] = sid
-        for alias in s.get("aliases", []):
-            legacy_map[str(alias)] = sid
-        for ltn in s.get("legacy_theme_names", []):
-            legacy_map[str(ltn)] = sid
-    return legacy_map
+    return _core_build_legacy_sector_map(sectors)
 
 
 def resolve_sector_id(
@@ -387,24 +242,15 @@ def resolve_sector_id(
     Resolve a sector ID (could be legacy or new).
     Returns (resolved_id, is_legacy).
     """
-    if raw_id in valid_sector_ids:
-        return raw_id, False
-    if raw_id in legacy_map:
-        return legacy_map[raw_id], True
-    return raw_id, False  # unresolved
+    return _core_resolve_sector_id(raw_id, valid_sector_ids, legacy_map)
 
 
 def _get_sector_by_id(config: ProjectConfig, sector_id: str) -> dict[str, Any] | None:
     """Internal lookup: try canonical then legacy map."""
-    sectors = config.raw.get("sectors", [])
-    valid_ids = {s.get("sector_id") for s in sectors}
-    legacy_map = config.raw.get("legacy_sector_map", {})
-
-    resolved, is_legacy = resolve_sector_id(sector_id, valid_ids, legacy_map)
-    for s in sectors:
-        if s.get("sector_id") == resolved:
-            return s
-    return None
+    try:
+        return _core_get_sector(config, sector_id)
+    except KeyError:
+        return None
 
 
 # ── Public Downstream Helper APIs ───────────────────────────────────────────
@@ -417,27 +263,12 @@ def get_sector(config: ProjectConfig, sector_id_or_legacy: str) -> dict[str, Any
 
     Raises KeyError if not found.
     """
-    sectors = config.raw.get("sectors", [])
-    valid_ids = {s.get("sector_id") for s in sectors}
-    legacy_map = config.raw.get("legacy_sector_map", {})
-
-    resolved, is_legacy = resolve_sector_id(sector_id_or_legacy, valid_ids, legacy_map)
-    for s in sectors:
-        if s.get("sector_id") == resolved:
-            return s
-
-    raise KeyError(
-        f"sector_id '{sector_id_or_legacy}' not found in sector_universe.yaml. "
-        f"Valid canonical IDs: {sorted(valid_ids)}"
-    )
+    return _core_get_sector(config, sector_id_or_legacy)
 
 
 def list_scoring_sectors(config: ProjectConfig) -> list[dict[str, Any]]:
     """Return all sectors where scoring_enabled=True."""
-    return [
-        s for s in config.raw.get("sectors", [])
-        if s.get("scoring_enabled", False)
-    ]
+    return _core_list_scoring_sectors(config)
 
 
 def _normalize_stock_entry(entry: dict[str, Any]) -> dict[str, Any]:
@@ -450,41 +281,16 @@ def _normalize_stock_entry(entry: dict[str, Any]) -> dict[str, Any]:
     The project schema expects at minimum: code, name, sectors, role, exposure_type, status, notes.
     We accept alternative field names and normalize them here so callers get a uniform shape.
     """
-    code = entry.get("code", "")
-    name = entry.get("name", code)
+    from investment_system.core.evidence_registry import _normalize_stock_entry as core_normalize
 
-    # Accept 'status' or fall back to 'verification_status'
-    status = entry.get("status") or entry.get("verification_status", "unverified")
-
-    # Normalize sectors: may be in 'sectors', 'sector_ids', or 'sector'
-    raw_sectors = entry.get("sectors") or entry.get("sector_ids") or entry.get("sector", [])
-    if isinstance(raw_sectors, str):
-        raw_sectors = [raw_sectors]
-
-    # Normalize role/exposure_type
-    role = entry.get("role", "")
-    exposure = entry.get("exposure_type") or entry.get("exposure", "")
-
-    return {
-        "code": code,
-        "name": name,
-        "sectors": list(raw_sectors),
-        "role": role,
-        "exposure_type": exposure,
-        "status": status,
-        "notes": entry.get("notes", ""),
-        "source": entry.get("source", ""),
-        "_source": entry.get("_source", "stocks"),
-        "pending": entry.get("pending", False),
-    }
+    return core_normalize(entry)
 
 
 def _is_listed_stock(entry: dict[str, Any]) -> bool:
     """Return True if this entry represents a listed stock (has a valid code)."""
-    code = entry.get("code", "")
-    if not code or code in ("pending", "待查", ""):
-        return False
-    return True
+    from investment_system.core.evidence_registry import _is_listed_stock as core_is_listed
+
+    return core_is_listed(entry)
 
 
 def get_stocks_for_sector(
@@ -517,45 +323,11 @@ def get_stocks_for_sector(
     Raises:
         KeyError: if sector cannot be resolved.
     """
-    sector = get_sector(config, sector_id_or_legacy)
-    canonical_id = sector.get("sector_id", "")
-
-    stocks_raw = config.raw.get("stocks", [])
-    seen_keys: set[str] = set()
-    result: list[dict[str, Any]] = []
-
-    for entry in stocks_raw:
-        entry_sectors = entry.get("sectors", []) or entry.get("sector_ids", []) or []
-        if canonical_id not in entry_sectors:
-            continue
-        if not _is_listed_stock(entry):
-            continue
-        normalized = _normalize_stock_entry(entry)
-        # Deduplicate by (code, canonical_id)
-        dedup_key = (normalized["code"], canonical_id)
-        if dedup_key in seen_keys:
-            continue
-        seen_keys.add(dedup_key)
-        result.append(normalized)
-
-    if include_pending:
-        pending_raw = config.raw.get("stock_universe", {}).get("pending_code_resolution", [])
-        for item in pending_raw:
-            item_sectors = item.get("suggested_sectors", [])
-            if canonical_id not in item_sectors:
-                continue
-            normalized = _normalize_stock_entry(item)
-            normalized["pending"] = True
-            normalized["_source"] = "pending"
-            normalized["status"] = "pending_code_resolution"
-            # Pending items have no code — dedup key uses name
-            dedup_key = (normalized.get("name", ""), canonical_id)
-            if dedup_key in seen_keys:
-                continue
-            seen_keys.add(dedup_key)
-            result.append(normalized)
-
-    return result
+    return _core_get_stocks_for_sector(
+        config,
+        sector_id_or_legacy,
+        include_pending=include_pending,
+    )
 
 
 def resolve_evidence_files_for_sector(
@@ -573,97 +345,22 @@ def resolve_evidence_files_for_sector(
 
     This resolver intentionally ignores seed_documents and retired_legacy_outputs.
     """
-    sector = get_sector(config, sector_id_or_legacy)
-    canonical_id = sector.get("sector_id", "")
-    ef_ids = set(sector.get("evidence_file_ids", []) or [])
-
-    evidence_files = config.raw.get("evidence_files", [])
-    legacy_map = config.raw.get("legacy_sector_map", {})
-    valid_ids = {s.get("sector_id") for s in config.raw.get("sectors", []) if s.get("sector_id")}
-    result: list[dict[str, Any]] = []
-    seen_ids: set[str] = set()
-
-    def _resolve_path(raw_path: str) -> Path:
-        path = Path(raw_path)
-        if path.is_absolute():
-            return path
-        return WORKSPACE_ROOT / path
-
-    def _normalize_record(ef: dict[str, Any], match_type: str) -> dict[str, Any]:
-        raw_path = str(ef.get("path", ""))
-        resolved_path = _resolve_path(raw_path) if raw_path else WORKSPACE_ROOT
-        legacy_sid = str(ef.get("legacy_sector_id", "") or "")
-        legacy_resolved = ""
-        legacy_is_alias = False
-        if legacy_sid:
-            legacy_resolved, legacy_is_alias = resolve_sector_id(legacy_sid, valid_ids, legacy_map)
-        return {
-            "evidence_file_id": ef.get("evidence_file_id", ""),
-            "path": raw_path,
-            "type": ef.get("type", ""),
-            "sector_id": canonical_id,
-            "legacy_sector_id": legacy_sid,
-            "status": ef.get("status", ""),
-            "action": ef.get("action", ""),
-            "exists": bool(raw_path and resolved_path.exists()),
-            "notes": ef.get("notes", ""),
-            "_source": "run_manifest.yaml + sector_universe.yaml",
-            "_match_type": match_type,
-            "_manifest_sector_id": ef.get("sector_id", ""),
-            "_resolved_path": str(resolved_path),
-            "_legacy_resolved_sector_id": legacy_resolved if legacy_is_alias else "",
-        }
-
-    def _append_once(ef: dict[str, Any], match_type: str) -> None:
-        ef_id = str(ef.get("evidence_file_id", "") or "")
-        dedup_key = ef_id or str(ef.get("path", ""))
-        if dedup_key in seen_ids:
-            return
-        seen_ids.add(dedup_key)
-        result.append(_normalize_record(ef, match_type))
-
-    for ef in evidence_files:
-        ef_sid = ef.get("sector_id", "")
-        ef_id = ef.get("evidence_file_id", "")
-
-        # Prefer explicit evidence_file_ids from sector_universe.yaml.
-        if ef_id and ef_id in ef_ids:
-            _append_once(ef, "evidence_file_id")
-            continue
-
-        # Fall back to canonical sector_id in run_manifest.yaml.
-        if ef_sid == canonical_id:
-            _append_once(ef, "canonical_sector_id")
-            continue
-
-        # Check via legacy map
-        resolved, is_legacy = resolve_sector_id(ef_sid, valid_ids, legacy_map)
-        if is_legacy and resolved == canonical_id:
-            _append_once(ef, "legacy_sector_id")
-            continue
-
-    return result
+    return _core_resolve_evidence_files_for_sector(config, sector_id_or_legacy)
 
 
 def get_output_spec(config: ProjectConfig) -> dict[str, Any]:
     """Return project output_spec.yaml as loaded by the project loader."""
-    return config.raw.get("output_spec", {}) or {}
+    return _core_get_output_spec(config)
 
 
 def get_output_schema() -> dict[str, Any]:
     """Return the canonical output.schema.yaml contract."""
-    path = SCHEMAS_ROOT / "output.schema.yaml"
-    if not path.exists():
-        return {}
-    with path.open("r", encoding="utf-8") as f:
-        return yaml.safe_load(f) or {}
+    return _core_get_output_schema()
 
 
 def list_output_types(config: ProjectConfig) -> list[str]:
     """List output types known to the canonical output contract."""
-    schema = get_output_schema()
-    output_types = schema.get("output_types", {}) or {}
-    return sorted(output_types)
+    return _core_list_output_types(config)
 
 
 def get_output_contract(config: ProjectConfig, output_type: str) -> dict[str, Any]:
@@ -673,14 +370,7 @@ def get_output_contract(config: ProjectConfig, output_type: str) -> dict[str, An
     The canonical source is investment_system/research/schemas/output.schema.yaml.
     output_spec.yaml remains the project-local file/path/field definition source.
     """
-    schema = get_output_schema()
-    contract = (schema.get("output_types", {}) or {}).get(output_type)
-    if not contract:
-        raise KeyError(f"output_type '{output_type}' not found in output.schema.yaml")
-    result = dict(contract)
-    result["output_type"] = output_type
-    result["schema_version"] = schema.get("schema_version", "")
-    return result
+    return _core_get_output_contract(config, output_type)
 
 
 def _table_file_by_name(config: ProjectConfig, file_name: str) -> Path:
@@ -693,23 +383,7 @@ def resolve_output_path(
     sector_id: str | None = None,
 ) -> str:
     """Resolve project-aware output path for a known output type."""
-    if output_type == "sector_card":
-        if not sector_id:
-            raise ValueError("sector_id is required for sector_card output path")
-        return str(resolve_sector_card_path(config, sector_id))
-    if output_type == "company_table":
-        return str(_table_file_by_name(config, "代表公司财务估值总表.csv"))
-    if output_type == "sector_comparison_table":
-        return str(_table_file_by_name(config, "科技细分方向横向比较表.csv"))
-    if output_type == "source_index":
-        return str(_table_file_by_name(config, "数据来源索引.csv"))
-    if output_type == "missing_data_log":
-        return str(config.logs_dir / "缺失数据清单.md")
-    if output_type == "conflict_data_log":
-        return str(config.logs_dir / "冲突数据清单.md")
-    if output_type == "score_table":
-        return str(_table_file_by_name(config, "科技细分方向横向比较表.csv"))
-    raise KeyError(f"Unknown output_type '{output_type}'")
+    return _core_resolve_output_path(config, output_type, sector_id)
 
 
 def validate_output_record_shape(
@@ -718,97 +392,7 @@ def validate_output_record_shape(
     record: dict[str, Any],
 ) -> dict[str, Any]:
     """Validate a generated output record against the canonical output contract."""
-    errors: list[str] = []
-    warnings: list[str] = []
-    contract = get_output_contract(config, output_type)
-    required = list(contract.get("required_fields", []) or [])
-    deprecated = set(contract.get("deprecated_fields", []) or [])
-    legacy_display = set(contract.get("legacy_display_fields", []) or [])
-    primary_keys = set(contract.get("primary_key", []) or [])
-    optional = set(contract.get("optional_fields", []) or [])
-    allowed_placeholders = set((get_output_schema().get("empty_value_policy", {}) or {}).get("allowed_placeholders", []) or [])
-
-    missing_required = sorted(
-        field for field in required
-        if field not in record or record.get(field) is None or str(record.get(field)).strip() == ""
-    )
-    for field in missing_required:
-        errors.append(f"{output_type} record missing required field '{field}'")
-
-    deprecated_fields_present = sorted(deprecated.intersection(record))
-    for field in deprecated_fields_present:
-        warnings.append(f"{output_type} record contains deprecated field '{field}'")
-
-    legacy_fields_present = sorted(legacy_display.intersection(record))
-    forbidden = {"main_theme", "sub_theme", "legacy_theme_name"}
-    for key in sorted(primary_keys.intersection(forbidden)):
-        errors.append(f"{output_type} contract uses legacy field '{key}' as primary key")
-
-    for key in sorted(forbidden.intersection(record)):
-        if key in primary_keys:
-            errors.append(f"{output_type} record uses legacy field '{key}' as primary key")
-        elif key not in legacy_display:
-            warnings.append(f"{output_type} record contains legacy field '{key}' outside legacy_display_fields")
-
-    empty_required = [
-        field for field in required
-        if str(record.get(field, "")).strip() in allowed_placeholders and str(record.get(field, "")).strip() != ""
-    ]
-    for field in empty_required:
-        warnings.append(f"{output_type} required field '{field}' uses placeholder value '{record.get(field)}'")
-
-    source_status: dict[str, Any] = {"status": "not_required"}
-    source_reqs = contract.get("source_evidence_requirements", {}) or {}
-    if source_reqs.get("source_ids_required") and "source_ids" not in record:
-        errors.append(f"{output_type} requires source_ids field")
-        source_status["status"] = "missing_source_ids"
-    elif source_reqs.get("source_ids_required"):
-        source_status["status"] = "source_ids_present"
-
-    if source_reqs.get("source_id_required") and "source_id" not in record:
-        errors.append(f"{output_type} requires source_id field")
-        source_status["status"] = "missing_source_id"
-    elif source_reqs.get("source_id_required"):
-        source_status["status"] = "source_id_present"
-
-    if output_type == "source_index" and "source_id" not in record:
-        errors.append("source_index record missing source_id")
-
-    if output_type == "score_table":
-        score_fields = [field for field in required if field.endswith("_score") and field != "total_score"]
-        missing_reasons = [
-            field.replace("_score", "_reason")
-            for field in score_fields
-            if field.replace("_score", "_reason") not in record or str(record.get(field.replace("_score", "_reason"), "")).strip() == ""
-        ]
-        if missing_reasons:
-            errors.append(f"score_table missing score reason fields: {', '.join(missing_reasons)}")
-
-    if output_type == "missing_data_log":
-        for field in ["output_type", "sector_id", "missing_field", "severity", "reason"]:
-            if field not in record or str(record.get(field, "")).strip() == "":
-                errors.append(f"missing_data_log missing canonical field '{field}'")
-
-    if output_type == "conflict_data_log":
-        for field in ["output_type", "sector_id", "field", "conflicting_values", "source_ids"]:
-            if field not in record or str(record.get(field, "")).strip() == "":
-                errors.append(f"conflict_data_log missing canonical field '{field}'")
-
-    contract_fields = set(required) | optional | legacy_display
-    extra_fields = sorted(set(record) - contract_fields - deprecated)
-    if extra_fields:
-        warnings.append(f"{output_type} record has fields outside contract: {extra_fields}")
-
-    return {
-        "ok": not errors,
-        "errors": errors,
-        "warnings": warnings,
-        "output_type": output_type,
-        "missing_required_fields": missing_required,
-        "deprecated_fields_present": deprecated_fields_present,
-        "legacy_fields_present": legacy_fields_present,
-        "source_evidence_status": source_status,
-    }
+    return _core_validate_output_record_shape(config, output_type, record)
 
 
 # ── Validation Helpers ───────────────────────────────────────────────────────

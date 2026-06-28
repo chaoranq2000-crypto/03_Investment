@@ -27,8 +27,8 @@
 
 ## Acceptance
 
-- `validate_outputs.py --project <project_id> --sector-id <sector_id> --grade pipeline` exits 0.
-- `validate_outputs.py --project <project_id> --sector-id <sector_id> --grade research` exits 0 for final reports.
+- `quality-auditor validate-outputs --project <project_id> --sector-id <sector_id> --grade pipeline` exits 0.
+- `quality-auditor validate-outputs --project <project_id> --sector-id <sector_id> --grade research` exits 0 for final reports.
 - Remaining data gaps are explicitly listed.
 - Data-source failures are described without overclaiming root cause.
 - For the simplified sector-card-only flow, `candidate_gate`, `publish_gate`, and `post_publish_check` are the preferred gate entry points.

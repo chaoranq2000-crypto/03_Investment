@@ -11,7 +11,7 @@ Use this as the forecast and forward-valuation layer.
 
 - Evidence YAML: `investment_system/research/evidence/`
 - Merge code: `investment_system/pipelines/evidence_overrides.py`
-- Company table: resolved dynamically from project config (do not hard-code `科技主线调研输出/.../代表公司财务估值总表.csv`; use `load_project --project <id> --dry-run-paths` to discover the correct path)
+- Company table: resolved dynamically from project config (do not hard-code `科技主线调研输出/.../代表公司财务估值总表.csv`; use `python -m investment_system.core.project_loader --project <id> --dry-run-paths` to discover the correct path)
 - Contract: read `references/contract.md` before changing forecast fields.
 
 ## Normalization
