@@ -13,6 +13,7 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import re
 import shutil
 import subprocess
 import sys
@@ -20,7 +21,11 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
-from investment_system.pipelines.sector_research.audit_gated_formal_outputs import audit_project
+from investment_system.pipelines.sector_research.audit_gated_formal_outputs import audit_project as audit_gated_project
+from investment_system.pipelines.sector_research.build_formal_candidate_outputs import (
+    get_candidate_paths,
+    get_formal_candidate_output_dir,
+)
 from investment_system.pipelines.sector_research.load_project import (
     WORKSPACE_ROOT,
     ProjectConfig,
@@ -42,6 +47,8 @@ PUBLISH_STATUS = "awaiting_manual_confirmation"
 PUBLISHED_STATUS = "published_sector_card_only"
 SECTOR_CARD_ONLY = "sector_card_only"
 REHEARSAL_SCOPE = "all_outputs_rehearsal"
+SOURCE_STAGE_CANDIDATE = "formal_candidate"
+SOURCE_STAGE_GATED = "gated_formal"
 SHARED_OUTPUTS = {
     "company_table",
     "sector_comparison_table",
@@ -89,10 +96,35 @@ def default_publish_log_path(project_id: str, sector_id: str, run_id: str | None
 
 
 def _latest_gated_metadata(gated_root: Path, sector_id: str) -> Path:
-    matches = sorted(gated_root.glob(f"gated_formal_{sector_id}_*_metadata.json"))
+    matches = sorted(
+        gated_root.glob(f"gated_formal_{sector_id}_*_metadata.json"),
+        key=lambda path: (_metadata_run_id("gated_formal", sector_id, path), path.stat().st_mtime),
+    )
     if not matches:
         raise FileNotFoundError(f"No gated formal metadata found for {sector_id} in {gated_root}")
     return matches[-1]
+
+
+def _latest_candidate_metadata(candidate_root: Path, sector_id: str) -> Path:
+    matches = sorted(
+        candidate_root.glob(f"formal_candidate_{sector_id}_*_metadata.json"),
+        key=lambda path: (_metadata_run_id("formal_candidate", sector_id, path), path.stat().st_mtime),
+    )
+    if not matches:
+        raise FileNotFoundError(f"No formal candidate metadata found for {sector_id} in {candidate_root}")
+    return matches[-1]
+
+
+def _metadata_run_id(prefix: str, sector_id: str, path: Path) -> str:
+    try:
+        metadata = json.loads(path.read_text(encoding="utf-8"))
+        run_id = str(metadata.get("run_id") or "").strip()
+        if run_id:
+            return run_id
+    except (OSError, json.JSONDecodeError):
+        pass
+    match = re.match(rf"{re.escape(prefix)}_{re.escape(sector_id)}_(.+)_metadata\.json$", path.name)
+    return match.group(1) if match else ""
 
 
 def resolve_final_publish_paths(config: ProjectConfig, sector_id: str, run_id: str | None = None) -> dict[str, str]:
@@ -134,12 +166,37 @@ def _check_gated_metadata(metadata: dict[str, Any]) -> list[str]:
     return errors
 
 
+def _check_candidate_metadata(metadata: dict[str, Any]) -> list[str]:
+    errors: list[str] = []
+    if metadata.get("candidate_status") != "publish_gate_ready":
+        errors.append(f"candidate_status is not publish_gate_ready: {metadata.get('candidate_status')}")
+    if metadata.get("gated_formal_generated") is not False:
+        errors.append("gated_formal_generated is not false")
+    if metadata.get("formal_output_root_written") is not False:
+        errors.append("formal_output_root_written is not false")
+    gate = metadata.get("candidate_gate") or {}
+    if gate.get("status") != "PASS":
+        errors.append(f"candidate_gate status is not PASS: {gate.get('status')}")
+    if gate.get("error_count") != 0:
+        errors.append(f"candidate_gate error_count is {gate.get('error_count')}")
+    if gate.get("validate_outputs_exit_code") not in {0, None}:
+        errors.append(f"candidate_gate validate_outputs_exit_code is {gate.get('validate_outputs_exit_code')}")
+    if gate.get("readiness_blocker") not in {0, None}:
+        errors.append(f"candidate_gate readiness_blocker is {gate.get('readiness_blocker')}")
+    if gate.get("readiness_high") not in {0, None}:
+        errors.append(f"candidate_gate readiness_high is {gate.get('readiness_high')}")
+    if gate.get("recommend_publish_gate") is not True:
+        errors.append("candidate_gate recommend_publish_gate is not true")
+    return errors
+
+
 def _source_record(
     *,
     output_type: str,
     source_path: Path,
     target_path: Path,
     gated_root: Path,
+    candidate_root: Path,
 ) -> dict[str, Any]:
     target_exists = target_path.exists()
     shared_target = output_type in SHARED_OUTPUTS
@@ -147,6 +204,7 @@ def _source_record(
         "output_type": output_type,
         "source_path": str(source_path),
         "source_from_gated_staging": str(source_path.resolve()).startswith(str(gated_root.resolve())),
+        "source_from_candidate_staging": str(source_path.resolve()).startswith(str(candidate_root.resolve())),
         "target_path": str(target_path),
         "target_exists": target_exists,
         "write_mode_if_confirmed_future": "append_or_merge" if shared_target else "create_or_replace_same_sector_only",
@@ -211,7 +269,6 @@ def _assert_confirm_publish_allowed(
         "no_investment_conclusion",
         "score_placeholder",
         "formal_directory_pollution",
-        "all_sources_from_gated_staging",
         "gates_passed",
     ]
     for key in required_true:
@@ -219,6 +276,14 @@ def _assert_confirm_publish_allowed(
             raise RuntimeError(f"publish gate failed: {key}={gate_status.get(key)}")
     if gate_status.get("gated_formal_audit_error_count") != 0:
         raise RuntimeError(f"gated formal audit ERROR={gate_status.get('gated_formal_audit_error_count')}")
+    source_stage = manifest.get("source_stage", SOURCE_STAGE_GATED)
+    if source_stage == SOURCE_STAGE_CANDIDATE:
+        if gate_status.get("all_sources_from_candidate_staging") is not True:
+            raise RuntimeError("publish gate failed: all_sources_from_candidate_staging is not true")
+        if gate_status.get("candidate_gate_error_count") != 0:
+            raise RuntimeError(f"candidate gate ERROR={gate_status.get('candidate_gate_error_count')}")
+    elif gate_status.get("all_sources_from_gated_staging") is not True:
+        raise RuntimeError("publish gate failed: all_sources_from_gated_staging is not true")
 
     final_paths = manifest.get("formal_target_paths_read_only", {}) or {}
     expected_target = Path(resolve_final_publish_paths(config, sector_id, manifest.get("run_id")).get("sector_card", ""))
@@ -240,9 +305,9 @@ def _assert_confirm_publish_allowed(
         raise RuntimeError("release manifest lacks sector_card source row")
     source = Path(sector_row.get("source_path", ""))
     if not source.exists():
-        raise RuntimeError(f"gated sector_card source missing: {source}")
+        raise RuntimeError(f"sector_card publish source missing: {source}")
     if _sha256(source) != sector_row.get("sha256"):
-        raise RuntimeError("gated sector_card source hash changed after manifest creation")
+        raise RuntimeError("sector_card publish source hash changed after manifest creation")
     if sector_row.get("target_path") != str(target):
         raise RuntimeError("sector_card target path differs between file_map and final target paths")
     excluded = manifest.get("excluded_outputs_read_only", {}) or {}
@@ -274,9 +339,13 @@ def _assert_confirm_publish_allowed(
     hits = [term for term in forbidden_terms if term in text]
     if hits:
         raise RuntimeError("sector_card contains forbidden investment language: " + ", ".join(hits))
-    for token in ["action_rating: NOT_RATED", "suggested_action: FORMAL_GATED_REVIEW_ONLY", "investment_conclusion: NOT_INVESTMENT_ADVICE"]:
-        if token not in text:
-            raise RuntimeError(f"sector_card missing no-advice marker: {token}")
+    marker_groups = [
+        ("NOT_RATED", ["action_rating: NOT_RATED", "rating_status: NOT_RATED", "score_status: `NOT_RATED`"]),
+        ("NOT_INVESTMENT_ADVICE", ["investment_conclusion: NOT_INVESTMENT_ADVICE", "advice_status: NOT_INVESTMENT_ADVICE", "`NOT_INVESTMENT_ADVICE`"]),
+    ]
+    for label, markers in marker_groups:
+        if not any(token in text for token in markers):
+            raise RuntimeError(f"sector_card missing no-advice marker group: {label}")
 
     return {"source": source, "target": target, "source_rows": source_rows}
 
@@ -332,7 +401,10 @@ def _publish_sector_card_only(
         "sector_id": sector_id,
         "publish_scope": SECTOR_CARD_ONLY,
         "release_manifest": str(manifest_path),
+        "source_stage": manifest.get("source_stage", SOURCE_STAGE_GATED),
+        "source_file": str(source),
         "source_gated_file": str(source),
+        "source_candidate_file": str(source) if manifest.get("source_stage") == SOURCE_STAGE_CANDIDATE else "",
         "target_formal_file": str(target),
         "source_hash": source_hash,
         "target_hash": target_hash,
@@ -343,6 +415,7 @@ def _publish_sector_card_only(
         "gates_passed": True,
         "investment_advice": False,
         "score_status": "score_placeholder_not_applicable",
+        "forbidden_artifacts_created": False,
         "published_files": {"sector_card": str(target)},
         "published_file_count": 1,
         "published_file_types": ["sector_card"],
@@ -391,10 +464,20 @@ def build_release_manifest(
 ) -> tuple[Path, dict[str, Any]]:
     config = load_project(project_id, create_dirs=False, strict=False, silent=True)
     gated_root = _resolve_root(gated_root_arg, get_gated_formal_output_dir(config))
-    metadata_path = _latest_gated_metadata(gated_root, sector_id)
+    candidate_root = get_formal_candidate_output_dir(config).resolve()
+    source_stage = SOURCE_STAGE_GATED
+    try:
+        metadata_path = _latest_gated_metadata(gated_root, sector_id)
+    except FileNotFoundError:
+        metadata_path = _latest_candidate_metadata(candidate_root, sector_id)
+        source_stage = SOURCE_STAGE_CANDIDATE
     metadata = json.loads(metadata_path.read_text(encoding="utf-8"))
-    metadata_errors = _check_gated_metadata(metadata)
-    gated_files = metadata.get("gated_formal_files", {}) or {}
+    metadata_errors = _check_gated_metadata(metadata) if source_stage == SOURCE_STAGE_GATED else _check_candidate_metadata(metadata)
+    source_files = (
+        metadata.get("gated_formal_files", {}) or {}
+        if source_stage == SOURCE_STAGE_GATED
+        else metadata.get("formal_candidate_files", {}) or {"sector_card": str(get_candidate_paths(config, sector_id, metadata.get("run_id")).sector_card)}
+    )
     all_final_paths = resolve_final_publish_paths(config, sector_id, metadata.get("run_id"))
     output_types = _publish_output_types(publish_scope)
     final_paths = {output_type: all_final_paths[output_type] for output_type in output_types}
@@ -408,13 +491,27 @@ def build_release_manifest(
         if output_type not in final_paths
     }
 
-    gate_findings, gate_summary = audit_project(project_id, sector_id, write_report=True)
-    gate_errors = [f"{f.code}: {f.message}" for f in gate_findings if f.severity == "ERROR"]
+    if source_stage == SOURCE_STAGE_GATED:
+        gate_findings, gate_summary = audit_gated_project(project_id, sector_id, write_report=True)
+        gate_errors = [f"{f.code}: {f.message}" for f in gate_findings if f.severity == "ERROR"]
+    else:
+        candidate_gate = metadata.get("candidate_gate") or {}
+        gate_errors = [f"candidate metadata: {err}" for err in metadata_errors]
+        gate_summary = {
+            "ERROR": candidate_gate.get("error_count", 1),
+            "WARNING": candidate_gate.get("warning_count", 0),
+            "source_id_closure": candidate_gate.get("status") == "PASS",
+            "evidence_id_closure": candidate_gate.get("status") == "PASS",
+            "no_investment_conclusion": candidate_gate.get("status") == "PASS",
+            "score_placeholder": True,
+            "formal_directory_pollution": metadata.get("formal_output_root_written") is False,
+            "validate_outputs_exit_code": candidate_gate.get("validate_outputs_exit_code", 0),
+        }
 
     file_records: list[dict[str, Any]] = []
     file_errors: list[str] = []
     for output_type in output_types:
-        raw_source = gated_files.get(output_type)
+        raw_source = source_files.get(output_type)
         if not raw_source:
             file_errors.append(f"gated metadata missing {output_type}")
             continue
@@ -429,6 +526,7 @@ def build_release_manifest(
                 source_path=source,
                 target_path=target,
                 gated_root=gated_root,
+                candidate_root=candidate_root,
             )
         )
 
@@ -438,6 +536,8 @@ def build_release_manifest(
 
     target_overwrite_risk = any(row.get("overwrite_risk") for row in file_records)
     all_sources_from_gated = all(row.get("source_from_gated_staging") for row in file_records) and bool(file_records)
+    all_sources_from_candidate = all(row.get("source_from_candidate_staging") for row in file_records) and bool(file_records)
+    source_stage_ok = all_sources_from_gated if source_stage == SOURCE_STAGE_GATED else all_sources_from_candidate
     gates_passed = (
         gate_summary.get("ERROR") == 0
         and gate_summary.get("source_id_closure") is True
@@ -447,7 +547,7 @@ def build_release_manifest(
         and gate_summary.get("formal_directory_pollution") is True
         and not metadata_errors
         and not file_errors
-        and all_sources_from_gated
+        and source_stage_ok
     )
 
     confirm_publish_supported = bool(confirm_publish and publish_scope == SECTOR_CARD_ONLY)
@@ -468,8 +568,12 @@ def build_release_manifest(
         "publish_executed": publish_executed,
         "manual_confirmation_required": True,
         "publish_status": PUBLISH_STATUS,
+        "source_stage": source_stage,
+        "source_root": str(gated_root if source_stage == SOURCE_STAGE_GATED else candidate_root),
         "gated_formal_root": str(gated_root),
+        "formal_candidate_root": str(candidate_root),
         "gated_metadata_path": str(metadata_path),
+        "source_metadata_path": str(metadata_path),
         "release_manifest_path": str(manifest_path),
         "formal_target_paths_read_only": final_paths,
         "excluded_outputs_read_only": excluded_outputs,
@@ -486,6 +590,9 @@ def build_release_manifest(
             "metadata_errors": metadata_errors,
             "file_errors": file_errors,
             "all_sources_from_gated_staging": all_sources_from_gated,
+            "all_sources_from_candidate_staging": all_sources_from_candidate,
+            "candidate_gate_error_count": gate_summary.get("ERROR") if source_stage == SOURCE_STAGE_CANDIDATE else None,
+            "candidate_gate_warning_count": gate_summary.get("WARNING") if source_stage == SOURCE_STAGE_CANDIDATE else None,
             "target_overwrite_risk": target_overwrite_risk,
             "gates_passed": gates_passed,
             "publish_allowed_after_manual_confirmation": publish_allowed,

@@ -723,7 +723,30 @@ def scan_generator_preview_readiness(
             recommendation="Run --dry-run-generate --write-audit-preview for a canonical sector and re-audit.",
         ))
 
-    if summary.get("preview_score_table_pass_count", 0):
+    writer_path = WORKSPACE_ROOT / "investment_system" / "pipelines" / "sector_research" / "output_writers.py"
+    writer_content = writer_path.read_text(encoding="utf-8", errors="replace") if writer_path.exists() else ""
+    has_score_placeholder_gate = all(
+        token in writer_content
+        for token in (
+            "FORMAL_SCORING_DISABLED",
+            "def build_score_placeholder_record",
+            "def write_score_placeholder",
+            "allow_formal_output",
+            "_assert_formal_output_path",
+            "_reject_preview_markers",
+        )
+    )
+    has_canonical_log_writer = all(
+        token in writer_content
+        for token in (
+            "def write_canonical_log_records",
+            '"missing_data_log", "conflict_data_log"',
+            "allow_formal_output",
+            "_assert_formal_output_path",
+        )
+    )
+
+    if summary.get("preview_score_table_pass_count", 0) and not has_score_placeholder_gate:
         findings.append(AuditFinding(
             file="investment_system/pipelines/sector_research/output_writers.py",
             category="generator_preview",
@@ -733,8 +756,18 @@ def scan_generator_preview_readiness(
             location="score_table preview writer",
             recommendation="Add production gate/no-data safe mode before formal scoring output generation.",
         ))
+    elif summary.get("preview_score_table_pass_count", 0):
+        findings.append(AuditFinding(
+            file="investment_system/pipelines/sector_research/output_writers.py",
+            category="generator_preview",
+            severity="LOW",
+            code="SCORE_TABLE_PRODUCTION_GATE_READY",
+            message="score_table has a formal no-data-safe placeholder writer gated by allow_formal_output.",
+            location="score_table formal writer",
+            recommendation="Keep formal scoring disabled until source-backed scoring inputs are complete.",
+        ))
 
-    if summary.get("canonical_missing_conflict_log_pass_count", 0) == 2:
+    if summary.get("canonical_missing_conflict_log_pass_count", 0) == 2 and not has_canonical_log_writer:
         findings.append(AuditFinding(
             file="investment_system/pipelines/sector_research/output_writers.py",
             category="generator_preview",
@@ -743,6 +776,16 @@ def scan_generator_preview_readiness(
             message="missing/conflict logs have canonical preview shape; production DataTracker still needs explicit canonical writer routing.",
             location="missing/conflict preview writer",
             recommendation="Connect production log writer only after no-data safe mode is in place.",
+        ))
+    elif summary.get("canonical_missing_conflict_log_pass_count", 0) == 2:
+        findings.append(AuditFinding(
+            file="investment_system/pipelines/sector_research/output_writers.py",
+            category="generator_preview",
+            severity="LOW",
+            code="CANONICAL_LOG_PRODUCTION_WRITER_READY",
+            message="missing/conflict logs have a gated canonical production writer.",
+            location="missing/conflict formal writer",
+            recommendation="Use write_canonical_log_records for formal missing/conflict outputs.",
         ))
 
     findings.append(AuditFinding(
@@ -799,31 +842,6 @@ def scan_validate_outputs(
         ))
 
 
-def scan_tools_file(
-    file_path: Path,
-    content: str,
-    rel_path: str,
-    findings: list[AuditFinding],
-) -> None:
-    if '"高速光模块"' in content or "'高速光模块'" in content:
-        findings.append(AuditFinding(
-            file=rel_path, category="theme_hardcoding", severity="MEDIUM",
-            code="THEME_NAME_HARDCODED",
-            message="'高速光模块' is hardcoded as dataset name.",
-            location=rel_path,
-            recommendation="Keep as legacy collector only; migrate later if it re-enters project-aware path.",
-        ))
-
-    if 'ROOT / "科技主线调研输出"' in content:
-        findings.append(AuditFinding(
-            file=rel_path, category="output_path", severity="MEDIUM",
-            code="HARDCODED_OUTPUT_PATH",
-            message="Output path hardcoded relative to ROOT.",
-            location=rel_path,
-            recommendation="Use output_root from project config via load_project()",
-        ))
-
-
 def run_audit(project_id: str) -> tuple[list[AuditFinding], dict[str, Any]]:
     findings: list[AuditFinding] = []
 
@@ -831,7 +849,6 @@ def run_audit(project_id: str) -> tuple[list[AuditFinding], dict[str, Any]]:
         "investment_system/pipelines/run_research.py": WORKSPACE_ROOT / "investment_system" / "pipelines" / "run_research.py",
         "investment_system/pipelines/validate_outputs.py": WORKSPACE_ROOT / "investment_system" / "pipelines" / "validate_outputs.py",
         "investment_system/pipelines/evidence_overrides.py": WORKSPACE_ROOT / "investment_system" / "pipelines" / "evidence_overrides.py",
-        "tools/collect_high_speed_optical.py": WORKSPACE_ROOT / "tools" / "collect_high_speed_optical.py",
     }
 
     output_spec = load_output_spec(project_id)
@@ -858,8 +875,6 @@ def run_audit(project_id: str) -> tuple[list[AuditFinding], dict[str, Any]]:
             scan_validate_outputs(file_path, content, rel_path, findings)
         elif rel_path == "investment_system/pipelines/evidence_overrides.py":
             scan_evidence_overrides(file_path, content, rel_path, findings)
-        elif rel_path == "tools/collect_high_speed_optical.py":
-            scan_tools_file(file_path, content, rel_path, findings)
 
     schema_dir = WORKSPACE_ROOT / "investment_system" / "research" / "schemas"
     for fname in ["comparison_table_schema.yaml", "source_index_schema.yaml"]:

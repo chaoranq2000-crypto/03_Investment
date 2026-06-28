@@ -594,7 +594,7 @@ def render_sector_card(
         "## 12. 缺失数据",
         "\n".join(missing_lines),
         "",
-        "## conflict data",
+        "## conflict / counter-evidence",
         "\n".join(conflict_lines),
         "",
         "## quality gate 状态",

@@ -144,7 +144,7 @@ def export_current_outputs_to_evidence(
         "source_rows": source_rows,
         "logs": {
             "缺失数据清单.md": "# 缺失数据清单\n\n## 已自动补充\n\n高速光模块主要缺失字段已迁移到结构化 evidence 层，并由 run_research.py 自动合并。\n\n## 仍需工具核查\n\n| 数据项 | 当前状态 | 获取方式 |\n|---|---|---|\n| 各公司PE/PB精确历史分位 | 定性高估，需可验证公开来源或用户提供数据 | 公开估值页面、券商研报或用户提供数据 |\n| 太辰光Q1负增长原因 | 待核实 | 互动易/业绩说明会 |\n| CPO/OCS对可插拔光模块替代节奏 | 定性风险，需跟踪 | 头部CSP公告/研报 |",
-            "冲突数据清单.md": "# 冲突数据清单\n\n暂未发现跨来源数据冲突；AKShare Eastmoney端点不稳定已作为数据源状态记录，Guosen skills 已禁用。",
+            "冲突数据清单.md": "# 冲突数据清单\n\n暂未发现跨来源数据冲突；AKShare Eastmoney端点不稳定已作为数据源状态记录。",
         },
         "card_markdown": card_path.read_text(encoding="utf-8"),
     }

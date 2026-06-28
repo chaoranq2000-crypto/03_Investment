@@ -509,7 +509,8 @@ sectors:
     legacy_sector_ids: []
     legacy_theme_names: []
     aliases: []
-    evidence_file_ids: []
+    evidence_file_ids:
+      - ai_server_pcb_high_speed_board
     include_concepts:
       - AI服务器PCB（高层数/高速/高可靠）
       - 交换机PCB
@@ -542,7 +543,8 @@ sectors:
     legacy_sector_ids: []
     legacy_theme_names: []
     aliases: []
-    evidence_file_ids: []
+    evidence_file_ids:
+      - ccl_high_frequency_materials
     include_concepts:
       - 高频高速覆铜板
       - 特种树脂/低介电材料

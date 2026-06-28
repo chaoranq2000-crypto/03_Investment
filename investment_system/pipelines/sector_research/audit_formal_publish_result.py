@@ -115,7 +115,11 @@ def audit_project(
         findings.append(Finding("INFO", "PUBLISH_LOG_PRESENT", "publish log exists.", str(publish_log_path)))
 
     expected_target = Path(resolve_output_path(config, "sector_card", sector_id))
-    source = Path(publish_log.get("source_gated_file", "")) if publish_log else Path()
+    source = Path(
+        publish_log.get("source_candidate_file")
+        or publish_log.get("source_file")
+        or publish_log.get("source_gated_file", "")
+    ) if publish_log else Path()
     target = Path(publish_log.get("target_formal_file", "")) if publish_log else Path()
     source_hash = publish_log.get("source_hash") if publish_log else None
     target_hash = publish_log.get("target_hash") if publish_log else None
@@ -196,13 +200,31 @@ def audit_project(
         for pattern in FORBIDDEN_PATTERNS:
             if pattern.search(content):
                 findings.append(Finding("ERROR", "FORMAL_INVESTMENT_LANGUAGE", f"sector_card matched {pattern.pattern}", str(target)))
-        for token in ["action_rating: NOT_RATED", "suggested_action: FORMAL_GATED_REVIEW_ONLY", "investment_conclusion: NOT_INVESTMENT_ADVICE"]:
-            if token not in content:
-                findings.append(Finding("ERROR", "NO_ADVICE_MARKER_MISSING", f"sector_card missing {token}", str(target)))
+        marker_groups = [
+            ("NOT_RATED", ["action_rating: NOT_RATED", "rating_status: NOT_RATED", "score_status: `NOT_RATED`"]),
+            ("NOT_INVESTMENT_ADVICE", ["investment_conclusion: NOT_INVESTMENT_ADVICE", "advice_status: NOT_INVESTMENT_ADVICE", "`NOT_INVESTMENT_ADVICE`"]),
+        ]
+        for label, markers in marker_groups:
+            if not any(token in content for token in markers):
+                findings.append(Finding("ERROR", "NO_ADVICE_MARKER_MISSING", f"sector_card missing marker group {label}", str(target)))
         if not any(f.code == "FORMAL_INVESTMENT_LANGUAGE" for f in findings):
             findings.append(Finding("INFO", "NO_INVESTMENT_CONCLUSION_OK", "No forbidden investment wording found in published sector card."))
         if "score_placeholder_not_applicable" in content or "score_placeholder" in content or "not_applicable" in content:
             findings.append(Finding("INFO", "SCORE_PLACEHOLDER_OK", "Published card retains score placeholder/not_applicable status."))
+
+    formal_md_files = sorted(config.output_root.rglob("*.md")) if config.output_root.exists() else []
+    if len(formal_md_files) == 3:
+        findings.append(Finding("INFO", "FORMAL_SECTOR_CARD_COUNT_OK", "formal output root contains exactly 3 markdown sector cards."))
+    else:
+        findings.append(Finding("ERROR", "FORMAL_SECTOR_CARD_COUNT_UNEXPECTED", f"formal markdown file count={len(formal_md_files)}; expected=3."))
+    if config.total_tables_dir.exists():
+        findings.append(Finding("WARNING", "TOTAL_TABLES_DIR_EXISTS", "total tables directory exists; verify it was not created by this publish.", str(config.total_tables_dir)))
+    else:
+        findings.append(Finding("INFO", "TOTAL_TABLES_DIR_ABSENT", "00_总表 directory is absent."))
+    if config.logs_dir.exists():
+        findings.append(Finding("WARNING", "LOGS_DIR_EXISTS", "logs directory exists; verify it was not created by this publish.", str(config.logs_dir)))
+    else:
+        findings.append(Finding("INFO", "LOGS_DIR_ABSENT", "99_日志 directory is absent."))
 
     validate_exit, _validate_output = _run_module("investment_system.pipelines.validate_outputs", "--project", project_id)
     if validate_exit == 0:
@@ -217,9 +239,12 @@ def audit_project(
         "project_id": project_id,
         "sector_id": sector_id,
         "publish_scope": publish_log.get("publish_scope") if publish_log else None,
+        "source_stage": publish_log.get("source_stage") if publish_log else None,
         "publish_log_path": str(publish_log_path),
         "release_manifest_path": str(release_manifest_path) if publish_log else "",
+        "source_file": str(source) if publish_log else "",
         "source_gated_file": str(source) if publish_log else "",
+        "source_candidate_file": publish_log.get("source_candidate_file", "") if publish_log else "",
         "target_formal_file": str(target) if publish_log else "",
         "source_hash": source_hash,
         "target_hash": target_hash,
@@ -229,6 +254,10 @@ def audit_project(
         "sector_card_only": publish_log.get("publish_scope") == SECTOR_CARD_ONLY and set((publish_log.get("published_files", {}) or {})) == {"sector_card"} if publish_log else False,
         "published_file_count": publish_log.get("published_file_count") if publish_log else None,
         "published_file_types": publish_log.get("published_file_types") if publish_log else None,
+        "formal_markdown_file_count": len(formal_md_files),
+        "formal_markdown_files": [str(path) for path in formal_md_files],
+        "total_tables_dir_exists": config.total_tables_dir.exists(),
+        "logs_dir_exists": config.logs_dir.exists(),
         "non_sector_outputs_unchanged": publish_log.get("non_sector_outputs_unchanged") if publish_log else None,
         "no_investment_conclusion": not any(f.code == "FORMAL_INVESTMENT_LANGUAGE" for f in findings),
         "score_placeholder": publish_log.get("score_status") == "score_placeholder_not_applicable" if publish_log else None,
@@ -252,9 +281,11 @@ def _write_report(findings: list[Finding], summary: dict[str, Any]) -> None:
         f"- project_id: `{summary['project_id']}`",
         f"- sector_id: `{summary['sector_id']}`",
         f"- publish_scope: `{summary['publish_scope']}`",
+        f"- source_stage: `{summary.get('source_stage')}`",
         f"- publish_log: `{summary['publish_log_path']}`",
         f"- release_manifest: `{summary['release_manifest_path']}`",
-        f"- 发布源文件: `{summary['source_gated_file']}`",
+        f"- 发布源文件: `{summary['source_file']}`",
+        f"- source_candidate_file: `{summary.get('source_candidate_file', '')}`",
         f"- 发布目标文件: `{summary['target_formal_file']}`",
         f"- source_hash: `{summary['source_hash']}`",
         f"- target_hash: `{summary['target_hash']}`",
@@ -263,6 +294,9 @@ def _write_report(findings: list[Finding], summary: dict[str, Any]) -> None:
         f"- sector_card_only: {summary['sector_card_only']}",
         f"- published_file_count: {summary['published_file_count']}",
         f"- published_file_types: {summary['published_file_types']}",
+        f"- formal_markdown_file_count: {summary['formal_markdown_file_count']}",
+        f"- total_tables_dir_exists: {summary['total_tables_dir_exists']}",
+        f"- logs_dir_exists: {summary['logs_dir_exists']}",
         f"- non_sector_outputs_unchanged: {summary['non_sector_outputs_unchanged']}",
         f"- no_investment_conclusion: {summary['no_investment_conclusion']}",
         f"- score_placeholder_not_applicable: {summary['score_placeholder']}",
@@ -293,12 +327,14 @@ def _print_summary(summary: dict[str, Any]) -> None:
     print(f"project_id: {summary['project_id']}")
     print(f"sector_id: {summary['sector_id']}")
     print(f"publish_scope: {summary['publish_scope']}")
+    print(f"source_stage: {summary.get('source_stage')}")
     print(f"publish_log: {summary['publish_log_path']}")
     print(f"target_formal_file: {summary['target_formal_file']}")
     print(f"ERROR: {summary['ERROR']}")
     print(f"WARNING: {summary['WARNING']}")
     print(f"INFO: {summary['INFO']}")
     print(f"sector_card_only: {summary['sector_card_only']}")
+    print(f"formal_markdown_file_count: {summary['formal_markdown_file_count']}")
     print(f"non_sector_outputs_unchanged: {summary['non_sector_outputs_unchanged']}")
     print(f"hash_match: {summary['hash_match']}")
     print(f"no_investment_conclusion: {summary['no_investment_conclusion']}")

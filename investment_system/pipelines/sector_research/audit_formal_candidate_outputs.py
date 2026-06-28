@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import argparse
 import csv
+import json
 import re
 import subprocess
 import sys
@@ -74,18 +75,56 @@ def _split_ids(value: Any) -> set[str]:
     return {part.strip() for part in str(value).split(",") if part.strip()}
 
 
+def _metadata_run_id(sector_id: str, path: Path, metadata: dict[str, Any] | None = None) -> str:
+    if metadata:
+        run_id = str(metadata.get("run_id") or "").strip()
+        if run_id:
+            return run_id
+    match = re.match(rf"formal_candidate_{re.escape(sector_id)}_(\d{{8}})_metadata\.json$", path.name)
+    return match.group(1) if match else ""
+
+
+def _latest_metadata_file(config: Any, sector_id: str) -> Path | None:
+    candidate_dir = get_formal_candidate_output_dir(config)
+    candidates: list[tuple[str, float, Path]] = []
+    for path in candidate_dir.glob(f"formal_candidate_{sector_id}_*_metadata.json"):
+        metadata: dict[str, Any] | None = None
+        try:
+            metadata = json.loads(path.read_text(encoding="utf-8"))
+        except (OSError, json.JSONDecodeError):
+            metadata = None
+        candidates.append((_metadata_run_id(sector_id, path, metadata), path.stat().st_mtime, path))
+    if not candidates:
+        return None
+    return max(candidates, key=lambda row: (row[0], row[1]))[2]
+
+
 def _candidate_files(project_id: str, sector_id: str) -> dict[str, Path]:
     config = load_project(project_id, create_dirs=False, strict=False, silent=True)
-    paths = get_candidate_paths(config, sector_id)
+    metadata_file = _latest_metadata_file(config, sector_id)
+    metadata: dict[str, Any] = {}
+    run_id: str | None = None
+    if metadata_file:
+        try:
+            metadata = json.loads(metadata_file.read_text(encoding="utf-8"))
+        except (OSError, json.JSONDecodeError):
+            metadata = {}
+        run_id = _metadata_run_id(sector_id, metadata_file, metadata) or None
+
+    paths = get_candidate_paths(config, sector_id, run_id)
+    sector_card = paths.sector_card
+    metadata_card = (metadata.get("formal_candidate_files") or {}).get("sector_card")
+    if metadata_card:
+        sector_card = Path(str(metadata_card))
     return {
-        "sector_card": paths.sector_card,
+        "sector_card": sector_card,
         "company_table": paths.company_table,
         "sector_comparison_table": paths.sector_comparison_table,
         "source_index": paths.source_index,
         "missing_data_log": paths.missing_data_log,
         "conflict_data_log": paths.conflict_data_log,
         "score_table": paths.score_table,
-        "metadata": paths.metadata,
+        "metadata": metadata_file or paths.metadata,
     }
 
 
@@ -110,6 +149,230 @@ def _parse_readiness(text: str) -> dict[str, int | None]:
     return result
 
 
+def _extract_ids_from_text(text: str) -> tuple[set[str], set[str]]:
+    source_ids = {
+        x
+        for x in re.findall(r"`?([A-Z][A-Z0-9]+(?:-[A-Z0-9]+)+-\d{8})`?", text)
+        if x.startswith(("CNINFO-", "TUSHARE-", "BAO-", "AKSHARE-", "TENCENT-", "LEGACY-", "EVIDENCE-", "HSOM-", "OCFP-"))
+    }
+    evidence_ids = set(re.findall(r"`?(EV-[A-Z0-9-]+-\d{8})`?", text))
+    return source_ids, evidence_ids
+
+
+DRAFT_PLACEHOLDER_TERMS = [
+    "DRAFT_PLACEHOLDER",
+    "TODO_MANUAL_EXTRACTION",
+    "draft_source_skeleton",
+]
+
+
+def _append_placeholder_findings(findings: list[Finding], path: Path, content: str) -> None:
+    leaked_terms = [term for term in DRAFT_PLACEHOLDER_TERMS if term in content]
+    if leaked_terms:
+        findings.append(
+            Finding(
+                "ERROR",
+                "DRAFT_PLACEHOLDER_LEAKED_TO_CANDIDATE",
+                f"Draft placeholder terms leaked into candidate output: {sorted(leaked_terms)}",
+                str(path),
+            )
+        )
+
+
+def _append_draft_reference_findings(
+    findings: list[Finding],
+    source_ids: set[str],
+    evidence_ids: set[str],
+    *,
+    location: str = "",
+) -> None:
+    draft_sources = {source_id for source_id in source_ids if "DRAFT" in source_id}
+    draft_evidence = {evidence_id for evidence_id in evidence_ids if evidence_id.startswith("EV-DRAFT-")}
+    if draft_sources or draft_evidence:
+        findings.append(
+            Finding(
+                "ERROR",
+                "DRAFT_EVIDENCE_REFERENCED_BY_CANDIDATE",
+                f"Draft source/evidence ids referenced: source_ids={sorted(draft_sources)}, evidence_ids={sorted(draft_evidence)}",
+                location,
+            )
+        )
+
+
+def _update_candidate_gate_metadata(metadata_path: Path, metadata: dict[str, Any], summary: dict[str, Any]) -> None:
+    if summary["ERROR"] != 0:
+        return
+    if metadata.get("candidate_gate"):
+        return
+    metadata["candidate_status"] = "publish_gate_ready"
+    metadata.setdefault("candidate_scope", "sector_card_only")
+    metadata.setdefault("gated_formal_generated", False)
+    metadata.setdefault("release_manifest_generated", False)
+    metadata.setdefault("formal_output_root_written", False)
+    metadata["candidate_gate"] = {
+        "status": "PASS",
+        "error_count": summary["ERROR"],
+        "warning_count": summary["WARNING"],
+        "validate_outputs_exit_code": summary.get("validate_outputs_exit_code", 0),
+        "readiness_exit_code": summary.get("readiness_exit_code"),
+        "readiness_blocker": (summary.get("readiness_counts") or {}).get("BLOCKER"),
+        "readiness_high": (summary.get("readiness_counts") or {}).get("HIGH"),
+        "recommend_publish_gate": True,
+    }
+    metadata["candidate_gate_updated_at"] = summary["audit_time"]
+    metadata_path.write_text(json.dumps(metadata, ensure_ascii=False, indent=2), encoding="utf-8")
+
+
+def _audit_candidate_only(
+    *,
+    project_id: str,
+    sector_id: str,
+    config: Any,
+    paths: dict[str, Path],
+    candidate_dir: Path,
+    formal_root: Path,
+    legacy_root: Path,
+    load_errors: list[Any],
+    load_warnings: list[Any],
+    write_report: bool,
+) -> tuple[list[Finding], dict[str, Any]]:
+    findings: list[Finding] = []
+    metadata = json.loads(paths["metadata"].read_text(encoding="utf-8"))
+    sector_card = Path((metadata.get("formal_candidate_files") or {}).get("sector_card") or paths["sector_card"])
+
+    if load_errors:
+        findings.append(Finding("ERROR", "LOAD_PROJECT_HAS_ERRORS", f"load_project errors={len(load_errors)}"))
+    elif load_warnings:
+        findings.append(Finding("WARNING", "LOAD_PROJECT_WARNING_ONLY", f"load_project warning-only count={len(load_warnings)}; expected exit code=3"))
+    else:
+        findings.append(Finding("INFO", "LOAD_PROJECT_OK", "load_project has no warnings/errors."))
+
+    readiness_exit_code, readiness_output = _run_module(
+        "investment_system.pipelines.sector_research.audit_pipeline_readiness",
+        "--project",
+        project_id,
+    )
+    readiness_counts = _parse_readiness(readiness_output)
+    if readiness_exit_code != 0:
+        findings.append(Finding("ERROR", "READINESS_COMMAND_FAILED", f"audit_pipeline_readiness exit_code={readiness_exit_code}"))
+    elif readiness_counts.get("BLOCKER") != 0 or readiness_counts.get("HIGH") != 0:
+        findings.append(Finding("ERROR", "READINESS_GATE_NOT_PASSED", f"readiness={readiness_counts}"))
+    else:
+        findings.append(Finding("INFO", "READINESS_GATE_PASSED", f"readiness={readiness_counts}"))
+
+    try:
+        sector = get_sector(config, sector_id)
+        coverage = check_sector_coverage(config, sector)
+        if coverage.get("coverage_status") != "ok":
+            findings.append(Finding("ERROR", "TARGET_SECTOR_COVERAGE_NOT_OK", f"{sector_id} coverage={coverage.get('coverage_status')}: {coverage.get('blocking_reason')}"))
+        else:
+            findings.append(Finding("INFO", "TARGET_SECTOR_COVERAGE_OK", f"{sector_id} coverage OK."))
+    except Exception as exc:
+        findings.append(Finding("ERROR", "TARGET_SECTOR_COVERAGE_CHECK_FAILED", str(exc)))
+        coverage = {}
+
+    if not sector_card.exists():
+        findings.append(Finding("ERROR", "FORMAL_CANDIDATE_FILE_MISSING", "Missing candidate-only sector_card.", str(sector_card)))
+        card_text = ""
+    else:
+        resolved = sector_card.resolve()
+        card_text = sector_card.read_text(encoding="utf-8-sig", errors="ignore")
+        if not str(resolved).startswith(str(candidate_dir)):
+            findings.append(Finding("ERROR", "FILE_OUTSIDE_CANDIDATE_DIR", "candidate-only sector_card outside formal_candidate_outputs.", str(sector_card)))
+        if str(resolved).startswith(str(formal_root)) or str(resolved).startswith(str(legacy_root)):
+            findings.append(Finding("ERROR", "FILE_IN_FORMAL_OUTPUT_ROOT", "candidate-only sector_card in formal output root.", str(sector_card)))
+        _append_placeholder_findings(findings, sector_card, card_text)
+
+    evidence = load_sector_evidence(config, sector_id)
+    evidence_ids = {str(item.get("evidence_id", "")) for item in evidence["evidence_items"] if item.get("evidence_id")}
+    source_ids = set(evidence["sources_by_id"])
+    metadata_source_ids = set(metadata.get("source_ids") or [])
+    metadata_evidence_ids = set(metadata.get("evidence_ids") or [])
+    card_source_ids, card_evidence_ids = _extract_ids_from_text(card_text)
+    _append_draft_reference_findings(
+        findings,
+        metadata_source_ids | card_source_ids,
+        metadata_evidence_ids | card_evidence_ids,
+        location=str(sector_card),
+    )
+    missing_sources = (metadata_source_ids | card_source_ids) - source_ids
+    missing_evidence = (metadata_evidence_ids | card_evidence_ids) - evidence_ids
+    if missing_sources:
+        findings.append(Finding("ERROR", "SOURCE_ID_NOT_IN_EVIDENCE", f"unknown source_ids: {sorted(missing_sources)}"))
+    if missing_evidence:
+        findings.append(Finding("ERROR", "EVIDENCE_ID_NOT_IN_ACTIVE_EVIDENCE", f"unknown evidence_ids: {sorted(missing_evidence)}"))
+    if not missing_sources and not missing_evidence:
+        findings.append(Finding("INFO", "SOURCE_EVIDENCE_CLOSURE_OK", f"source_ids={len(metadata_source_ids | card_source_ids)}, evidence_ids={len(metadata_evidence_ids | card_evidence_ids)}"))
+
+    gate = metadata.get("candidate_gate") or {}
+    if not gate:
+        findings.append(Finding("INFO", "CANDIDATE_GATE_METADATA_WILL_BE_COMPUTED", "candidate_gate metadata is absent; this audit will compute current gate status."))
+    elif gate.get("status") != "PASS" or gate.get("error_count") != 0:
+        findings.append(Finding("ERROR", "CANDIDATE_GATE_NOT_PASSING", f"candidate_gate={gate}"))
+    else:
+        findings.append(Finding("INFO", "CANDIDATE_GATE_PASS", "Candidate Gate status=PASS and error_count=0."))
+
+    required_markers = [project_id, sector_id, "NOT_RATED", "NOT_INVESTMENT_ADVICE", "缺失数据", "conflict / counter-evidence"]
+    for marker in required_markers:
+        if marker not in card_text:
+            findings.append(Finding("ERROR", "SECTOR_CARD_REQUIRED_MARKER_MISSING", f"Missing marker: {marker}", str(sector_card)))
+    for pattern, code in FORBIDDEN_INVESTMENT_PATTERNS:
+        if pattern.search(card_text):
+            findings.append(Finding("ERROR", f"FORMAL_INVESTMENT_LANGUAGE_{code}", f"Forbidden investment wording matched: {pattern.pattern}", str(sector_card)))
+    for term in ["目标价", "仓位建议", "清仓建议", "建议清仓"]:
+        if term in card_text:
+            findings.append(Finding("ERROR", "FORMAL_INVESTMENT_LANGUAGE_FORBIDDEN_TERM", f"Forbidden investment wording matched: {term}", str(sector_card)))
+    if not any(f.code.startswith("FORMAL_INVESTMENT_LANGUAGE") for f in findings):
+        findings.append(Finding("INFO", "NO_INVESTMENT_CONCLUSION_OK", "No forbidden buy/sell/add/reduce/build-position wording found."))
+
+    if sector_id != "high_speed_copper_connector":
+        findings.append(Finding("INFO", "MISSING_EVIDENCE_SECTION_PRESENT", "Generic missing/counter-evidence markers are present."))
+    elif "named_customer_order_certification" in card_text and "ai_server_named_customer_300563" in card_text:
+        findings.append(Finding("INFO", "MISSING_EVIDENCE_RETAINED", "Customer/order/certification gaps and Shenyu named AI-server customer gap remain explicit."))
+    else:
+        findings.append(Finding("ERROR", "MISSING_EVIDENCE_NOT_RETAINED", "Required missing-evidence fields are not explicit.", str(sector_card)))
+
+    if not any(f.code in {"FILE_IN_FORMAL_OUTPUT_ROOT", "FORMAL_CANDIDATE_POLLUTION"} for f in findings):
+        findings.append(Finding("INFO", "FORMAL_DIRECTORY_POLLUTION_OK", "No formal_candidate files found in formal output root."))
+
+    validate_exit, _validate_output = _run_module("investment_system.pipelines.validate_outputs", "--project", project_id)
+    if validate_exit == 0:
+        findings.append(Finding("INFO", "VALIDATE_OUTPUTS_OK", "validate_outputs exit_code=0."))
+    else:
+        findings.append(Finding("ERROR", "VALIDATE_OUTPUTS_FAILED", f"validate_outputs exit_code={validate_exit}"))
+
+    counts = _counts(findings)
+    summary = {
+        **counts,
+        "project_id": project_id,
+        "sector_id": sector_id,
+        "audit_time": _now_iso(),
+        "output_dir": str(candidate_dir),
+        "generated_files": {"sector_card": str(sector_card), "metadata": str(paths["metadata"])},
+        "load_project_warning_count": len(load_warnings),
+        "load_project_error_count": len(load_errors),
+        "load_project_actual_exit_code": 1 if load_warnings and not load_errors else 0,
+        "load_project_expected_warning_exit_code": 3 if load_warnings and not load_errors else 0,
+        "readiness_exit_code": readiness_exit_code,
+        "readiness_counts": readiness_counts,
+        "validate_outputs_exit_code": validate_exit,
+        "coverage_status": coverage.get("coverage_status"),
+        "p0p1_coverage_counts": {},
+        "evidence_file_count": len(evidence["files"]),
+        "source_count": len(source_ids),
+        "evidence_item_count": len(evidence_ids),
+        "source_id_closure": not missing_sources,
+        "evidence_id_closure": not missing_evidence,
+        "shape_errors": 0,
+        "shape_warnings": 0,
+        "recommend_next_stage": counts["ERROR"] == 0,
+    }
+    if write_report:
+        _write_report(findings, summary)
+        _update_candidate_gate_metadata(paths["metadata"], metadata, summary)
+    return findings, summary
+
+
 def audit_project(project_id: str, sector_id: str, write_report: bool = True) -> tuple[list[Finding], dict[str, Any]]:
     config = load_project(project_id, create_dirs=False, strict=False, silent=True)
     findings: list[Finding] = []
@@ -120,6 +383,21 @@ def audit_project(project_id: str, sector_id: str, write_report: bool = True) ->
 
     load_errors = [w for w in config.warnings if w.severity == "error"]
     load_warnings = [w for w in config.warnings if w.severity == "warning"]
+    if paths["metadata"].exists():
+        metadata_probe = json.loads(paths["metadata"].read_text(encoding="utf-8"))
+        if metadata_probe.get("candidate_only") is True:
+            return _audit_candidate_only(
+                project_id=project_id,
+                sector_id=sector_id,
+                config=config,
+                paths=paths,
+                candidate_dir=candidate_dir,
+                formal_root=formal_root,
+                legacy_root=legacy_root,
+                load_errors=load_errors,
+                load_warnings=load_warnings,
+                write_report=write_report,
+            )
     if load_errors:
         findings.append(Finding("ERROR", "LOAD_PROJECT_HAS_ERRORS", f"load_project errors={len(load_errors)}"))
     elif load_warnings:
@@ -220,6 +498,12 @@ def audit_project(project_id: str, sector_id: str, write_report: bool = True) ->
             if unknown:
                 findings.append(Finding("ERROR", "ROW_SOURCE_ID_NOT_IN_SOURCE_INDEX", f"{output_type} row references unknown source_ids: {sorted(unknown)}", str(path)))
     unknown_evidence = referenced_evidence_ids - evidence_ids
+    _append_draft_reference_findings(
+        findings,
+        output_source_ids,
+        referenced_evidence_ids,
+        location=str(paths["source_index"]),
+    )
     if unknown_evidence:
         findings.append(Finding("ERROR", "EVIDENCE_ID_NOT_IN_ACTIVE_EVIDENCE", f"Unknown evidence_ids: {sorted(unknown_evidence)}"))
     else:
@@ -229,6 +513,7 @@ def audit_project(project_id: str, sector_id: str, write_report: bool = True) ->
         if not path.exists():
             continue
         content = path.read_text(encoding="utf-8-sig", errors="ignore")
+        _append_placeholder_findings(findings, path, content)
         for pattern, code in FORBIDDEN_INVESTMENT_PATTERNS:
             if pattern.search(content):
                 findings.append(Finding("ERROR", f"FORMAL_INVESTMENT_LANGUAGE_{code}", f"Forbidden investment wording matched: {pattern.pattern}", str(path)))

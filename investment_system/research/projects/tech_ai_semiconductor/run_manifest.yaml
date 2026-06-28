@@ -214,6 +214,30 @@ evidence_files:
       missing_evidence 中。本文件不得作为投资结论、建仓评级、
       目标价、仓位建议或正式评分使用。
 
+  - path: investment_system/research/evidence/ai_server_pcb_high_speed_board.yaml
+    type: evidence_yaml
+    sector_id: ai_server_pcb_high_speed_board
+    evidence_file_id: ai_server_pcb_high_speed_board
+    status: schema_normalized
+    action: index_only
+    notes: >
+      [INDEXED — DO NOT DELETE] 1E-k-a 新增 P1 batch pre-start evidence。
+      使用巨潮资讯 2025 年报本地缓存与 Tushare 财务/估值/交易热度事实，
+      仅用于 AI服务器PCB/高速通信板 evidence coverage 判断；不得作为
+      投资结论、建仓评级、目标价、仓位建议或正式评分使用。
+
+  - path: investment_system/research/evidence/ccl_high_frequency_materials.yaml
+    type: evidence_yaml
+    sector_id: ccl_high_frequency_materials
+    evidence_file_id: ccl_high_frequency_materials
+    status: schema_normalized
+    action: index_only
+    notes: >
+      [INDEXED — DO NOT DELETE] 1E-k-a 新增 P1 batch pre-start evidence。
+      使用巨潮资讯 2025 年报本地缓存与 Tushare 财务/估值/交易热度事实，
+      仅用于 CCL/高频高速材料/铜箔/树脂 evidence coverage 判断；不得作为
+      投资结论、建仓评级、目标价、仓位建议或正式评分使用。
+
 # ── Seed Documents (from user copy, NOT research-grade) ────────────────────
 # These are user-copied draft notes. They must pass evidence + source
 # verification before being upgraded. Do NOT treat as completed sector cards.

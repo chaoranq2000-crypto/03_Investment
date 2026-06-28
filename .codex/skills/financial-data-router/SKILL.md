@@ -12,7 +12,7 @@ Use this as the financial-data layer. It should provide normalized fields, not i
 - Primary code: `investment_system/scripts/research_client.py`
 - Tushare bridge: `investment_system/pipelines/tushare_client.py`
 - Standard pipeline: `investment_system/pipelines/run_research.py`
-- Cleanup/derived metrics: `investment_system/pipelines/cleanup_outputs.py`
+- Derived metrics should be normalized before output generation and checked through `investment_system/pipelines/validate_outputs.py`
 - Contract: read `references/contract.md` before adding financial fields.
 
 ## Route Order

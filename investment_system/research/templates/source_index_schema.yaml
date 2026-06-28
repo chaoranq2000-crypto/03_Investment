@@ -14,7 +14,7 @@ fields:
       Examples:
         SRC-BAO-300308-20260619     (BaoStock, 300308, date)
         SRC-CNINFO-300394-20260407   (CNINFO annual report)
-        SRC-BROKER-GUOSEN-20260619   (Guosen broker report)
+        SRC-BROKER-PUBLIC-20260619   (public broker report)
         SRC-POLICY-MIITTT-20260610   (Ministry policy doc)
 
   - field: subject_type

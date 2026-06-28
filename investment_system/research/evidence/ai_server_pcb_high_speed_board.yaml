@@ -1,0 +1,282 @@
+schema_version: '1.1'
+evidence_file_id: ai_server_pcb_high_speed_board
+status: schema_normalized
+project_ids:
+- tech_ai_semiconductor
+canonical_sector_ids:
+- ai_server_pcb_high_speed_board
+_audit_metadata:
+  created_for_phase: 1E-k-a
+  created_date: '2026-06-24'
+  source_id_convention_version: '1.1'
+  note: P1 evidence batch pre-start. Official annual reports plus Tushare financial/market facts only; no candidate or formal output generation.
+source_index:
+- source_id: CNINFO-AR-AI-SERVER-PCB-HIGH-SPEED-BOARD-002463-20260624
+  source_type: annual_report
+  title: 沪电股份 2025年年度报告
+  publisher: 巨潮资讯/CNINFO
+  date: '2026-03-25'
+  url: http://static.cninfo.com.cn/finalpage/2026-03-25/1225027832.PDF
+  access_method: web_download
+  local_path: investment_system/data/raw/cninfo/p1_batch_evidence/2026-06-24/002463.SZ_1225027832_2025_annual_report.txt
+  reliability_level: 高
+  notes: Official annual report PDF cached locally; text extracted with pdfplumber for evidence pre-start.
+- source_id: CNINFO-AR-AI-SERVER-PCB-HIGH-SPEED-BOARD-002916-20260624
+  source_type: annual_report
+  title: 深南电路 2025年年度报告
+  publisher: 巨潮资讯/CNINFO
+  date: '2026-03-13'
+  url: http://static.cninfo.com.cn/finalpage/2026-03-13/1225006760.PDF
+  access_method: web_download
+  local_path: investment_system/data/raw/cninfo/p1_batch_evidence/2026-06-24/002916.SZ_1225006760_2025_annual_report.txt
+  reliability_level: 高
+  notes: Official annual report PDF cached locally; text extracted with pdfplumber for evidence pre-start.
+- source_id: CNINFO-AR-AI-SERVER-PCB-HIGH-SPEED-BOARD-300476-20260624
+  source_type: annual_report
+  title: 胜宏科技 2025年年度报告
+  publisher: 巨潮资讯/CNINFO
+  date: '2026-03-13'
+  url: http://static.cninfo.com.cn/finalpage/2026-03-13/1225007455.PDF
+  access_method: web_download
+  local_path: investment_system/data/raw/cninfo/p1_batch_evidence/2026-06-24/300476.SZ_1225007455_2025_annual_report.txt
+  reliability_level: 高
+  notes: Official annual report PDF cached locally; text extracted with pdfplumber for evidence pre-start.
+- source_id: TUSHARE-INCOME-AI-SERVER-PCB-HIGH-SPEED-BOARD-20260624
+  source_type: financial_data
+  title: Tushare Pro income statements for ai_server_pcb_high_speed_board stock sample
+  publisher: Tushare Pro
+  date: '2026-06-24'
+  url: ''
+  access_method: script_query
+  local_path: investment_system/data/raw/tushare/p1_batch_evidence_20260624.json
+  dataset_ref: tushare:income(ts_code,start_date=20250101,end_date=20260624)
+  reliability_level: 高
+  notes: No token stored; raw query result cached as JSON.
+- source_id: TUSHARE-DAILY-BASIC-AI-SERVER-PCB-HIGH-SPEED-BOARD-20260624
+  source_type: market_data
+  title: Tushare Pro daily_basic valuation fields for ai_server_pcb_high_speed_board stock sample
+  publisher: Tushare Pro
+  date: '2026-06-24'
+  url: ''
+  access_method: script_query
+  local_path: investment_system/data/raw/tushare/p1_batch_evidence_20260624.json
+  dataset_ref: tushare:daily_basic(ts_code,start_date=20260301,end_date=20260623)
+  reliability_level: 高
+  notes: Valuation and turnover fields; last available trade date 2026-06-23.
+- source_id: TUSHARE-DAILY-AI-SERVER-PCB-HIGH-SPEED-BOARD-20260624
+  source_type: market_data
+  title: Tushare Pro daily k-line for ai_server_pcb_high_speed_board stock sample
+  publisher: Tushare Pro
+  date: '2026-06-24'
+  url: ''
+  access_method: script_query
+  local_path: investment_system/data/raw/tushare/p1_batch_evidence_20260624.json
+  dataset_ref: tushare:daily(ts_code,start_date=20260301,end_date=20260623)
+  reliability_level: 高
+  notes: Daily close, pct_chg and amount fields; last available trade date 2026-06-23.
+evidence_items:
+- evidence_id: EV-AI-SERVER-PCB-HIGH-SPEED-BOARD-SECTOR-LOGIC-20260624
+  source_id: CNINFO-AR-AI-SERVER-PCB-HIGH-SPEED-BOARD-002463-20260624
+  source_ids:
+  - CNINFO-AR-AI-SERVER-PCB-HIGH-SPEED-BOARD-002463-20260624
+  - CNINFO-AR-AI-SERVER-PCB-HIGH-SPEED-BOARD-002916-20260624
+  - CNINFO-AR-AI-SERVER-PCB-HIGH-SPEED-BOARD-300476-20260624
+  project_id: tech_ai_semiconductor
+  sector_id: ai_server_pcb_high_speed_board
+  subject_type: sector
+  subject_id: ai_server_pcb_high_speed_board
+  subject_name: AI服务器PCB/高速通信板
+  company_code: ''
+  company_name: ''
+  evidence_level: strong
+  evidence_type: industry_logic
+  source_url: http://static.cninfo.com.cn/finalpage/2026-03-25/1225027832.PDF
+  source_file: investment_system/data/raw/cninfo/p1_batch_evidence/2026-06-24/002463.SZ_1225027832_2025_annual_report.txt
+  source_date: '2026-03-25'
+  extracted_text: Official annual reports of representative PCB companies support the sector logic that AI servers, high-speed network switches, optical modules and data centers raise requirements for high-layer, high-speed and high-reliability PCB products.
+  claim: Official annual reports of representative PCB companies support the sector logic that AI servers, high-speed network switches, optical modules and data centers raise requirements for high-layer, high-speed and high-reliability PCB products. This sector-level item is not an investment conclusion.
+  metrics_supported:
+  - sector_level_claim
+  - risk_evidence
+  time_scope: 2025FY
+  confidence: 中高
+  used_for: &id001
+  - sector_card
+  - source_index
+  - missing_data_log
+  - risk_review
+  not_allowed_for: &id002
+  - investment_conclusion
+  - position_sizing
+  - final_rating
+  limitation: Sector logic does not prove all stock-pool companies have AI-specific revenue or named orders.
+  missing_fields: &id003
+  - named_ai_server_customer_contracts
+  - model_level_ai_server_pcb_revenue
+  - capacity_by_ai_server_pcb_line
+  - certification_files
+- evidence_id: EV-AI-SERVER-PCB-HIGH-SPEED-BOARD-PRODUCT-002463-20260624
+  source_id: CNINFO-AR-AI-SERVER-PCB-HIGH-SPEED-BOARD-002463-20260624
+  source_ids:
+  - CNINFO-AR-AI-SERVER-PCB-HIGH-SPEED-BOARD-002463-20260624
+  project_id: tech_ai_semiconductor
+  sector_id: ai_server_pcb_high_speed_board
+  subject_type: company
+  subject_id: 002463.SZ
+  subject_name: 沪电股份
+  company_code: 002463.SZ
+  company_name: 沪电股份
+  evidence_level: strong
+  evidence_type: company_evidence
+  source_url: http://static.cninfo.com.cn/finalpage/2026-03-25/1225027832.PDF
+  source_file: investment_system/data/raw/cninfo/p1_batch_evidence/2026-06-24/002463.SZ_1225027832_2025_annual_report.txt
+  source_date: '2026-03-25'
+  extracted_text: Annual report states data communication products are mainly used in data centers including high-speed network switches and routers, AI servers/HPC and general servers; 2025 PCB business revenue was about 18.143 billion yuan; AI server/HPC application revenue was about 3.006 billion yuan and high-speed switch/router applications about 8.169 billion yuan.
+  claim: Official annual report supports company-level AI server/HPC and high-speed network PCB exposure, product/application stage, customer-demand context and segment revenue. Revenue/收入 and risk review are supported by annual-report disclosures, but this is not investment advice.
+  metrics_supported:
+  - company_evidence
+  - revenue_2025_actual
+  - profit_data
+  - risk_evidence
+  time_scope: 2025FY
+  confidence: 高
+  used_for: *id001
+  not_allowed_for: *id002
+  limitation: Annual report may not disclose named customer contracts, order amount, product model revenue split or certification files.
+  missing_fields: *id003
+- evidence_id: EV-AI-SERVER-PCB-HIGH-SPEED-BOARD-PRODUCT-002916-20260624
+  source_id: CNINFO-AR-AI-SERVER-PCB-HIGH-SPEED-BOARD-002916-20260624
+  source_ids:
+  - CNINFO-AR-AI-SERVER-PCB-HIGH-SPEED-BOARD-002916-20260624
+  project_id: tech_ai_semiconductor
+  sector_id: ai_server_pcb_high_speed_board
+  subject_type: company
+  subject_id: 002916.SZ
+  subject_name: 深南电路
+  company_code: 002916.SZ
+  company_name: 深南电路
+  evidence_level: strong
+  evidence_type: company_evidence
+  source_url: http://static.cninfo.com.cn/finalpage/2026-03-13/1225006760.PDF
+  source_file: investment_system/data/raw/cninfo/p1_batch_evidence/2026-06-24/002916.SZ_1225006760_2025_annual_report.txt
+  source_date: '2026-03-13'
+  extracted_text: Annual report defines high-speed multilayer boards and states PCB products focus on communications equipment, with data center including switches, optical modules and servers/storage/power; 2025 operating revenue was 23.647 billion yuan.
+  claim: Official annual report supports data-center/server/switch high-speed PCB exposure and financial scale, but not model-level AI server PCB revenue. Revenue/收入 and risk review are supported by annual-report disclosures, but this is not investment advice.
+  metrics_supported:
+  - company_evidence
+  - revenue_2025_actual
+  - profit_data
+  - risk_evidence
+  time_scope: 2025FY
+  confidence: 高
+  used_for: *id001
+  not_allowed_for: *id002
+  limitation: Annual report may not disclose named customer contracts, order amount, product model revenue split or certification files.
+  missing_fields: *id003
+- evidence_id: EV-AI-SERVER-PCB-HIGH-SPEED-BOARD-PRODUCT-300476-20260624
+  source_id: CNINFO-AR-AI-SERVER-PCB-HIGH-SPEED-BOARD-300476-20260624
+  source_ids:
+  - CNINFO-AR-AI-SERVER-PCB-HIGH-SPEED-BOARD-300476-20260624
+  project_id: tech_ai_semiconductor
+  sector_id: ai_server_pcb_high_speed_board
+  subject_type: company
+  subject_id: 300476.SZ
+  subject_name: 胜宏科技
+  company_code: 300476.SZ
+  company_name: 胜宏科技
+  evidence_level: strong
+  evidence_type: company_evidence
+  source_url: http://static.cninfo.com.cn/finalpage/2026-03-13/1225007455.PDF
+  source_file: investment_system/data/raw/cninfo/p1_batch_evidence/2026-06-24/300476.SZ_1225007455_2025_annual_report.txt
+  source_date: '2026-03-13'
+  extracted_text: Annual report states products are widely used in artificial intelligence and data centers; company focuses on GPU/CPU technology routes, AI servers, AI compute cards and 800G/1.6T high-speed transmission equipment; it reports 2025 operating revenue of 19.292 billion yuan.
+  claim: Official annual report supports AI/data-center PCB exposure, high-speed transmission technology reserve and financial scale, but named AI server customer/order amount remains missing. Revenue/收入 and risk review are supported by annual-report disclosures, but this is not investment advice.
+  metrics_supported:
+  - company_evidence
+  - revenue_2025_actual
+  - profit_data
+  - risk_evidence
+  time_scope: 2025FY
+  confidence: 高
+  used_for: *id001
+  not_allowed_for: *id002
+  limitation: Annual report may not disclose named customer contracts, order amount, product model revenue split or certification files.
+  missing_fields: *id003
+- evidence_id: EV-AI-SERVER-PCB-HIGH-SPEED-BOARD-FIN-VALUATION-20260624
+  source_id: TUSHARE-INCOME-AI-SERVER-PCB-HIGH-SPEED-BOARD-20260624
+  source_ids:
+  - TUSHARE-INCOME-AI-SERVER-PCB-HIGH-SPEED-BOARD-20260624
+  - TUSHARE-DAILY-BASIC-AI-SERVER-PCB-HIGH-SPEED-BOARD-20260624
+  project_id: tech_ai_semiconductor
+  sector_id: ai_server_pcb_high_speed_board
+  subject_type: sector
+  subject_id: ai_server_pcb_high_speed_board
+  subject_name: AI服务器PCB/高速通信板
+  company_code: ''
+  company_name: ''
+  evidence_level: strong
+  evidence_type: financial_data
+  source_url: ''
+  source_file: investment_system/data/raw/tushare/p1_batch_evidence_20260624.json
+  source_date: '2026-06-24'
+  extracted_text: Tushare income and daily_basic returned financial, valuation and turnover fields for the selected official-evidence company sample.
+  claim: 'Tushare income/daily_basic facts: 2025FY total_revenue=18945220585.0 yuan, n_income_attr_p=3822306272.0 yuan, ann_date=20260325; 2026Q1 total_revenue=6214156406.0 yuan, n_income_attr_p=1242081367.0 yuan; daily_basic 20260623 pe_ttm=61.9547, pb=15.8741, turnover_rate=4.2977, total_mv=26652435.86 (Tushare unit). ; Tushare income/daily_basic facts: 2025FY total_revenue=23646977088.98 yuan, n_income_attr_p=3275738151.27 yuan, ann_date=20260313; 2026Q1 total_revenue=6595587902.38 yuan, n_income_attr_p=850230796.58 yuan; daily_basic 20260623 pe_ttm=79.8391, pb=16.0403, turnover_rate=2.3159, total_mv=29017697.16 (Tushare unit). ; Tushare income/daily_basic facts: 2025FY total_revenue=19292313457.36 yuan, n_income_attr_p=4311988274.4 yuan, ann_date=20260313; 2026Q1 total_revenue=5519485066.85 yuan, n_income_attr_p=1288427592.46 yuan; daily_basic 20260623 pe_ttm=71.0244, pb=19.0976, turnover_rate=6.0426, total_mv=33237781.936 (Tushare unit).'
+  metrics_supported:
+  - financial_data
+  - revenue_2025_actual
+  - profit_data
+  - valuation
+  - pe_ttm
+  - pb
+  - turnover_data
+  - risk_evidence
+  time_scope: 2025FY;2026Q1;2026-06-23
+  confidence: 高
+  used_for: *id001
+  not_allowed_for: *id002
+  limitation: Market valuation and financial facts do not prove AI-specific order conversion or customer qualification.
+  missing_fields: *id003
+- evidence_id: EV-AI-SERVER-PCB-HIGH-SPEED-BOARD-TRADING-20260624
+  source_id: TUSHARE-DAILY-AI-SERVER-PCB-HIGH-SPEED-BOARD-20260624
+  source_ids:
+  - TUSHARE-DAILY-AI-SERVER-PCB-HIGH-SPEED-BOARD-20260624
+  project_id: tech_ai_semiconductor
+  sector_id: ai_server_pcb_high_speed_board
+  subject_type: sector
+  subject_id: ai_server_pcb_high_speed_board
+  subject_name: AI服务器PCB/高速通信板
+  company_code: ''
+  company_name: ''
+  evidence_level: strong
+  evidence_type: trading_heat_fact
+  source_url: ''
+  source_file: investment_system/data/raw/tushare/p1_batch_evidence_20260624.json
+  source_date: '2026-06-24'
+  extracted_text: Tushare daily returned close, pct_chg, amount and enough observations for 20d/60d return calculations.
+  claim: 'Tushare daily trading heat fact: as_of_date=20260623; close_price=138.5; pct_chg=-4.6537; return_20d_pct=13.02; return_60d_pct=68.31; amount_thousand_yuan=11630901.6313. ; Tushare daily trading heat fact: as_of_date=20260623; close_price=426.0; pct_chg=-6.8527; return_20d_pct=6.5; return_60d_pct=81.25; amount_thousand_yuan=6638777.58339. ; Tushare daily trading heat fact: as_of_date=20260623; close_price=338.2; pct_chg=-7.4439; return_20d_pct=-11.81; return_60d_pct=27.11; amount_thousand_yuan=18043654.3741.'
+  metrics_supported:
+  - price_data
+  - close_price
+  - return_20d
+  - return_60d
+  - trading_amount
+  - momentum_data
+  time_scope: '2026-06-23'
+  confidence: 高
+  used_for: *id001
+  not_allowed_for: *id002
+  limitation: Trading heat is only a market-state fact and cannot be used as investment advice or rating.
+  missing_fields: *id003
+missing_evidence:
+- field: named_ai_server_customer_contracts
+  status: missing_or_incomplete
+  notes: Keep as missing evidence before any candidate generation.
+- field: model_level_ai_server_pcb_revenue
+  status: missing_or_incomplete
+  notes: Keep as missing evidence before any candidate generation.
+- field: capacity_by_ai_server_pcb_line
+  status: missing_or_incomplete
+  notes: Keep as missing evidence before any candidate generation.
+- field: certification_files
+  status: missing_or_incomplete
+  notes: Keep as missing evidence before any candidate generation.

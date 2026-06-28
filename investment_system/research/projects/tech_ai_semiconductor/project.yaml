@@ -68,7 +68,6 @@ data_source_priority:
     - user_provided
     - verifiable_public_page
     - broker_report
-  guosen_skills_enabled: false
 
 # Quality gates
 quality:

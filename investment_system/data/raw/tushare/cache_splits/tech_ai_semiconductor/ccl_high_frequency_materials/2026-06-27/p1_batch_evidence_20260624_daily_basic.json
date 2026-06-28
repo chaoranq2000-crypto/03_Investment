@@ -1,0 +1,314 @@
+{
+  "002463.SZ": [
+    {
+      "ts_code": "002463.SZ",
+      "trade_date": "20260623",
+      "turnover_rate": 4.2977,
+      "volume_ratio": 0.85,
+      "pe_ttm": 61.9547,
+      "pb": 15.8741,
+      "total_mv": 26652435.86,
+      "circ_mv": 26630925.425
+    },
+    {
+      "ts_code": "002463.SZ",
+      "trade_date": "20260622",
+      "turnover_rate": 4.7256,
+      "volume_ratio": 0.97,
+      "pe_ttm": 64.9786,
+      "pb": 16.6489,
+      "total_mv": 27953305.6536,
+      "circ_mv": 27930745.323
+    },
+    {
+      "ts_code": "002463.SZ",
+      "trade_date": "20260618",
+      "turnover_rate": 4.3519,
+      "volume_ratio": 0.91,
+      "pe_ttm": 66.1596,
+      "pb": 16.9515,
+      "total_mv": 28461337.644,
+      "circ_mv": 28438367.295
+    },
+    {
+      "ts_code": "002463.SZ",
+      "trade_date": "20260617",
+      "turnover_rate": 5.1567,
+      "volume_ratio": 1.06,
+      "pe_ttm": 65.5557,
+      "pb": 16.7968,
+      "total_mv": 28201548.558,
+      "circ_mv": 28178787.8775
+    },
+    {
+      "ts_code": "002463.SZ",
+      "trade_date": "20260616",
+      "turnover_rate": 5.7286,
+      "volume_ratio": 1.14,
+      "pe_ttm": 62.912,
+      "pb": 16.1194,
+      "total_mv": 27064249.6704,
+      "circ_mv": 27042406.872
+    }
+  ],
+  "002916.SZ": [
+    {
+      "ts_code": "002916.SZ",
+      "trade_date": "20260623",
+      "turnover_rate": 2.3159,
+      "volume_ratio": 0.98,
+      "pe_ttm": 79.8391,
+      "pb": 16.0403,
+      "total_mv": 29017697.16,
+      "circ_mv": 28320884.7
+    },
+    {
+      "ts_code": "002916.SZ",
+      "trade_date": "20260622",
+      "turnover_rate": 2.6466,
+      "volume_ratio": 1.23,
+      "pe_ttm": 85.7127,
+      "pb": 17.2204,
+      "total_mv": 31152473.2844,
+      "circ_mv": 30404397.673
+    },
+    {
+      "ts_code": "002916.SZ",
+      "trade_date": "20260618",
+      "turnover_rate": 2.9374,
+      "volume_ratio": 1.58,
+      "pe_ttm": 85.0493,
+      "pb": 17.0871,
+      "total_mv": 30911340.308,
+      "circ_mv": 30169055.11
+    },
+    {
+      "ts_code": "002916.SZ",
+      "trade_date": "20260617",
+      "turnover_rate": 1.8102,
+      "volume_ratio": 0.98,
+      "pe_ttm": 83.2632,
+      "pb": 16.7283,
+      "total_mv": 30262188.5382,
+      "circ_mv": 29535491.6565
+    },
+    {
+      "ts_code": "002916.SZ",
+      "trade_date": "20260616",
+      "turnover_rate": 2.3784,
+      "volume_ratio": 1.28,
+      "pe_ttm": 75.6935,
+      "pb": 15.2075,
+      "total_mv": 27510956.6408,
+      "circ_mv": 26850326.086
+    }
+  ],
+  "300476.SZ": [
+    {
+      "ts_code": "300476.SZ",
+      "trade_date": "20260623",
+      "turnover_rate": 6.0426,
+      "volume_ratio": 1.17,
+      "pe_ttm": 71.0244,
+      "pb": 19.0976,
+      "total_mv": 33237781.936,
+      "circ_mv": 29260891.518
+    },
+    {
+      "ts_code": "300476.SZ",
+      "trade_date": "20260622",
+      "turnover_rate": 5.6998,
+      "volume_ratio": 1.16,
+      "pe_ttm": 76.7366,
+      "pb": 20.6335,
+      "total_mv": 35910956.592,
+      "circ_mv": 31614221.646
+    },
+    {
+      "ts_code": "300476.SZ",
+      "trade_date": "20260618",
+      "turnover_rate": 5.2236,
+      "volume_ratio": 1.17,
+      "pe_ttm": 77.4926,
+      "pb": 20.8368,
+      "total_mv": 36264759.12,
+      "circ_mv": 31925691.81
+    },
+    {
+      "ts_code": "300476.SZ",
+      "trade_date": "20260617",
+      "turnover_rate": 5.1361,
+      "volume_ratio": 1.24,
+      "pe_ttm": 75.9596,
+      "pb": 20.4246,
+      "total_mv": 35547326.216,
+      "circ_mv": 31294099.533
+    },
+    {
+      "ts_code": "300476.SZ",
+      "trade_date": "20260616",
+      "turnover_rate": 5.4225,
+      "volume_ratio": 1.29,
+      "pe_ttm": 74.6533,
+      "pb": 20.0734,
+      "total_mv": 34936034.0704,
+      "circ_mv": 30755948.3052
+    }
+  ],
+  "600183.SH": [
+    {
+      "ts_code": "600183.SH",
+      "trade_date": "20260623",
+      "turnover_rate": 4.1689,
+      "volume_ratio": 1.15,
+      "pe_ttm": 103.8009,
+      "pb": 22.7455,
+      "total_mv": 40777624.0104,
+      "circ_mv": 40196496.6805
+    },
+    {
+      "ts_code": "600183.SH",
+      "trade_date": "20260622",
+      "turnover_rate": 3.9478,
+      "volume_ratio": 1.08,
+      "pe_ttm": 114.0839,
+      "pb": 24.9988,
+      "total_mv": 44817249.24,
+      "circ_mv": 44178552.675
+    },
+    {
+      "ts_code": "600183.SH",
+      "trade_date": "20260618",
+      "turnover_rate": 3.3359,
+      "volume_ratio": 0.9,
+      "pe_ttm": 113.6943,
+      "pb": 24.9134,
+      "total_mv": 44664214.7304,
+      "circ_mv": 44027699.0805
+    },
+    {
+      "ts_code": "600183.SH",
+      "trade_date": "20260617",
+      "turnover_rate": 4.8261,
+      "volume_ratio": 1.37,
+      "pe_ttm": 111.3941,
+      "pb": 24.4094,
+      "total_mv": 43760582.388,
+      "circ_mv": 43136944.5225
+    },
+    {
+      "ts_code": "600183.SH",
+      "trade_date": "20260616",
+      "turnover_rate": 3.8379,
+      "volume_ratio": 1.15,
+      "pe_ttm": 110.9304,
+      "pb": 24.3078,
+      "total_mv": 43578398.448,
+      "circ_mv": 42957356.91
+    }
+  ],
+  "688519.SH": [
+    {
+      "ts_code": "688519.SH",
+      "trade_date": "20260623",
+      "turnover_rate": 3.4702,
+      "volume_ratio": 1.0,
+      "pe_ttm": 212.0408,
+      "pb": 27.1519,
+      "total_mv": 7831507.32,
+      "circ_mv": 7831507.32
+    },
+    {
+      "ts_code": "688519.SH",
+      "trade_date": "20260622",
+      "turnover_rate": 3.8434,
+      "volume_ratio": 1.11,
+      "pe_ttm": 239.1986,
+      "pb": 30.6294,
+      "total_mv": 8834551.726,
+      "circ_mv": 8834551.726
+    },
+    {
+      "ts_code": "688519.SH",
+      "trade_date": "20260618",
+      "turnover_rate": 3.375,
+      "volume_ratio": 0.99,
+      "pe_ttm": 252.7934,
+      "pb": 32.3702,
+      "total_mv": 9336661.88,
+      "circ_mv": 9336661.88
+    },
+    {
+      "ts_code": "688519.SH",
+      "trade_date": "20260617",
+      "turnover_rate": 3.4762,
+      "volume_ratio": 1.03,
+      "pe_ttm": 251.5263,
+      "pb": 32.208,
+      "total_mv": 9289860.9804,
+      "circ_mv": 9289860.9804
+    },
+    {
+      "ts_code": "688519.SH",
+      "trade_date": "20260616",
+      "turnover_rate": 3.318,
+      "volume_ratio": 0.95,
+      "pe_ttm": 226.9665,
+      "pb": 29.0631,
+      "total_mv": 8382770.1776,
+      "circ_mv": 8382770.1776
+    }
+  ],
+  "603186.SH": [
+    {
+      "ts_code": "603186.SH",
+      "trade_date": "20260623",
+      "turnover_rate": 8.4954,
+      "volume_ratio": 1.02,
+      "pe_ttm": 125.5478,
+      "pb": 15.5065,
+      "total_mv": 3631267.98,
+      "circ_mv": 3631267.98
+    },
+    {
+      "ts_code": "603186.SH",
+      "trade_date": "20260622",
+      "turnover_rate": 12.4437,
+      "volume_ratio": 1.46,
+      "pe_ttm": 135.0832,
+      "pb": 16.6842,
+      "total_mv": 3907062.4695,
+      "circ_mv": 3907062.4695
+    },
+    {
+      "ts_code": "603186.SH",
+      "trade_date": "20260618",
+      "turnover_rate": 11.2753,
+      "volume_ratio": 1.28,
+      "pe_ttm": 129.0768,
+      "pb": 15.9423,
+      "total_mv": 3733338.5955,
+      "circ_mv": 3733338.5955
+    },
+    {
+      "ts_code": "603186.SH",
+      "trade_date": "20260617",
+      "turnover_rate": 10.2307,
+      "volume_ratio": 1.07,
+      "pe_ttm": 122.8753,
+      "pb": 15.1764,
+      "total_mv": 3553970.2635,
+      "circ_mv": 3553970.2635
+    },
+    {
+      "ts_code": "603186.SH",
+      "trade_date": "20260616",
+      "turnover_rate": 3.6915,
+      "volume_ratio": 0.33,
+      "pe_ttm": 111.7029,
+      "pb": 13.7965,
+      "total_mv": 3230825.043,
+      "circ_mv": 3230825.043
+    }
+  ]
+}

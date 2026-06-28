@@ -18,10 +18,13 @@ from investment_system.pipelines.sector_research.prepare_formal_publish import (
     MANIFEST_PREFIX,
     PUBLISH_STATUS,
     SECTOR_CARD_ONLY,
+    SOURCE_STAGE_CANDIDATE,
+    SOURCE_STAGE_GATED,
     default_manifest_path,
     resolve_final_publish_paths,
 )
 from investment_system.pipelines.sector_research.promote_formal_candidate_outputs import FORBIDDEN_PATTERNS, get_gated_formal_output_dir
+from investment_system.pipelines.sector_research.build_formal_candidate_outputs import get_formal_candidate_output_dir
 
 
 @dataclass
@@ -84,12 +87,14 @@ def audit_project(
     sector_id: str,
     *,
     manifest_path_arg: str | None = None,
+    expected_publish_scope: str | None = None,
     write_report: bool = True,
 ) -> tuple[list[Finding], dict[str, Any]]:
     config = load_project(project_id, create_dirs=False, strict=False, silent=True)
     findings: list[Finding] = []
     manifest_path = _manifest_path(project_id, sector_id, manifest_path_arg)
     gated_root = get_gated_formal_output_dir(config).resolve()
+    candidate_root = get_formal_candidate_output_dir(config).resolve()
     all_final_paths = resolve_final_publish_paths(config, sector_id)
     formal_root = config.output_root.resolve()
 
@@ -114,6 +119,8 @@ def audit_project(
         if manifest.get("manual_confirmation_required") is not True:
             findings.append(Finding("ERROR", "MANUAL_CONFIRMATION_NOT_REQUIRED", "manual_confirmation_required is not true."))
         publish_scope = manifest.get("publish_scope")
+        if expected_publish_scope and publish_scope != expected_publish_scope:
+            findings.append(Finding("ERROR", "PUBLISH_SCOPE_MISMATCH", f"publish_scope={publish_scope}, expected={expected_publish_scope}"))
         if publish_scope == SECTOR_CARD_ONLY:
             final_paths = {"sector_card": all_final_paths["sector_card"]}
         else:
@@ -126,7 +133,6 @@ def audit_project(
             "no_investment_conclusion",
             "score_placeholder",
             "formal_directory_pollution",
-            "all_sources_from_gated_staging",
             "gates_passed",
         ]
         for key in expected_true:
@@ -134,6 +140,14 @@ def audit_project(
                 findings.append(Finding("ERROR", "GATE_STATUS_NOT_PASSING", f"{key}={gate_status.get(key)}"))
         if gate_status.get("gated_formal_audit_error_count") != 0:
             findings.append(Finding("ERROR", "GATED_AUDIT_ERROR_COUNT_NONZERO", f"ERROR={gate_status.get('gated_formal_audit_error_count')}"))
+        source_stage = manifest.get("source_stage", SOURCE_STAGE_GATED)
+        if source_stage == SOURCE_STAGE_CANDIDATE:
+            if gate_status.get("all_sources_from_candidate_staging") is not True:
+                findings.append(Finding("ERROR", "SOURCE_STAGE_NOT_PASSING", f"all_sources_from_candidate_staging={gate_status.get('all_sources_from_candidate_staging')}"))
+            if gate_status.get("candidate_gate_error_count") != 0:
+                findings.append(Finding("ERROR", "CANDIDATE_GATE_ERROR_COUNT_NONZERO", f"ERROR={gate_status.get('candidate_gate_error_count')}"))
+        elif gate_status.get("all_sources_from_gated_staging") is not True:
+            findings.append(Finding("ERROR", "SOURCE_STAGE_NOT_PASSING", f"all_sources_from_gated_staging={gate_status.get('all_sources_from_gated_staging')}"))
         if gate_status.get("validate_outputs_exit_code") != 0:
             findings.append(Finding("ERROR", "VALIDATE_OUTPUTS_NOT_ZERO_IN_MANIFEST", f"exit={gate_status.get('validate_outputs_exit_code')}"))
 
@@ -158,7 +172,10 @@ def audit_project(
             if not source.exists():
                 findings.append(Finding("ERROR", "SOURCE_FILE_MISSING", "source file missing.", str(source)))
                 continue
-            if not str(source.resolve()).startswith(str(gated_root)):
+            if source_stage == SOURCE_STAGE_CANDIDATE:
+                if not str(source.resolve()).startswith(str(candidate_root)):
+                    findings.append(Finding("ERROR", "SOURCE_NOT_FROM_CANDIDATE_STAGING", "source is not under formal_candidate_outputs.", str(source)))
+            elif not str(source.resolve()).startswith(str(gated_root)):
                 findings.append(Finding("ERROR", "SOURCE_NOT_FROM_GATED_STAGING", "source is not under gated staging.", str(source)))
             if str(source.resolve()).startswith(str(formal_root)):
                 findings.append(Finding("ERROR", "SOURCE_IN_FINAL_OUTPUT_ROOT", "source is inside final formal output root.", str(source)))
@@ -238,7 +255,9 @@ def audit_project(
         "project_id": project_id,
         "sector_id": sector_id,
         "manifest_path": str(manifest_path),
+        "source_stage": manifest.get("source_stage") if manifest else None,
         "gated_formal_root": manifest.get("gated_formal_root", "") if manifest else "",
+        "formal_candidate_root": manifest.get("formal_candidate_root", "") if manifest else "",
         "final_target_paths": manifest.get("formal_target_paths_read_only", {}) if manifest else {},
         "excluded_outputs": manifest.get("excluded_outputs_read_only", {}) if manifest else {},
         "publish_scope": manifest.get("publish_scope") if manifest else None,
@@ -271,8 +290,10 @@ def _write_report(findings: list[Finding], summary: dict[str, Any]) -> None:
         f"- project_id: `{summary['project_id']}`",
         f"- sector_id: `{summary['sector_id']}`",
         f"- gated formal source: `{summary['gated_formal_root']}`",
+        f"- formal candidate source: `{summary.get('formal_candidate_root', '')}`",
         f"- release manifest: `{summary['manifest_path']}`",
         f"- publish_scope: `{summary['publish_scope']}`",
+        f"- source_stage: `{summary.get('source_stage')}`",
         f"- dry_run: {summary['dry_run']}",
         f"- manual_confirmation_required: {summary['manual_confirmation_required']}",
         f"- confirm_publish_requested: {summary['confirm_publish_requested']}",
@@ -326,6 +347,7 @@ def _print_summary(summary: dict[str, Any]) -> None:
     print(f"sector_id: {summary['sector_id']}")
     print(f"manifest_path: {summary['manifest_path']}")
     print(f"publish_scope: {summary['publish_scope']}")
+    print(f"source_stage: {summary.get('source_stage')}")
     print(f"ERROR: {summary['ERROR']}")
     print(f"WARNING: {summary['WARNING']}")
     print(f"INFO: {summary['INFO']}")
@@ -347,12 +369,14 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--project", required=True)
     parser.add_argument("--sector-id", required=True)
     parser.add_argument("--release-manifest", default=None)
+    parser.add_argument("--publish-scope", default=None)
     args = parser.parse_args(argv)
 
     findings, summary = audit_project(
         args.project,
         args.sector_id,
         manifest_path_arg=args.release_manifest,
+        expected_publish_scope=args.publish_scope,
         write_report=True,
     )
     _print_summary(summary)

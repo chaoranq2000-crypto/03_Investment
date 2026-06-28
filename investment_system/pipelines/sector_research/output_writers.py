@@ -1,7 +1,8 @@
-"""Canonical output writer adapters for project-aware generator previews.
+"""Canonical output writer adapters for project-aware outputs.
 
-This module writes only audit previews unless a future production gate
-explicitly routes records to formal output paths.
+Preview writers stay under audits/generator_previews. Formal writers are gated:
+callers must explicitly opt in and placeholder score rows cannot carry preview
+ratings or generated investment actions.
 """
 
 from __future__ import annotations
@@ -27,6 +28,8 @@ from investment_system.pipelines.sector_research.load_project import (
 
 PREVIEW_MARKER = "PREVIEW_ONLY_DO_NOT_USE_FOR_RESEARCH"
 PREVIEW_RATING = "PREVIEW_NOT_FOR_INVESTMENT"
+FORMAL_SCORING_DISABLED = "FORMAL_SCORING_DISABLED"
+NOT_RATED = "NOT_RATED"
 GENERATOR_PREVIEW_FILENAMES = {
     "company_table": "preview_company_table.csv",
     "sector_comparison_table": "preview_sector_comparison_table.csv",
@@ -62,6 +65,154 @@ def _field_order(config: ProjectConfig, output_type: str) -> list[str]:
             if field not in fields:
                 fields.append(field)
     return fields
+
+
+def _write_csv_rows(path: Path, fields: list[str], rows: list[dict[str, Any]], mode: str = "w") -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    file_exists = path.exists()
+    with path.open(mode, newline="", encoding="utf-8-sig") as f:
+        writer = csv.DictWriter(f, fieldnames=fields, extrasaction="ignore")
+        if mode == "w" or not file_exists:
+            writer.writeheader()
+        writer.writerows(rows)
+
+
+def _assert_formal_output_path(config: ProjectConfig, path: Path) -> None:
+    resolved = path.resolve()
+    output_root = config.output_root.resolve()
+    preview_dir = get_generator_preview_dir(config).resolve()
+    if not str(resolved).startswith(str(output_root)):
+        raise RuntimeError(f"formal output path is outside project output root: {resolved}")
+    if str(resolved).startswith(str(preview_dir)):
+        raise RuntimeError(f"formal output path points to generator preview dir: {resolved}")
+
+
+def _reject_preview_markers(output_type: str, record: dict[str, Any]) -> None:
+    text = "\n".join(str(value) for value in record.values())
+    if PREVIEW_MARKER in text or PREVIEW_RATING in text:
+        raise RuntimeError(f"{output_type} formal record contains preview marker/rating")
+    if str(record.get("data_status", "")).lower() == "preview":
+        raise RuntimeError(f"{output_type} formal record has preview data_status")
+
+
+def _validate_formal_record(config: ProjectConfig, output_type: str, record: dict[str, Any]) -> None:
+    _reject_preview_markers(output_type, record)
+    result = validate_output_record_shape(config, output_type, record)
+    if result.get("errors"):
+        raise RuntimeError(f"{output_type} formal record shape failed: {'; '.join(result['errors'])}")
+
+
+def build_score_placeholder_record(
+    config: ProjectConfig,
+    sector_id: str,
+    *,
+    source_ids: str = "",
+    evidence_ids: str = "",
+    generated_at: str | None = None,
+    reason: str = "formal production scoring is disabled; no investment rating generated",
+) -> dict[str, Any]:
+    """Build a no-data-safe formal score placeholder.
+
+    This is the only formal score_table record allowed before a production
+    scoring calculator is explicitly enabled.
+    """
+    sector = get_sector(config, sector_id)
+    generated_at = generated_at or _now_iso()
+    reason_text = f"{FORMAL_SCORING_DISABLED}: {reason}"
+    record = {
+        "project_id": config.project_id,
+        "sector_id": sector.get("sector_id", sector_id),
+        "sector_name": sector.get("sector_name", sector_id),
+        "prosperity_score": "not_applicable",
+        "prosperity_reason": reason_text,
+        "earnings_certainty_score": "not_applicable",
+        "earnings_certainty_reason": reason_text,
+        "valuation_score": "not_applicable",
+        "valuation_reason": reason_text,
+        "trading_comfort_score": "not_applicable",
+        "trading_comfort_reason": reason_text,
+        "catalyst_score": "not_applicable",
+        "catalyst_reason": reason_text,
+        "purity_score": "not_applicable",
+        "purity_reason": reason_text,
+        "risk_control_score": "not_applicable",
+        "risk_control_reason": reason_text,
+        "total_score": "not_applicable",
+        "rating": NOT_RATED,
+        "rating_reason": "no formal investment rating generated",
+        "source_ids": source_ids or "missing",
+        "evidence_ids": evidence_ids or "missing",
+        "data_status": "score_placeholder",
+        "notes": FORMAL_SCORING_DISABLED,
+        "score_version": "score_placeholder_v1",
+        "generated_at": generated_at,
+    }
+    _validate_formal_record(config, "score_table", record)
+    return record
+
+
+def write_score_placeholder(
+    config: ProjectConfig,
+    sector_id: str,
+    path: Path,
+    *,
+    source_ids: str = "",
+    evidence_ids: str = "",
+    allow_formal_output: bool = False,
+) -> Path:
+    """Write a gated formal score_table placeholder to a project output path."""
+    if not allow_formal_output:
+        raise RuntimeError("formal score placeholder write requires allow_formal_output=True")
+    _assert_formal_output_path(config, path)
+    record = build_score_placeholder_record(
+        config,
+        sector_id,
+        source_ids=source_ids,
+        evidence_ids=evidence_ids,
+    )
+    _write_csv_rows(path, _field_order(config, "score_table"), [record], mode="w")
+    return path
+
+
+def _markdown_table(fields: list[str], rows: list[dict[str, Any]]) -> str:
+    lines = [
+        "| " + " | ".join(fields) + " |",
+        "| " + " | ".join("---" for _ in fields) + " |",
+    ]
+    for row in rows:
+        values = [str(row.get(field, "")).replace("\n", " ") for field in fields]
+        lines.append("| " + " | ".join(values) + " |")
+    return "\n".join(lines) + "\n"
+
+
+def write_canonical_log_records(
+    config: ProjectConfig,
+    output_type: str,
+    rows: list[dict[str, Any]],
+    path: Path,
+    *,
+    allow_formal_output: bool = False,
+) -> Path:
+    """Write canonical missing/conflict log records to the configured log path."""
+    if output_type not in {"missing_data_log", "conflict_data_log"}:
+        raise ValueError(f"unsupported canonical log output_type: {output_type}")
+    if not allow_formal_output:
+        raise RuntimeError(f"{output_type} write requires allow_formal_output=True")
+    _assert_formal_output_path(config, path)
+    fields = _field_order(config, output_type)
+    normalized_rows = rows or []
+    for row in normalized_rows:
+        _validate_formal_record(config, output_type, row)
+
+    title = "Missing Data Log" if output_type == "missing_data_log" else "Conflict Data Log"
+    path.parent.mkdir(parents=True, exist_ok=True)
+    if path.suffix.lower() == ".csv":
+        _write_csv_rows(path, fields, normalized_rows, mode="w")
+    else:
+        body = f"# {title}\n\n"
+        body += _markdown_table(fields, normalized_rows) if normalized_rows else _markdown_table(fields, [])
+        path.write_text(body, encoding="utf-8")
+    return path
 
 
 def _path_from_evidence_path(raw_path: str) -> Path:

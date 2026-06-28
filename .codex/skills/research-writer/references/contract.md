@@ -20,6 +20,8 @@ Paths are resolved dynamically from project config. Use `load_project --project 
 - `<output_root>/99_日志/冲突数据清单.md`
 - `<output_root>/99_日志/调研日志.md`
 
+In the current simplified flow, candidate generation writes review artifacts under `investment_system/research/projects/<project_id>/audits/` only. Formal `sector_card_only` publication is handled by `sector-research-orchestrator` and `quality-auditor` gates, not by broad writer defaults.
+
 ## Acceptance
 
 - CSV headers match pipeline constants.

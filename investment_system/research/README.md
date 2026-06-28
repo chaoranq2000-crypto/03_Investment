@@ -2,4 +2,6 @@
 
 这里用于沉淀研究模板、证据链、主题研究和公司研究。
 
-当前研究资料以根目录下的 `A股科技前两主线调研文件包` 为输入。后续可以先建立模板，再逐步把新报告按统一格式生成。
+当前 project-aware 研究输入以 `investment_system/research/projects/<project_id>/` 配置和 `investment_system/research/evidence/` 证据库为源头。
+
+`科技主线调研输出/` 是 gate 后生成的正式输出目录，不作为事实源手工维护。

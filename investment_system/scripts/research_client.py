@@ -1,17 +1,15 @@
 """Unified, production-grade data source client.
 
-Handles all three data source tiers with proper fallback, rate-limiting,
+Handles data source tiers with proper fallback, rate-limiting,
 and environment-aware key loading:
 
   Priority 1: BaoStock   -- always reachable, daily kline + financial data
-  Priority 2: Guosen     -- curl.exe backend (bypasses Python SSL issue)
-  Priority 3: AkShare    -- Tencent direct HTTP (Eastmoney is flaky behind proxy)
-  Priority 4: mootdx     -- TCP binary protocol, never IP-blocked
+  Priority 2: AkShare    -- Tencent direct HTTP (Eastmoney is flaky behind proxy)
+  Priority 3: mootdx     -- TCP binary protocol, never IP-blocked
 
 Key discovery order:
   1. environment variables (set in shell session)
   2. investment_system/config/.env.local
-  3. memory.md (legacy location)
 
 Usage:
   from research_client import ResearchClient
@@ -20,8 +18,6 @@ Usage:
   daily = client.get_daily_kline("300308", "SZ")
   # financial
   profit = client.get_profit("300308")
-  # Guosen market
-  mkt = client.get_guosen_comb_hq(["300308"], [0])
   # AKShare Tencent bar
   bar = client.get_tencent_bar("sz300308")
 """
@@ -46,12 +42,7 @@ import baostock as bs
 # ---------------------------------------------------------------------------
 
 ROOT = Path(__file__).resolve().parents[2]  # project root
-MEMORY_MD = ROOT / "memory.md"
 LOCAL_ENV = ROOT / "investment_system" / "config" / ".env.local"
-GUOSEN_BASE_URL = "https://dgzt.guosen.com.cn/skills"
-GUOSEN_SOFT_NAME = "goldsun_skills"
-GUOSEN_KEY_ENVS = ["GS_API_KEY", "GS_API_KEY_BACKUP"]
-GUOSEN_TIMEOUT = 90  # seconds per curl call
 
 AKSHARE_MIN_WAIT = 8.0   # seconds between public-web calls
 AKSHARE_JITTER = 4.0
@@ -64,18 +55,17 @@ TODAY = date.today().isoformat()
 # ---------------------------------------------------------------------------
 
 def load_env() -> None:
-    """Load env vars from .env.local, falling back to memory.md."""
-    for path in [LOCAL_ENV, MEMORY_MD]:
-        if not path.exists():
+    """Load env vars from the project-local .env.local file."""
+    if not LOCAL_ENV.exists():
+        return
+    for raw in LOCAL_ENV.read_text(encoding="utf-8").splitlines():
+        line = raw.strip()
+        if not line or line.startswith("#") or "=" not in line:
             continue
-        for raw in path.read_text(encoding="utf-8").splitlines():
-            line = raw.strip()
-            if not line or line.startswith("#") or "=" not in line:
-                continue
-            key, _, val = line.partition("=")
-            key = key.strip()
-            val = val.strip().strip('"').strip("'")
-            os.environ.setdefault(key, val)
+        key, _, val = line.partition("=")
+        key = key.strip()
+        val = val.strip().strip('"').strip("'")
+        os.environ.setdefault(key, val)
 
 
 def get_env(key: str, fallback: str = "") -> str:
@@ -264,111 +254,7 @@ class BaoStockClient:
 
 
 # ---------------------------------------------------------------------------
-# 2. Guosen API client (curl.exe backend, TLS 1.2)
-# ---------------------------------------------------------------------------
-
-class GuosenClient:
-    """Call Guosen API via curl.exe with key fallback and TLS 1.2 enforcement."""
-
-    def __init__(self, keys: list[str] | None = None, timeout: int = GUOSEN_TIMEOUT) -> None:
-        self.timeout = timeout
-        self.keys = keys or [os.environ[k] for k in GUOSEN_KEY_ENVS if os.environ.get(k)]
-        self._session_headers = {
-            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
-        }
-
-    def _request(self, endpoint: str, params: dict[str, Any]) -> dict[str, Any]:
-        for key in self.keys:
-            q = {
-                "softName": GUOSEN_SOFT_NAME,
-                "apiKey": key,
-                **params,
-            }
-            from urllib.parse import urlencode
-            url = f"{GUOSEN_BASE_URL}{endpoint}?{urlencode(q)}"
-            cmd = [
-                "curl.exe", "-s", "-k",
-                "--tlsv1.2",
-                "--connect-timeout", "20",
-                "--max-time", str(self.timeout),
-                url,
-            ]
-            try:
-                cp = subprocess.run(
-                    cmd, capture_output=True, text=True,
-                    timeout=self.timeout + 15, encoding="utf-8", errors="ignore",
-                )
-            except subprocess.TimeoutExpired:
-                continue
-            if cp.returncode != 0 or not cp.stdout.strip():
-                continue
-            try:
-                data = json.loads(cp.stdout)
-                if isinstance(data, dict):
-                    # success: no top-level error field
-                    if not data.get("error"):
-                        data["_guosen_meta"] = {"key_env": key, "endpoint": endpoint}
-                        return data
-            except json.JSONDecodeError:
-                continue
-        return {"_guosen_error": "all_keys_failed"}
-
-    def comb_hq(self, codes: list[str], set_codes: list[int]) -> dict[str, Any]:
-        return self._request(
-            "/gsnews/market/agentbot/queryCombHQ/1.0",
-            {"code": ",".join(codes), "setCode": ",".join(str(s) for s in set_codes), "target": "0"},
-        )
-
-    def fund_flow(self, code: str, set_code: int, period: str = "20") -> dict[str, Any]:
-        return self._request(
-            "/gsnews/market/agentbot/queryFundFlow/1.0",
-            {"code": code, "setCode": str(set_code), "period": period},
-        )
-
-    def related_comb(self, code: str, set_code: int) -> dict[str, Any]:
-        return self._request(
-            "/gsnews/market/agentbot/queryRelatedCombHQ/1.0",
-            {"code": code, "setCode": str(set_code), "target": "0"},
-        )
-
-    def income(self, code: str, market: str, count: int = 4) -> dict[str, Any]:
-        return self._request(
-            "/gsnews/gsf10/financial/incomeStatement/1.0",
-            {"code": code, "market": market, "reportType": "Q0", "count": str(count)},
-        )
-
-    def balance(self, code: str, market: str, count: int = 4) -> dict[str, Any]:
-        return self._request(
-            "/gsnews/gsf10/financial/balanceSheet/1.0",
-            {"code": code, "market": market, "reportType": "Q0", "count": str(count)},
-        )
-
-    def cashflow(self, code: str, market: str, count: int = 4) -> dict[str, Any]:
-        return self._request(
-            "/gsnews/gsf10/financial/cashFlowStatement/1.0",
-            {"code": code, "market": market, "reportType": "Q0", "count": str(count)},
-        )
-
-    def health_check(self) -> bool:
-        """Ping Guosen via curl. Any HTTP 200 = reachable (TLS 1.2 works)."""
-        cmd = [
-            "curl.exe", "-s", "-o", "NUL", "-w", "%{http_code}",
-            "-k", "--tlsv1.2",
-            "--connect-timeout", "15", "--max-time", "30",
-            f"{GUOSEN_BASE_URL}/gsnews/market/agentbot/queryCombHQ/1.0?softName=goldsun_skills&apiKey=&skillName=gs-stock-market-query&code=300308&setCode=0&target=0",
-        ]
-        try:
-            cp = subprocess.run(
-                cmd, capture_output=True, text=True,
-                timeout=45, encoding="utf-8", errors="ignore",
-            )
-            return cp.returncode == 0 and cp.stdout.strip() in ("200", "301", "302")
-        except Exception:
-            return False
-
-
-# ---------------------------------------------------------------------------
-# 3. AKShare client -- Tencent primary (Eastmoney fallback with retry)
+# 2. AKShare client -- Tencent primary (Eastmoney fallback with retry)
 # ---------------------------------------------------------------------------
 
 class AKShareClient:
@@ -523,25 +409,20 @@ class ResearchClient:
 
     def __init__(
         self,
-        skip_guosen: bool = False,
         baostock_interval: float = BAOSTOCK_INTERVAL,
         akshare_min_wait: float = AKSHARE_MIN_WAIT,
         akshare_jitter: float = AKSHARE_JITTER,
     ) -> None:
         load_env()
-        self.skip_guosen = skip_guosen
         self._baostock_interval = baostock_interval
         self._akshare_limiter = HumanRateLimiter(min_seconds=akshare_min_wait, jitter=akshare_jitter)
         self._bs: Optional[BaoStockClient] = None
-        self._gs: Optional[GuosenClient] = None
         self._ak: Optional[AKShareClient] = None
 
     # -- Context manager for BaoStock session --
     def __enter__(self) -> "ResearchClient":
         self._bs = BaoStockClient(interval=self._baostock_interval)
         self._bs.__enter__()
-        if not self.skip_guosen:
-            self._gs = GuosenClient()
         self._ak = AKShareClient(limiter=self._akshare_limiter)
         return self
 
@@ -574,41 +455,6 @@ class ResearchClient:
         if self._bs:
             return self._bs.profit(code, market, years)
         return [{"_error": "baostock_session_not_open"}]
-
-    def get_comb_hq(
-        self,
-        codes: list[str],
-        set_codes: list[int],
-    ) -> dict[str, Any]:
-        """Guosen combined quote (realtime)."""
-        if self.skip_guosen or not self._gs:
-            return {"_error": "guosen_disabled"}
-        return self._gs.comb_hq(codes, set_codes)
-
-    def get_fund_flow(self, code: str, set_code: int) -> dict[str, Any]:
-        if self.skip_guosen or not self._gs:
-            return {"_error": "guosen_disabled"}
-        return self._gs.fund_flow(code, set_code)
-
-    def get_related_comb(self, code: str, set_code: int) -> dict[str, Any]:
-        if self.skip_guosen or not self._gs:
-            return {"_error": "guosen_disabled"}
-        return self._gs.related_comb(code, set_code)
-
-    def get_income(self, code: str, market: str, count: int = 4) -> dict[str, Any]:
-        if self.skip_guosen or not self._gs:
-            return {"_error": "guosen_disabled"}
-        return self._gs.income(code, market, count)
-
-    def get_balance(self, code: str, market: str, count: int = 4) -> dict[str, Any]:
-        if self.skip_guosen or not self._gs:
-            return {"_error": "guosen_disabled"}
-        return self._gs.balance(code, market, count)
-
-    def get_cashflow(self, code: str, market: str, count: int = 4) -> dict[str, Any]:
-        if self.skip_guosen or not self._gs:
-            return {"_error": "guosen_disabled"}
-        return self._gs.cashflow(code, market, count)
 
     def get_akshare_financial_indicator(self, code: str) -> list[dict]:
         """Financial analysis indicator via AKShare (non-push2his endpoint)."""
@@ -643,8 +489,3 @@ class ResearchClient:
         if self._ak:
             return self._ak.stock_info_a_code_name()
         return [{"_error": "akshare_not_init"}]
-
-    def guosen_health(self) -> bool:
-        if self._gs:
-            return self._gs.health_check()
-        return False

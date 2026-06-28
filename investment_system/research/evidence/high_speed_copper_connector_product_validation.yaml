@@ -44,6 +44,45 @@ source_index:
       Local PDF cache:
       investment_system/data/raw/cninfo/high_speed_copper_connector/2026-06-24/002130.SZ_1225067232_2025_annual_report.pdf.
       MinerU task_id=eebf5b46-6bf2-4b82-bcfc-39ea09f0fdf2.
+  - source_id: CNINFO-AR-HSCC-300563-20260421
+    source_type: annual_report
+    title: 神宇通信科技股份公司2025年年度报告
+    publisher: 巨潮资讯/神宇通信科技股份公司
+    date: '2026-04-21'
+    url: http://static.cninfo.com.cn/finalpage/2026-04-21/1225130891.PDF
+    access_method: web_download
+    local_path: investment_system/data/raw/mineru/high_speed_copper_connector/2026-06-24/300563.SZ_1225130891/mineru_text_0.md
+    reliability_level: 高
+    notes: >
+      Local PDF cache:
+      investment_system/data/raw/cninfo/high_speed_copper_connector/2026-06-24/300563.SZ_1225130891_2025_annual_report.pdf.
+      MinerU backend=hybrid-engine, task_id=45102edb-bf38-4d9d-84e1-7265dd43d420.
+  - source_id: CNINFO-AR-HSCC-300913-20260428
+    source_type: annual_report
+    title: 浙江兆龙互连科技股份有限公司2025年年度报告
+    publisher: 巨潮资讯/浙江兆龙互连科技股份有限公司
+    date: '2026-04-28'
+    url: http://static.cninfo.com.cn/finalpage/2026-04-28/1225211482.PDF
+    access_method: web_download
+    local_path: investment_system/data/raw/mineru/high_speed_copper_connector/2026-06-24/300913.SZ_1225211482/mineru_text_0.md
+    reliability_level: 高
+    notes: >
+      Local PDF cache:
+      investment_system/data/raw/cninfo/high_speed_copper_connector/2026-06-24/300913.SZ_1225211482_2025_annual_report.pdf.
+      MinerU backend=hybrid-engine, task_id=7691486c-7533-4764-8ab0-eec3905a0f73.
+  - source_id: CNINFO-AR-HSCC-605277-20260429
+    source_type: annual_report
+    title: 新亚电子股份有限公司2025年年度报告
+    publisher: 巨潮资讯/新亚电子股份有限公司
+    date: '2026-04-29'
+    url: http://static.cninfo.com.cn/finalpage/2026-04-29/1225239014.PDF
+    access_method: web_download
+    local_path: investment_system/data/raw/mineru/high_speed_copper_connector/2026-06-24/605277.SH_1225239014/mineru_text_0.md
+    reliability_level: 高
+    notes: >
+      Local PDF cache:
+      investment_system/data/raw/cninfo/high_speed_copper_connector/2026-06-24/605277.SH_1225239014_2025_annual_report.pdf.
+      MinerU backend=hybrid-engine, task_id=e1c14e30-bc89-4081-a895-0f37b40070cb.
 
 evidence_items:
   - evidence_id: EV-HSCC-PRODUCT-002475-20260624
@@ -248,55 +287,480 @@ evidence_items:
       Supporting evidence only. Deterministic company exposure must rely on
       company-specific evidence items above.
 
+  - evidence_id: EV-HSCC-PRODUCT-300563-20260624
+    source_id: CNINFO-AR-HSCC-300563-20260421
+    source_ids:
+      - CNINFO-AR-HSCC-300563-20260421
+    project_id: tech_ai_semiconductor
+    sector_id: high_speed_copper_connector
+    company_code: 300563.SZ
+    company_name: 神宇股份
+    subject_type: company
+    subject_id: 300563.SZ
+    subject_name: 神宇股份
+    claim: >
+      The 2025 annual report states that Shenyu develops high-speed data cables
+      for big-data storage, cloud storage and server data transmission. It
+      discloses internal PCIE5.0/6.0/7.0 high-speed data cable products,
+      DAC56G/112G/224G high-speed data cable products, and external SAS
+      2X/4X/8X/12X/16X SFP/QSFP/QSFP+ high-speed data cable products. It also
+      states that the company has developed core cables adapted to AI servers
+      and AIPC.
+    evidence_type: company_product_validation
+    evidence_level: strong
+    evidence_strength: strong
+    source_url: http://static.cninfo.com.cn/finalpage/2026-04-21/1225130891.PDF
+    source_file: investment_system/data/raw/mineru/high_speed_copper_connector/2026-06-24/300563.SZ_1225130891/mineru_text_0.md
+    source_date: '2026-04-21'
+    extracted_text: >
+      Annual-report excerpts include: "PCIE5.0/6.0/7.0 系列高速数据线产品";
+      "DAC56G/112G/224G 系列高速数据线产品"; "适配 AI服务器、AIPC等核心线缆".
+    limitation: >
+      The annual report supports product existence and specifications, but does
+      not disclose named AI-server customers, DAC/AEC order amounts, or
+      certification certificates for this product line.
+    missing_fields:
+      - named_ai_server_customer
+      - order_amount
+      - certification_certificate
+    metrics_supported:
+      - product_stage
+      - dac_exposure
+      - pcie_5_6_7_exposure
+      - high_speed_data_cable_exposure
+      - ai_server_interconnect_partial
+      - industrial_chain_position
+    time_scope: '2025FY'
+    confidence: 高
+    used_for:
+      - sector_card
+      - source_index
+      - missing_data_log
+      - risk_review
+    not_allowed_for:
+      - investment_conclusion
+      - position_sizing
+      - final_rating
+    notes: >
+      Strong company-level product evidence from an official annual report.
+
+  - evidence_id: EV-HSCC-FINSEG-300563-20260624
+    source_id: CNINFO-AR-HSCC-300563-20260421
+    source_ids:
+      - CNINFO-AR-HSCC-300563-20260421
+    project_id: tech_ai_semiconductor
+    sector_id: high_speed_copper_connector
+    company_code: 300563.SZ
+    company_name: 神宇股份
+    subject_type: company
+    subject_id: 300563.SZ
+    subject_name: 神宇股份
+    claim: >
+      The 2025 annual report discloses total operating revenue of
+      844,632,723.49 yuan and states that the company mainly operates around
+      RF coaxial cable products. Parent-company revenue disaggregation lists
+      RF coaxial cable revenue of 668,654,600.69 yuan. The report also states
+      that the company does not disclose segment information because its core
+      products and markets are similar.
+    evidence_type: company_segment_financial_disclosure
+    evidence_level: strong
+    evidence_strength: strong
+    source_url: http://static.cninfo.com.cn/finalpage/2026-04-21/1225130891.PDF
+    source_file: investment_system/data/raw/mineru/high_speed_copper_connector/2026-06-24/300563.SZ_1225130891/mineru_text_0.md
+    source_date: '2026-04-21'
+    extracted_text: >
+      Annual-report excerpts include total revenue 844,632,723.49 yuan, RF
+      coaxial cable revenue 668,654,600.69 yuan, and no segment disclosure due
+      to similar core products and markets.
+    limitation: >
+      Revenue disclosure is not split by DAC, PCIE high-speed data cable or AI
+      server cable product line.
+    missing_fields:
+      - product_line_revenue
+      - dac_order_amount
+    metrics_supported:
+      - revenue_context
+      - segment_revenue_partial
+      - industrial_chain_position
+    time_scope: '2025FY'
+    confidence: 高
+    used_for:
+      - sector_card
+      - source_index
+      - missing_data_log
+      - risk_review
+    not_allowed_for:
+      - investment_conclusion
+      - position_sizing
+      - final_rating
+    notes: >
+      Strong annual-report revenue context, not product-line revenue proof.
+
+  - evidence_id: EV-HSCC-PRODUCT-300913-20260624
+    source_id: CNINFO-AR-HSCC-300913-20260428
+    source_ids:
+      - CNINFO-AR-HSCC-300913-20260428
+    project_id: tech_ai_semiconductor
+    sector_id: high_speed_copper_connector
+    company_code: 300913.SZ
+    company_name: 兆龙互连
+    subject_type: company
+    subject_id: 300913.SZ
+    subject_name: 兆龙互连
+    claim: >
+      The 2025 annual report states that Zhaolong's high-speed transmission
+      cable is used between data-center and AI-computing-center switches,
+      server clusters, and inside servers, with maximum working frequency up to
+      60GHz and support for 224Gb/s single-channel high-speed copper cable
+      assemblies. It also discloses passive copper cable products including
+      SFP56/SFP112/QSFP56/QSFP112/QSFP-DD400/QSFP-DD800/OSFP800/OSFP1600 and
+      active copper cable products including SFP56/SFP112/QSFP56/QSFP112/
+      QSFP-DD400/QSFP-DD800.
+    evidence_type: company_product_validation
+    evidence_level: strong
+    evidence_strength: strong
+    source_url: http://static.cninfo.com.cn/finalpage/2026-04-28/1225211482.PDF
+    source_file: investment_system/data/raw/mineru/high_speed_copper_connector/2026-06-24/300913.SZ_1225211482/mineru_text_0.md
+    source_date: '2026-04-28'
+    extracted_text: >
+      Annual-report excerpts include "单通道传输速率为224Gb/s 的高速铜缆组件产品",
+      "高速无源铜缆产品", "高速有源铜缆产品", and "数据中心、AI算力中心".
+    limitation: >
+      Product disclosure is strong, but the annual report does not disclose
+      named end-customer order amounts for each product model.
+    missing_fields:
+      - product_model_order_amount
+      - named_end_customer_contract
+    metrics_supported:
+      - product_stage
+      - high_speed_copper_cable_exposure
+      - active_copper_cable_exposure
+      - passive_copper_cable_exposure
+      - pcie_5_6_exposure
+      - industrial_chain_position
+    time_scope: '2025FY'
+    confidence: 高
+    used_for:
+      - sector_card
+      - source_index
+      - missing_data_log
+      - risk_review
+    not_allowed_for:
+      - investment_conclusion
+      - position_sizing
+      - final_rating
+    notes: >
+      Strong product and specification evidence from an official annual report.
+
+  - evidence_id: EV-HSCC-VALIDATION-CAPACITY-300913-20260624
+    source_id: CNINFO-AR-HSCC-300913-20260428
+    source_ids:
+      - CNINFO-AR-HSCC-300913-20260428
+    project_id: tech_ai_semiconductor
+    sector_id: high_speed_copper_connector
+    company_code: 300913.SZ
+    company_name: 兆龙互连
+    subject_type: company
+    subject_id: 300913.SZ
+    subject_name: 兆龙互连
+    claim: >
+      The 2025 annual report states that in high-speed interconnect, Zhaolong
+      promoted top-customer certification and that high-speed cable and
+      connector-product orders grew rapidly. It reports completed development
+      projects including 800Gb/s active high-speed interconnect components,
+      PCIe 5.0 512GT/s high-speed interconnect components, PCIe 5.0 Gen-Z
+      connectors, and 224Gb/s single-channel parallel high-speed transmission
+      cables. It also discloses a high-speed cable and connector-product
+      intelligent manufacturing fundraising project with planned investment of
+      431.9995 million yuan and 156.1950 million yuan pre-invested by
+      2025 year-end.
+    evidence_type: customer_validation_capacity_progress
+    evidence_level: strong
+    evidence_strength: strong
+    source_url: http://static.cninfo.com.cn/finalpage/2026-04-28/1225211482.PDF
+    source_file: investment_system/data/raw/mineru/high_speed_copper_connector/2026-06-24/300913.SZ_1225211482/mineru_text_0.md
+    source_date: '2026-04-28'
+    extracted_text: >
+      Annual-report excerpts include "积极推进头部客户认证", "订单实现快速增长",
+      R&D projects with progress "已完成产品开发", and the fundraising project
+      "高速电缆及连接产品智能制造项目".
+    limitation: >
+      Customer certification is disclosed as a category, not as named customer
+      certificates or signed contract amounts.
+    missing_fields:
+      - named_customer_certificate
+      - product_model_order_amount
+    metrics_supported:
+      - customer_validation_partial
+      - capacity_progress
+      - r_and_d_completed
+      - fundraising_project
+      - order_growth_qualitative
+    time_scope: '2025FY'
+    confidence: 高
+    used_for:
+      - sector_card
+      - source_index
+      - missing_data_log
+      - risk_review
+    not_allowed_for:
+      - investment_conclusion
+      - position_sizing
+      - final_rating
+    notes: >
+      Strong evidence for validation/capacity progress, with named-order gaps retained.
+
+  - evidence_id: EV-HSCC-FINSEG-300913-20260624
+    source_id: CNINFO-AR-HSCC-300913-20260428
+    source_ids:
+      - CNINFO-AR-HSCC-300913-20260428
+    project_id: tech_ai_semiconductor
+    sector_id: high_speed_copper_connector
+    company_code: 300913.SZ
+    company_name: 兆龙互连
+    subject_type: company
+    subject_id: 300913.SZ
+    subject_name: 兆龙互连
+    claim: >
+      The 2025 annual report discloses total operating revenue of
+      2,123,930,905.00 yuan, up 15.97% year on year. It states that 6A and
+      above data-cable revenue grew 3.92%, special-cable revenue grew 210.24%,
+      and connector-product revenue grew 29.13%. Revenue disaggregation
+      reports 404,389,204.77 yuan for 6A and above data communications cables,
+      483,471,272.05 yuan for special cables, and 237,513,801.97 yuan for
+      connector products.
+    evidence_type: company_segment_financial_disclosure
+    evidence_level: strong
+    evidence_strength: strong
+    source_url: http://static.cninfo.com.cn/finalpage/2026-04-28/1225211482.PDF
+    source_file: investment_system/data/raw/mineru/high_speed_copper_connector/2026-06-24/300913.SZ_1225211482/mineru_text_0.md
+    source_date: '2026-04-28'
+    extracted_text: >
+      Annual-report excerpts include revenue growth by 6A+ data cable,
+      special cable and connector products, plus revenue disaggregation rows.
+    limitation: >
+      Revenue rows are category-level and do not isolate DAC/AEC or each
+      high-speed interconnect assembly model.
+    missing_fields:
+      - dac_aec_revenue
+      - product_model_revenue
+    metrics_supported:
+      - segment_revenue
+      - product_revenue_partial
+      - revenue_growth
+      - revenue_context
+    time_scope: '2025FY'
+    confidence: 高
+    used_for:
+      - sector_card
+      - source_index
+      - missing_data_log
+      - risk_review
+    not_allowed_for:
+      - investment_conclusion
+      - position_sizing
+      - final_rating
+    notes: >
+      Strong annual-report category revenue evidence, not model-level revenue.
+
+  - evidence_id: EV-HSCC-PRODUCT-605277-20260624
+    source_id: CNINFO-AR-HSCC-605277-20260429
+    source_ids:
+      - CNINFO-AR-HSCC-605277-20260429
+    project_id: tech_ai_semiconductor
+    sector_id: high_speed_copper_connector
+    company_code: 605277.SH
+    company_name: 新亚电子
+    subject_type: company
+    subject_id: 605277.SH
+    subject_name: 新亚电子
+    claim: >
+      The 2025 annual report states that XinYa's communications-cable and data
+      wire products include high-frequency high-speed copper-cable connection
+      wires or high-frequency high-speed data wires, including PCIe4.0/5.0/
+      6.0/7.0, mainly used in AI servers, liquid-cooling servers and data
+      centers. It also states that the company regards high-frequency
+      high-speed copper-cable connection wires as a strategic core product and
+      continues expanding domestic and overseas capacity.
+    evidence_type: company_product_validation
+    evidence_level: strong
+    evidence_strength: strong
+    source_url: http://static.cninfo.com.cn/finalpage/2026-04-29/1225239014.PDF
+    source_file: investment_system/data/raw/mineru/high_speed_copper_connector/2026-06-24/605277.SH_1225239014/mineru_text_0.md
+    source_date: '2026-04-29'
+    extracted_text: >
+      Annual-report excerpts include "高频高速铜缆连接线或高频高速数据线材",
+      "PCIe4.0/5.0/6.0/7.0", "AI 人工智能服务器、液冷服务器、数据中心",
+      and "战略核心产品".
+    limitation: >
+      The annual report supports product and application exposure, but does not
+      isolate DAC/AEC revenue or signed order amount by customer.
+    missing_fields:
+      - dac_aec_revenue
+      - signed_order_amount_by_customer
+    metrics_supported:
+      - product_stage
+      - pcie_4_5_6_7_exposure
+      - high_speed_copper_cable_exposure
+      - ai_server_interconnect
+      - capacity_progress
+      - industrial_chain_position
+    time_scope: '2025FY'
+    confidence: 高
+    used_for:
+      - sector_card
+      - source_index
+      - missing_data_log
+      - risk_review
+    not_allowed_for:
+      - investment_conclusion
+      - position_sizing
+      - final_rating
+    notes: >
+      Strong company-level annual-report evidence for high-speed copper-cable
+      connection wires.
+
+  - evidence_id: EV-HSCC-VALIDATION-605277-20260624
+    source_id: CNINFO-AR-HSCC-605277-20260429
+    source_ids:
+      - CNINFO-AR-HSCC-605277-20260429
+    project_id: tech_ai_semiconductor
+    sector_id: high_speed_copper_connector
+    company_code: 605277.SH
+    company_name: 新亚电子
+    subject_type: company
+    subject_id: 605277.SH
+    subject_name: 新亚电子
+    claim: >
+      The 2025 annual report states that XinYa's high-frequency high-speed
+      copper-cable connection wires entered the supply chain of leading
+      domestic and overseas server manufacturers and data-center operators
+      through Amphenol, with terminal customers including Dell, HP, Google,
+      Amazon, Microsoft, Oracle, Meta, Inspur, H3C and Sugon. It also states
+      that the company participated in the group standard for 224Gbps
+      high-speed direct-attach copper-cable technical requirements and has
+      international product and system certifications including UL, CSA, VDE,
+      CCC, KC, TUV, JET, BIS, TL, CB and IATF16949/ISO systems.
+    evidence_type: customer_validation_certification
+    evidence_level: strong
+    evidence_strength: strong
+    source_url: http://static.cninfo.com.cn/finalpage/2026-04-29/1225239014.PDF
+    source_file: investment_system/data/raw/mineru/high_speed_copper_connector/2026-06-24/605277.SH_1225239014/mineru_text_0.md
+    source_date: '2026-04-29'
+    extracted_text: >
+      Annual-report excerpts include "通过安费诺进入国内外领先服务器制造商与
+      数据中心运营商的供应链", named terminal customers, and "224Gbps 高速直连
+      铜缆技术要求".
+    limitation: >
+      The annual report names supply-chain/terminal-customer coverage and
+      standards/certifications, but not signed order amounts by customer.
+    missing_fields:
+      - signed_order_amount_by_customer
+      - customer_certificate_file
+    metrics_supported:
+      - customer_validation_partial
+      - certification_partial
+      - standard_participation
+      - ai_server_customer_chain
+      - supply_chain_position
+    time_scope: '2025FY'
+    confidence: 高
+    used_for:
+      - sector_card
+      - source_index
+      - missing_data_log
+      - risk_review
+    not_allowed_for:
+      - investment_conclusion
+      - position_sizing
+      - final_rating
+    notes: >
+      Strong validation evidence, while order-amount gaps remain.
+
+  - evidence_id: EV-HSCC-FINSEG-605277-20260624
+    source_id: CNINFO-AR-HSCC-605277-20260429
+    source_ids:
+      - CNINFO-AR-HSCC-605277-20260429
+    project_id: tech_ai_semiconductor
+    sector_id: high_speed_copper_connector
+    company_code: 605277.SH
+    company_name: 新亚电子
+    subject_type: company
+    subject_id: 605277.SH
+    subject_name: 新亚电子
+    claim: >
+      The 2025 annual report discloses total operating revenue of
+      3,923,121,480.91 yuan, up 11.11% year on year. It reports
+      communications-cable and data-wire revenue of 1,293,631,547.04 yuan,
+      up 5.43%, accounting for 32.97% of total revenue. It further states that
+      data wire, namely high-frequency high-speed copper-cable connection wire
+      or "high-speed copper cable", achieved revenue of 217 million yuan, up
+      84.94%.
+    evidence_type: company_segment_financial_disclosure
+    evidence_level: strong
+    evidence_strength: strong
+    source_url: http://static.cninfo.com.cn/finalpage/2026-04-29/1225239014.PDF
+    source_file: investment_system/data/raw/mineru/high_speed_copper_connector/2026-06-24/605277.SH_1225239014/mineru_text_0.md
+    source_date: '2026-04-29'
+    extracted_text: >
+      Annual-report excerpts include communications-cable and data-wire revenue
+      12.94亿元 (1,293,631,547.04 yuan), high-speed copper cable revenue
+      217 million yuan, and revenue growth 84.94%.
+    limitation: >
+      Revenue is disclosed for high-frequency high-speed copper-cable
+      connection wire but not split by PCIe generation, DAC/AEC model or
+      customer.
+    missing_fields:
+      - pcie_generation_revenue
+      - customer_revenue_split
+      - dac_aec_model_revenue
+    metrics_supported:
+      - segment_revenue
+      - high_speed_copper_cable_revenue
+      - revenue_growth
+      - product_revenue_partial
+      - revenue_context
+    time_scope: '2025FY'
+    confidence: 高
+    used_for:
+      - sector_card
+      - source_index
+      - missing_data_log
+      - risk_review
+    not_allowed_for:
+      - investment_conclusion
+      - position_sizing
+      - final_rating
+    notes: >
+      Strong revenue evidence for high-speed copper-cable connection wires.
+
 missing_evidence:
-  - missing_field: company_primary_source_300563
-    reason: >
-      神宇股份 official annual-report PDF was identified but could not be
-      downloaded in this run because the required network-download approval was
-      rejected. No MinerU-parsed primary-source product evidence was collected.
-    affected_subjects:
-      - 300563.SZ
-    required_source_types:
-      - annual_report
-      - announcement
-      - exchange_qna
-      - investor_relations
-  - missing_field: company_primary_source_300913
-    reason: >
-      兆龙互连 official annual-report PDF was identified but could not be
-      downloaded in this run because the required network-download approval was
-      rejected. No MinerU-parsed primary-source product evidence was collected.
-    affected_subjects:
-      - 300913.SZ
-    required_source_types:
-      - annual_report
-      - announcement
-      - exchange_qna
-      - investor_relations
-  - missing_field: company_primary_source_605277
-    reason: >
-      新亚电子 official annual-report PDF was identified but could not be
-      downloaded in this run because the required network-download approval was
-      rejected. No MinerU-parsed primary-source product evidence was collected.
-    affected_subjects:
-      - 605277.SH
-    required_source_types:
-      - annual_report
-      - announcement
-      - exchange_qna
-      - investor_relations
   - missing_field: named_customer_order_certification
     reason: >
-      The current strong evidence improves product-stage, partial validation,
-      capacity and segment-revenue visibility for 002475.SZ and 002130.SZ, but
-      does not provide named customer contracts, order amounts, certification
-      certificates, or backlog details for the sector stock pool.
+      The current strong evidence now improves product-stage, partial
+      validation, capacity, standard/certification context and segment-revenue
+      visibility across the five-company stock pool. However, annual reports
+      still do not provide complete named customer contracts, order amounts,
+      customer certificate files, or backlog details by DAC/AEC/PCIe product
+      model for every company.
     affected_subjects:
       - 002475.SZ
       - 002130.SZ
       - 300563.SZ
       - 300913.SZ
       - 605277.SH
+    required_source_types:
+      - announcement
+      - exchange_qna
+      - investor_relations
+      - annual_report
+  - missing_field: ai_server_named_customer_300563
+    reason: >
+      神宇股份 annual report supports AI-server-adapted cable and DAC/PCIe
+      product exposure, but does not disclose named AI-server end customers or
+      signed order amounts for the high-speed data cable product line.
+    affected_subjects:
+      - 300563.SZ
     required_source_types:
       - announcement
       - exchange_qna

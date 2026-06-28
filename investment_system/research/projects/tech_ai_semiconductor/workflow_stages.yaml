@@ -1,0 +1,199 @@
+project_id: tech_ai_semiconductor
+workflow_name: simplified_sector_research_gate_flow
+workflow_version: 1
+
+global_forbidden_outputs:
+  - 科技主线调研输出/00_总表/**
+  - 科技主线调研输出/99_日志/**
+  - formal_source_index
+  - formal_missing_conflict_log
+  - formal_comparison_table
+  - formal_score_table
+  - formal_rating
+  - investment_advice
+  - target_price
+  - position_sizing
+
+warning_only_rules:
+  load_project_warning:
+    step: load_project
+    exit_codes: [3]
+    detector: load_project_warning_only
+    reason: load_project may return warning-only when errors=[] and _load_status=warning.
+  target_coverage_ok:
+    step: audit_evidence_coverage
+    exit_codes: [1, 3]
+    detector: target_coverage_ok
+    reason: audit_evidence_coverage can exit nonzero while unrelated P0/P1 sectors remain missing.
+
+stages:
+  scope_check:
+    description: Load project, run readiness, and validate structural output contract.
+    writes:
+      allowed:
+        - investment_system/research/projects/{project_id}/audits/**
+      forbidden:
+        - 科技主线调研输出/**
+    requires_sector_id: false
+    requires_manual_confirmation: false
+    formal_output_write: false
+    steps:
+      - load_project
+      - audit_pipeline_readiness
+      - validate_outputs
+    warning_only_rules:
+      - load_project_warning
+
+  evidence_register:
+    description: Register one evidence YAML in run_manifest and bind it to exactly one canonical sector.
+    writes:
+      allowed:
+        - investment_system/research/projects/{project_id}/run_manifest.yaml
+        - investment_system/research/projects/{project_id}/sector_universe.yaml
+      forbidden:
+        - 科技主线调研输出/**
+        - investment_system/research/evidence/**
+    requires_sector_id: true
+    requires_manual_confirmation: false
+    formal_output_write: false
+    default_mode: dry_run
+    apply_flag: --apply-registration
+    steps:
+      - register_evidence_file
+
+  evidence_collect:
+    description: Build an official-source manifest from cached annual reports, announcements, IR files, Tushare cache, or parser outputs.
+    writes:
+      allowed:
+        - investment_system/data/raw/official_evidence/**
+        - investment_system/data/raw/cninfo/**
+        - investment_system/data/raw/tushare/**
+        - investment_system/data/raw/mineru/**
+      forbidden:
+        - 科技主线调研输出/**
+        - investment_system/research/evidence/**
+        - investment_system/research/projects/{project_id}/run_manifest.yaml
+        - investment_system/research/projects/{project_id}/sector_universe.yaml
+    requires_sector_id: true
+    requires_manual_confirmation: false
+    formal_output_write: false
+    default_mode: preview
+    write_flag: --write-manifest
+    steps:
+      - collect_official_evidence
+
+  evidence_draft:
+    description: Convert source manifests into draft evidence YAML skeletons for manual curation.
+    writes:
+      allowed:
+        - investment_system/research/projects/{project_id}/audits/evidence_drafts/**
+      forbidden:
+        - 科技主线调研输出/**
+        - investment_system/research/evidence/**
+        - investment_system/research/projects/{project_id}/run_manifest.yaml
+        - investment_system/research/projects/{project_id}/sector_universe.yaml
+    requires_sector_id: true
+    requires_manual_confirmation: false
+    formal_output_write: false
+    default_mode: preview
+    write_flag: --write-draft
+    steps:
+      - build_evidence_skeleton
+
+  evidence_gate:
+    description: Check evidence binding, schema, and target-sector coverage.
+    writes:
+      allowed:
+        - investment_system/research/projects/{project_id}/audits/evidence_schema_audit.md
+        - investment_system/research/projects/{project_id}/audits/evidence_coverage_plan.md
+        - investment_system/research/projects/{project_id}/audits/evidence_coverage_matrix.csv
+      forbidden:
+        - 科技主线调研输出/**
+    requires_sector_id: true
+    requires_manual_confirmation: false
+    formal_output_write: false
+    steps:
+      - audit_evidence_bindings
+      - audit_evidence_schema
+      - audit_evidence_coverage
+    warning_only_rules:
+      - target_coverage_ok
+
+  generate_candidate:
+    description: Generate candidate-only sector card artifacts in the project audit directory.
+    writes:
+      allowed:
+        - investment_system/research/projects/{project_id}/audits/formal_candidate_outputs/**
+      forbidden:
+        - 科技主线调研输出/**
+    requires_sector_id: true
+    requires_manual_confirmation: false
+    formal_output_write: false
+    steps:
+      - build_formal_candidate_outputs
+
+  candidate_gate:
+    description: Check candidate content quality, source/evidence traceability, missing evidence, and no-advice boundaries.
+    writes:
+      allowed:
+        - investment_system/research/projects/{project_id}/audits/formal_candidate_output_audit.md
+        - investment_system/research/projects/{project_id}/audits/candidate_gate_*.md
+      forbidden:
+        - 科技主线调研输出/**
+    requires_sector_id: true
+    requires_manual_confirmation: false
+    formal_output_write: false
+    steps:
+      - audit_formal_candidate_outputs
+      - validate_outputs
+
+  publish_gate:
+    description: Dry-run sector-card-only publish manifest and check publish path/no-overwrite boundaries.
+    writes:
+      allowed:
+        - investment_system/research/projects/{project_id}/audits/formal_publish_manifest_*.json
+        - investment_system/research/projects/{project_id}/audits/formal_publish_readiness_audit.md
+      forbidden:
+        - 科技主线调研输出/**
+    requires_sector_id: true
+    requires_manual_confirmation: false
+    formal_output_write: false
+    publish_scope: sector_card_only
+    steps:
+      - prepare_formal_publish_dry_run
+      - audit_formal_publish_readiness
+
+  publish_sector_card_only:
+    description: Copy exactly one candidate sector card to the project-aware formal output path.
+    writes:
+      allowed:
+        - 科技主线调研输出/*/*/*.md
+        - investment_system/research/projects/{project_id}/audits/formal_publish_log_*.json
+      forbidden:
+        - 科技主线调研输出/00_总表/**
+        - 科技主线调研输出/99_日志/**
+        - formal_source_index
+        - formal_score_table
+        - investment_advice
+    requires_sector_id: true
+    requires_manual_confirmation: true
+    formal_output_write: true
+    publish_scope: sector_card_only
+    no_overwrite_required: true
+    steps:
+      - prepare_formal_publish_confirmed
+
+  post_publish_check:
+    description: Verify hash equality, card count, no forbidden formal artifacts, validate_outputs, and readiness.
+    writes:
+      allowed:
+        - investment_system/research/projects/{project_id}/audits/formal_publish_result_audit_*.md
+      forbidden:
+        - 科技主线调研输出/**
+    requires_sector_id: true
+    requires_manual_confirmation: false
+    formal_output_write: false
+    steps:
+      - audit_formal_publish_result
+      - validate_outputs
+      - audit_pipeline_readiness

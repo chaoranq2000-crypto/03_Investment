@@ -1,7 +1,6 @@
 """Check unified investment data-source configuration without network calls."""
 from __future__ import annotations
 
-import importlib.util
 import os
 import subprocess
 import sys
@@ -26,24 +25,6 @@ def load_dotenv(path: Path) -> None:
         key = key.strip()
         value = value.strip().strip('"').strip("'")
         os.environ.setdefault(key, value)
-
-
-def load_legacy_key_value_file(path: Path, keys: list[str]) -> None:
-    if not path.exists():
-        return
-    wanted = set(keys)
-    for raw_line in path.read_text(encoding="utf-8").splitlines():
-        line = raw_line.strip()
-        if not line or line.startswith("#") or "=" not in line:
-            continue
-        key, value = line.split("=", 1)
-        key = key.strip()
-        if key in wanted:
-            os.environ.setdefault(key, value.strip())
-
-
-def has_module(module_name: str) -> bool:
-    return importlib.util.find_spec(module_name) is not None
 
 
 def python_has_module(python_path: str, module_name: str) -> bool:
@@ -86,20 +67,6 @@ def main() -> int:
         print(status("AKShare module in configured python", python_has_module(akshare_python, akshare_module)))
     else:
         print(status("AKShare", True, "disabled"))
-
-    print()
-
-    guosen = config.get("guosen", {})
-    if guosen.get("enabled", False):
-        token_env = guosen.get("token_env", "GS_API_KEY")
-        print(status(f"{token_env} env", bool(os.environ.get(token_env))))
-        backup_env = guosen.get("backup_token_env", "")
-        if backup_env:
-            print(status(f"{backup_env} env", bool(os.environ.get(backup_env))))
-        print(status("Guosen python path", Path(guosen.get("python", "")).exists(), guosen.get("python", "")))
-        print(status("Guosen local adapter", Path(guosen.get("local_adapter", "")).exists(), guosen.get("local_adapter", "")))
-    else:
-        print(status("Guosen", True, "disabled"))
 
     print()
 

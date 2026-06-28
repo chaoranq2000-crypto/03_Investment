@@ -1,0 +1,32 @@
+{
+  "manifest_version": "1.0",
+  "created_at": "2026-06-25T07:27:09.910929+00:00",
+  "project_id": "tech_ai_semiconductor",
+  "sector_id": "ccl_high_frequency_materials",
+  "source_set": "module3_validation_pdf",
+  "run_date": "2026-06-25",
+  "record_count": 1,
+  "records": [
+    {
+      "source_id": "CNINFO-AR-CCL-HIGH-FREQUENCY-MATERIALS-600183-SH-20260625",
+      "project_id": "tech_ai_semiconductor",
+      "sector_id": "ccl_high_frequency_materials",
+      "source_type": "annual_report",
+      "evidence_level": "strong",
+      "company_code": "600183.SH",
+      "company_name": "",
+      "title": "600183.SH_1225195409_2025_annual_report",
+      "publisher": "巨潮资讯/CNINFO",
+      "source_date": "",
+      "source_url": "",
+      "local_path": "investment_system/data/raw/cninfo/p1_batch_evidence/2026-06-24/600183.SH_1225195409_2025_annual_report.pdf",
+      "text_path": "investment_system/data/raw/cninfo/p1_batch_evidence/2026-06-24/600183.SH_1225195409_2025_annual_report.txt",
+      "file_sha256": "cf39d9c7014358ef47ff0e38d3ae91cb9827c22432309b501165eafa95f00435",
+      "file_size": 1799800,
+      "access_method": "local_cache",
+      "parser": "existing_text",
+      "parser_status": "ok",
+      "notes": "Collected in source_set=module3_validation_pdf; not yet converted to evidence YAML."
+    }
+  ]
+}

@@ -1,0 +1,414 @@
+{
+  "002463.SZ": [
+    {
+      "ts_code": "002463.SZ",
+      "ann_date": "20260423",
+      "f_ann_date": "20260423",
+      "end_date": "20260331",
+      "report_type": "1",
+      "total_revenue": 6214156406.0,
+      "n_income": 1241439745.0,
+      "n_income_attr_p": 1242081367.0
+    },
+    {
+      "ts_code": "002463.SZ",
+      "ann_date": "20260325",
+      "f_ann_date": "20260325",
+      "end_date": "20251231",
+      "report_type": "1",
+      "total_revenue": 18945220585.0,
+      "n_income": 3818673108.0,
+      "n_income_attr_p": 3822306272.0
+    },
+    {
+      "ts_code": "002463.SZ",
+      "ann_date": "20251029",
+      "f_ann_date": "20251029",
+      "end_date": "20250930",
+      "report_type": "1",
+      "total_revenue": 13512390231.0,
+      "n_income": 2713321370.0,
+      "n_income_attr_p": 2717617995.0
+    },
+    {
+      "ts_code": "002463.SZ",
+      "ann_date": "20250822",
+      "f_ann_date": "20250822",
+      "end_date": "20250630",
+      "report_type": "1",
+      "total_revenue": 8493871883.0,
+      "n_income": 1678314457.0,
+      "n_income_attr_p": 1682780947.0
+    },
+    {
+      "ts_code": "002463.SZ",
+      "ann_date": "20250425",
+      "f_ann_date": "20250425",
+      "end_date": "20250331",
+      "report_type": "1",
+      "total_revenue": 4037627327.0,
+      "n_income": 759976047.0,
+      "n_income_attr_p": 762465400.0
+    },
+    {
+      "ts_code": "002463.SZ",
+      "ann_date": "20250326",
+      "f_ann_date": "20250326",
+      "end_date": "20241231",
+      "report_type": "1",
+      "total_revenue": 13341541440.0,
+      "n_income": 2566315235.0,
+      "n_income_attr_p": 2587236693.0
+    },
+    {
+      "ts_code": "002463.SZ",
+      "ann_date": "20250326",
+      "f_ann_date": "20250326",
+      "end_date": "20241231",
+      "report_type": "1",
+      "total_revenue": 13341541440.0,
+      "n_income": 2566315235.0,
+      "n_income_attr_p": 2587236693.0
+    }
+  ],
+  "002916.SZ": [
+    {
+      "ts_code": "002916.SZ",
+      "ann_date": "20260424",
+      "f_ann_date": "20260424",
+      "end_date": "20260331",
+      "report_type": "1",
+      "total_revenue": 6595587902.38,
+      "n_income": 851291856.45,
+      "n_income_attr_p": 850230796.58
+    },
+    {
+      "ts_code": "002916.SZ",
+      "ann_date": "20260313",
+      "f_ann_date": "20260313",
+      "end_date": "20251231",
+      "report_type": "1",
+      "total_revenue": 23646977088.98,
+      "n_income": 3278514938.41,
+      "n_income_attr_p": 3275738151.27
+    },
+    {
+      "ts_code": "002916.SZ",
+      "ann_date": "20251030",
+      "f_ann_date": "20251030",
+      "end_date": "20250930",
+      "report_type": "1",
+      "total_revenue": 16754015317.37,
+      "n_income": 2328338717.68,
+      "n_income_attr_p": 2325825551.62
+    },
+    {
+      "ts_code": "002916.SZ",
+      "ann_date": "20250828",
+      "f_ann_date": "20250828",
+      "end_date": "20250630",
+      "report_type": "1",
+      "total_revenue": 10453454733.49,
+      "n_income": 1361120341.92,
+      "n_income_attr_p": 1360017775.49
+    },
+    {
+      "ts_code": "002916.SZ",
+      "ann_date": "20250424",
+      "f_ann_date": "20250424",
+      "end_date": "20250331",
+      "report_type": "1",
+      "total_revenue": 4782896546.25,
+      "n_income": 492056366.0,
+      "n_income_attr_p": 491448182.06
+    },
+    {
+      "ts_code": "002916.SZ",
+      "ann_date": "20250424",
+      "f_ann_date": "20250424",
+      "end_date": "20250331",
+      "report_type": "1",
+      "total_revenue": 4782896546.25,
+      "n_income": 492056366.0,
+      "n_income_attr_p": 491448182.06
+    },
+    {
+      "ts_code": "002916.SZ",
+      "ann_date": "20250313",
+      "f_ann_date": "20250313",
+      "end_date": "20241231",
+      "report_type": "1",
+      "total_revenue": 17907445251.3,
+      "n_income": 1878722169.02,
+      "n_income_attr_p": 1877565481.01
+    }
+  ],
+  "300476.SZ": [
+    {
+      "ts_code": "300476.SZ",
+      "ann_date": "20260429",
+      "f_ann_date": "20260429",
+      "end_date": "20260331",
+      "report_type": "1",
+      "total_revenue": 5519485066.85,
+      "n_income": 1288427592.46,
+      "n_income_attr_p": 1288427592.46
+    },
+    {
+      "ts_code": "300476.SZ",
+      "ann_date": "20260313",
+      "f_ann_date": "20260313",
+      "end_date": "20251231",
+      "report_type": "1",
+      "total_revenue": 19292313457.36,
+      "n_income": 4311988274.4,
+      "n_income_attr_p": 4311988274.4
+    },
+    {
+      "ts_code": "300476.SZ",
+      "ann_date": "20251028",
+      "f_ann_date": "20251028",
+      "end_date": "20250930",
+      "report_type": "1",
+      "total_revenue": 14117292798.89,
+      "n_income": 3244826449.42,
+      "n_income_attr_p": 3244826449.42
+    },
+    {
+      "ts_code": "300476.SZ",
+      "ann_date": "20250827",
+      "f_ann_date": "20250827",
+      "end_date": "20250630",
+      "report_type": "1",
+      "total_revenue": 9030866364.08,
+      "n_income": 2143119809.25,
+      "n_income_attr_p": 2143119809.25
+    },
+    {
+      "ts_code": "300476.SZ",
+      "ann_date": "20250422",
+      "f_ann_date": "20250422",
+      "end_date": "20250331",
+      "report_type": "1",
+      "total_revenue": 4312340862.19,
+      "n_income": 920647385.47,
+      "n_income_attr_p": 920647385.47
+    },
+    {
+      "ts_code": "300476.SZ",
+      "ann_date": "20250329",
+      "f_ann_date": "20250329",
+      "end_date": "20241231",
+      "report_type": "1",
+      "total_revenue": 10731469489.88,
+      "n_income": 1154431097.85,
+      "n_income_attr_p": 1154431097.85
+    }
+  ],
+  "600183.SH": [
+    {
+      "ts_code": "600183.SH",
+      "ann_date": "20260429",
+      "f_ann_date": "20260429",
+      "end_date": "20260331",
+      "report_type": "1",
+      "total_revenue": 8141455910.4,
+      "n_income": 1332307575.73,
+      "n_income_attr_p": 1158139324.56
+    },
+    {
+      "ts_code": "600183.SH",
+      "ann_date": "20260425",
+      "f_ann_date": "20260425",
+      "end_date": "20251231",
+      "report_type": "1",
+      "total_revenue": 28431138459.44,
+      "n_income": 3891871604.15,
+      "n_income_attr_p": 3333954377.92
+    },
+    {
+      "ts_code": "600183.SH",
+      "ann_date": "20251029",
+      "f_ann_date": "20251029",
+      "end_date": "20250930",
+      "report_type": "1",
+      "total_revenue": 20613555150.44,
+      "n_income": 2863526001.9,
+      "n_income_attr_p": 2443164415.82
+    },
+    {
+      "ts_code": "600183.SH",
+      "ann_date": "20250816",
+      "f_ann_date": "20250816",
+      "end_date": "20250630",
+      "report_type": "1",
+      "total_revenue": 12679896704.94,
+      "n_income": 1622705495.92,
+      "n_income_attr_p": 1426490859.25
+    },
+    {
+      "ts_code": "600183.SH",
+      "ann_date": "20250429",
+      "f_ann_date": "20250429",
+      "end_date": "20250331",
+      "report_type": "1",
+      "total_revenue": 5611370948.47,
+      "n_income": 634861357.91,
+      "n_income_attr_p": 563647263.06
+    },
+    {
+      "ts_code": "600183.SH",
+      "ann_date": "20250329",
+      "f_ann_date": "20250329",
+      "end_date": "20241231",
+      "report_type": "1",
+      "total_revenue": 20388330213.56,
+      "n_income": 1867780248.75,
+      "n_income_attr_p": 1738669517.06
+    }
+  ],
+  "688519.SH": [
+    {
+      "ts_code": "688519.SH",
+      "ann_date": "20260428",
+      "f_ann_date": "20260428",
+      "end_date": "20260331",
+      "report_type": "1",
+      "total_revenue": 1832161085.0,
+      "n_income": 150132663.11,
+      "n_income_attr_p": 150132663.11
+    },
+    {
+      "ts_code": "688519.SH",
+      "ann_date": "20260326",
+      "f_ann_date": "20260326",
+      "end_date": "20251231",
+      "report_type": "1",
+      "total_revenue": 5227828810.43,
+      "n_income": 240327620.48,
+      "n_income_attr_p": 240327620.48
+    },
+    {
+      "ts_code": "688519.SH",
+      "ann_date": "20251030",
+      "f_ann_date": "20251030",
+      "end_date": "20250930",
+      "report_type": "1",
+      "total_revenue": 3663333868.72,
+      "n_income": 158098607.52,
+      "n_income_attr_p": 158098607.52
+    },
+    {
+      "ts_code": "688519.SH",
+      "ann_date": "20250808",
+      "f_ann_date": "20250808",
+      "end_date": "20250630",
+      "report_type": "1",
+      "total_revenue": 2305055409.51,
+      "n_income": 87190150.81,
+      "n_income_attr_p": 87190150.81
+    },
+    {
+      "ts_code": "688519.SH",
+      "ann_date": "20250417",
+      "f_ann_date": "20250417",
+      "end_date": "20250331",
+      "report_type": "1",
+      "total_revenue": 952450782.15,
+      "n_income": 21120712.02,
+      "n_income_attr_p": 21120712.02
+    },
+    {
+      "ts_code": "688519.SH",
+      "ann_date": "20250417",
+      "f_ann_date": "20250417",
+      "end_date": "20241231",
+      "report_type": "1",
+      "total_revenue": 3361541042.55,
+      "n_income": 50319926.41,
+      "n_income_attr_p": 50320174.62
+    }
+  ],
+  "603186.SH": [
+    {
+      "ts_code": "603186.SH",
+      "ann_date": "20260422",
+      "f_ann_date": "20260422",
+      "end_date": "20260331",
+      "report_type": "1",
+      "total_revenue": 1234291571.69,
+      "n_income": 31122751.31,
+      "n_income_attr_p": 30920963.67
+    },
+    {
+      "ts_code": "603186.SH",
+      "ann_date": "20260422",
+      "f_ann_date": "20260422",
+      "end_date": "20260331",
+      "report_type": "1",
+      "total_revenue": 1234291571.69,
+      "n_income": 31122751.31,
+      "n_income_attr_p": 30920963.67
+    },
+    {
+      "ts_code": "603186.SH",
+      "ann_date": "20260324",
+      "f_ann_date": "20260324",
+      "end_date": "20251231",
+      "report_type": "1",
+      "total_revenue": 4369207731.02,
+      "n_income": 278982085.51,
+      "n_income_attr_p": 276713420.07
+    },
+    {
+      "ts_code": "603186.SH",
+      "ann_date": "20251025",
+      "f_ann_date": "20251025",
+      "end_date": "20250930",
+      "report_type": "1",
+      "total_revenue": 3195673038.15,
+      "n_income": 66226088.04,
+      "n_income_attr_p": 62608741.04
+    },
+    {
+      "ts_code": "603186.SH",
+      "ann_date": "20251025",
+      "f_ann_date": "20251025",
+      "end_date": "20250930",
+      "report_type": "1",
+      "total_revenue": 3195673038.15,
+      "n_income": 66226088.04,
+      "n_income_attr_p": 62608741.04
+    },
+    {
+      "ts_code": "603186.SH",
+      "ann_date": "20250822",
+      "f_ann_date": "20250822",
+      "end_date": "20250630",
+      "report_type": "1",
+      "total_revenue": 2095079347.25,
+      "n_income": 44155708.06,
+      "n_income_attr_p": 42669003.72
+    },
+    {
+      "ts_code": "603186.SH",
+      "ann_date": "20250822",
+      "f_ann_date": "20250822",
+      "end_date": "20250630",
+      "report_type": "1",
+      "total_revenue": 2095079347.25,
+      "n_income": 44155708.06,
+      "n_income_attr_p": 42669003.72
+    },
+    {
+      "ts_code": "603186.SH",
+      "ann_date": "20250422",
+      "f_ann_date": "20250422",
+      "end_date": "20250331",
+      "report_type": "1",
+      "total_revenue": 1029975937.09,
+      "n_income": 18763489.55,
+      "n_income_attr_p": 18400541.91
+    }
+  ]
+}

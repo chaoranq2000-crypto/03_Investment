@@ -1,18 +1,20 @@
 # Formal Publish Readiness Audit
 
-- audit_time: 2026-06-22T17:02:20+00:00
+- audit_time: 2026-06-25T07:39:29+00:00
 - project_id: `tech_ai_semiconductor`
-- sector_id: `optical_chip_components`
+- sector_id: `ccl_high_frequency_materials`
 - gated formal source: `C:\Projects\03_Investment\investment_system\research\projects\tech_ai_semiconductor\audits\gated_formal_outputs`
-- release manifest: `C:\Projects\03_Investment\investment_system\research\projects\tech_ai_semiconductor\audits\formal_publish_manifest_optical_chip_components_20260622.json`
+- formal candidate source: `C:\Projects\03_Investment\investment_system\research\projects\tech_ai_semiconductor\audits\formal_candidate_outputs`
+- release manifest: `C:\Projects\03_Investment\investment_system\research\projects\tech_ai_semiconductor\audits\formal_publish_manifest_ccl_high_frequency_materials_20260625.json`
 - publish_scope: `sector_card_only`
+- source_stage: `formal_candidate`
 - dry_run: True
 - manual_confirmation_required: True
 - confirm_publish_requested: False
 - publish_executed: False
 
 ## 最终正式发布目标路径清单
-- sector_card: `C:\Projects\03_Investment\科技主线调研输出\3_光通信\高速互连\P0_光芯片_激光器_光器件.md`
+- sector_card: `C:\Projects\03_Investment\科技主线调研输出\4_PCB\CCL\载板\P1_CCL_高频高速材料_铜箔_树脂.md`
 
 ## 明确排除的正式输出动作
 - company_table: publish_action=False; target=`C:\Projects\03_Investment\科技主线调研输出\00_总表\代表公司财务估值总表.csv`
@@ -21,7 +23,7 @@
 - missing_data_log: publish_action=False; target=`C:\Projects\03_Investment\科技主线调研输出\99_日志\缺失数据清单.md`
 - conflict_data_log: publish_action=False; target=`C:\Projects\03_Investment\科技主线调研输出\99_日志\冲突数据清单.md`
 - score_table: publish_action=False; target=`C:\Projects\03_Investment\科技主线调研输出\00_总表\科技细分方向横向比较表.csv`
-- release_manifest: publish_action=False; target=`C:\Projects\03_Investment\科技主线调研输出\99_日志\formal_publish_manifest_optical_chip_components_20260622.json`
+- release_manifest: publish_action=False; target=`C:\Projects\03_Investment\科技主线调研输出\99_日志\formal_publish_manifest_ccl_high_frequency_materials_20260625_m7.json`
 
 ## 门禁结果
 - source_id_closure: True
@@ -42,7 +44,7 @@
 
 ### INFO
 
-- `RELEASE_MANIFEST_PRESENT` (`C:\Projects\03_Investment\investment_system\research\projects\tech_ai_semiconductor\audits\formal_publish_manifest_optical_chip_components_20260622.json`): release manifest exists.
+- `RELEASE_MANIFEST_PRESENT` (`C:\Projects\03_Investment\investment_system\research\projects\tech_ai_semiconductor\audits\formal_publish_manifest_ccl_high_frequency_materials_20260625.json`): release manifest exists.
 - `FINAL_TARGET_PATHS_RESOLVED`: target_count=1
 - `SOURCE_HASH_SIZE_OK`: verified 1 source files.
 - `SECTOR_CARD_ONLY_SCOPE_OK`: Only sector_card is mapped for potential publish; other outputs are excluded/no-action.

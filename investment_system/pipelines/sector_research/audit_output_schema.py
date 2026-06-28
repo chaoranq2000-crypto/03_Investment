@@ -153,7 +153,6 @@ def _audit_paths_and_legacy_calls(findings: list[Finding]) -> dict[str, int]:
     targets = [
         WORKSPACE_ROOT / "investment_system" / "pipelines" / "run_research.py",
         WORKSPACE_ROOT / "investment_system" / "pipelines" / "validate_outputs.py",
-        WORKSPACE_ROOT / "tools" / "collect_high_speed_optical.py",
     ]
     hardcoded_count = 0
     for path in targets:

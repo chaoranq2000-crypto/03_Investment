@@ -1,0 +1,282 @@
+schema_version: '1.1'
+evidence_file_id: ccl_high_frequency_materials
+status: schema_normalized
+project_ids:
+- tech_ai_semiconductor
+canonical_sector_ids:
+- ccl_high_frequency_materials
+_audit_metadata:
+  created_for_phase: 1E-k-a
+  created_date: '2026-06-24'
+  source_id_convention_version: '1.1'
+  note: P1 evidence batch pre-start. Official annual reports plus Tushare financial/market facts only; no candidate or formal output generation.
+source_index:
+- source_id: CNINFO-AR-CCL-HIGH-FREQUENCY-MATERIALS-600183-20260624
+  source_type: annual_report
+  title: 生益科技 2025年年度报告
+  publisher: 巨潮资讯/CNINFO
+  date: '2026-04-25'
+  url: http://static.cninfo.com.cn/finalpage/2026-04-25/1225195409.PDF
+  access_method: web_download
+  local_path: investment_system/data/raw/cninfo/p1_batch_evidence/2026-06-24/600183.SH_1225195409_2025_annual_report.txt
+  reliability_level: 高
+  notes: Official annual report PDF cached locally; text extracted with pdfplumber for evidence pre-start.
+- source_id: CNINFO-AR-CCL-HIGH-FREQUENCY-MATERIALS-688519-20260624
+  source_type: annual_report
+  title: 南亚新材 2025年年度报告
+  publisher: 巨潮资讯/CNINFO
+  date: '2026-03-26'
+  url: http://static.cninfo.com.cn/finalpage/2026-03-26/1225031388.PDF
+  access_method: web_download
+  local_path: investment_system/data/raw/cninfo/p1_batch_evidence/2026-06-24/688519.SH_1225031388_2025_annual_report.txt
+  reliability_level: 高
+  notes: Official annual report PDF cached locally; text extracted with pdfplumber for evidence pre-start.
+- source_id: CNINFO-AR-CCL-HIGH-FREQUENCY-MATERIALS-603186-20260624
+  source_type: annual_report
+  title: 华正新材 2025年年度报告
+  publisher: 巨潮资讯/CNINFO
+  date: '2026-04-16'
+  url: http://static.cninfo.com.cn/finalpage/2026-04-16/1225107720.PDF
+  access_method: web_download
+  local_path: investment_system/data/raw/cninfo/p1_batch_evidence/2026-06-24/603186.SH_1225107720_2025_annual_report.txt
+  reliability_level: 高
+  notes: Official annual report PDF cached locally; text extracted with pdfplumber for evidence pre-start.
+- source_id: TUSHARE-INCOME-CCL-HIGH-FREQUENCY-MATERIALS-20260624
+  source_type: financial_data
+  title: Tushare Pro income statements for ccl_high_frequency_materials stock sample
+  publisher: Tushare Pro
+  date: '2026-06-24'
+  url: ''
+  access_method: script_query
+  local_path: investment_system/data/raw/tushare/p1_batch_evidence_20260624.json
+  dataset_ref: tushare:income(ts_code,start_date=20250101,end_date=20260624)
+  reliability_level: 高
+  notes: No token stored; raw query result cached as JSON.
+- source_id: TUSHARE-DAILY-BASIC-CCL-HIGH-FREQUENCY-MATERIALS-20260624
+  source_type: market_data
+  title: Tushare Pro daily_basic valuation fields for ccl_high_frequency_materials stock sample
+  publisher: Tushare Pro
+  date: '2026-06-24'
+  url: ''
+  access_method: script_query
+  local_path: investment_system/data/raw/tushare/p1_batch_evidence_20260624.json
+  dataset_ref: tushare:daily_basic(ts_code,start_date=20260301,end_date=20260623)
+  reliability_level: 高
+  notes: Valuation and turnover fields; last available trade date 2026-06-23.
+- source_id: TUSHARE-DAILY-CCL-HIGH-FREQUENCY-MATERIALS-20260624
+  source_type: market_data
+  title: Tushare Pro daily k-line for ccl_high_frequency_materials stock sample
+  publisher: Tushare Pro
+  date: '2026-06-24'
+  url: ''
+  access_method: script_query
+  local_path: investment_system/data/raw/tushare/p1_batch_evidence_20260624.json
+  dataset_ref: tushare:daily(ts_code,start_date=20260301,end_date=20260623)
+  reliability_level: 高
+  notes: Daily close, pct_chg and amount fields; last available trade date 2026-06-23.
+evidence_items:
+- evidence_id: EV-CCL-HIGH-FREQUENCY-MATERIALS-SECTOR-LOGIC-20260624
+  source_id: CNINFO-AR-CCL-HIGH-FREQUENCY-MATERIALS-600183-20260624
+  source_ids:
+  - CNINFO-AR-CCL-HIGH-FREQUENCY-MATERIALS-600183-20260624
+  - CNINFO-AR-CCL-HIGH-FREQUENCY-MATERIALS-688519-20260624
+  - CNINFO-AR-CCL-HIGH-FREQUENCY-MATERIALS-603186-20260624
+  project_id: tech_ai_semiconductor
+  sector_id: ccl_high_frequency_materials
+  subject_type: sector
+  subject_id: ccl_high_frequency_materials
+  subject_name: CCL/高频高速材料/铜箔/树脂
+  company_code: ''
+  company_name: ''
+  evidence_level: strong
+  evidence_type: industry_logic
+  source_url: http://static.cninfo.com.cn/finalpage/2026-04-25/1225195409.PDF
+  source_file: investment_system/data/raw/cninfo/p1_batch_evidence/2026-06-24/600183.SH_1225195409_2025_annual_report.txt
+  source_date: '2026-04-25'
+  extracted_text: Official annual reports of CCL companies support the sector logic that AI servers, switches, optical modules and data centers require low-Dk/low-Df high-frequency/high-speed CCL and prepreg materials.
+  claim: Official annual reports of CCL companies support the sector logic that AI servers, switches, optical modules and data centers require low-Dk/low-Df high-frequency/high-speed CCL and prepreg materials. This sector-level item is not an investment conclusion.
+  metrics_supported:
+  - sector_level_claim
+  - risk_evidence
+  time_scope: 2025FY
+  confidence: 中高
+  used_for: &id001
+  - sector_card
+  - source_index
+  - missing_data_log
+  - risk_review
+  not_allowed_for: &id002
+  - investment_conclusion
+  - position_sizing
+  - final_rating
+  limitation: Sector logic does not prove all stock-pool companies have AI-specific revenue or named orders.
+  missing_fields: &id003
+  - named_customer_contracts
+  - product_model_revenue_split
+  - capacity_by_high_speed_ccl_grade
+  - independent_certification_files
+- evidence_id: EV-CCL-HIGH-FREQUENCY-MATERIALS-PRODUCT-600183-20260624
+  source_id: CNINFO-AR-CCL-HIGH-FREQUENCY-MATERIALS-600183-20260624
+  source_ids:
+  - CNINFO-AR-CCL-HIGH-FREQUENCY-MATERIALS-600183-20260624
+  project_id: tech_ai_semiconductor
+  sector_id: ccl_high_frequency_materials
+  subject_type: company
+  subject_id: 600183.SH
+  subject_name: 生益科技
+  company_code: 600183.SH
+  company_name: 生益科技
+  evidence_level: strong
+  evidence_type: company_evidence
+  source_url: http://static.cninfo.com.cn/finalpage/2026-04-25/1225195409.PDF
+  source_file: investment_system/data/raw/cninfo/p1_batch_evidence/2026-06-24/600183.SH_1225195409_2025_annual_report.txt
+  source_date: '2026-04-25'
+  extracted_text: Annual report states the company designs, produces and sells CCL/prepreg and high-end electronic materials; products are used in high-computing-power, AI server, 5G antenna, new-generation base stations, high-end servers and chip packaging; it says multiple product categories have obtained advanced terminal customer certification and demand has converted into substantive orders.
+  claim: Official annual report supports high-frequency/high-speed CCL exposure to AI server/high-computing-power applications, customer certification/order context and revenue scale. Revenue/收入 and risk review are supported by annual-report disclosures, but this is not investment advice.
+  metrics_supported:
+  - company_evidence
+  - revenue_2025_actual
+  - profit_data
+  - risk_evidence
+  time_scope: 2025FY
+  confidence: 高
+  used_for: *id001
+  not_allowed_for: *id002
+  limitation: Annual report may not disclose named customer contracts, order amount, product model revenue split or certification files.
+  missing_fields: *id003
+- evidence_id: EV-CCL-HIGH-FREQUENCY-MATERIALS-PRODUCT-688519-20260624
+  source_id: CNINFO-AR-CCL-HIGH-FREQUENCY-MATERIALS-688519-20260624
+  source_ids:
+  - CNINFO-AR-CCL-HIGH-FREQUENCY-MATERIALS-688519-20260624
+  project_id: tech_ai_semiconductor
+  sector_id: ccl_high_frequency_materials
+  subject_type: company
+  subject_id: 688519.SH
+  subject_name: 南亚新材
+  company_code: 688519.SH
+  company_name: 南亚新材
+  evidence_level: strong
+  evidence_type: company_evidence
+  source_url: http://static.cninfo.com.cn/finalpage/2026-03-26/1225031388.PDF
+  source_file: investment_system/data/raw/cninfo/p1_batch_evidence/2026-06-24/688519.SH_1225031388_2025_annual_report.txt
+  source_date: '2026-03-26'
+  extracted_text: Annual report states main products are CCL and prepreg; high-speed board series are used in AI server UBB, AI server accelerator cards, core network, switches, servers, optical modules and data centers; it reports 2025 operating revenue of 5.228 billion yuan.
+  claim: Official annual report supports high-speed CCL product-series exposure to AI server, accelerator-card, switch, server, optical-module and data-center applications. Revenue/收入 and risk review are supported by annual-report disclosures, but this is not investment advice.
+  metrics_supported:
+  - company_evidence
+  - revenue_2025_actual
+  - profit_data
+  - risk_evidence
+  time_scope: 2025FY
+  confidence: 高
+  used_for: *id001
+  not_allowed_for: *id002
+  limitation: Annual report may not disclose named customer contracts, order amount, product model revenue split or certification files.
+  missing_fields: *id003
+- evidence_id: EV-CCL-HIGH-FREQUENCY-MATERIALS-PRODUCT-603186-20260624
+  source_id: CNINFO-AR-CCL-HIGH-FREQUENCY-MATERIALS-603186-20260624
+  source_ids:
+  - CNINFO-AR-CCL-HIGH-FREQUENCY-MATERIALS-603186-20260624
+  project_id: tech_ai_semiconductor
+  sector_id: ccl_high_frequency_materials
+  subject_type: company
+  subject_id: 603186.SH
+  subject_name: 华正新材
+  company_code: 603186.SH
+  company_name: 华正新材
+  evidence_level: strong
+  evidence_type: company_evidence
+  source_url: http://static.cninfo.com.cn/finalpage/2026-04-16/1225107720.PDF
+  source_file: investment_system/data/raw/cninfo/p1_batch_evidence/2026-06-24/603186.SH_1225107720_2025_annual_report.txt
+  source_date: '2026-04-16'
+  extracted_text: Annual report states products are used in 5G communications, servers and data centers; high-speed CCL focuses on AI servers, switches and optical modules; Ultra low loss material has productized sales, server terminal customer recognition, domestic leading terminal certification and small-batch orders for large-chip computing applications.
+  claim: Official annual report supports high-speed CCL exposure to AI server/switch/optical module applications, customer certification and small-batch order progress. Revenue/收入 and risk review are supported by annual-report disclosures, but this is not investment advice.
+  metrics_supported:
+  - company_evidence
+  - revenue_2025_actual
+  - profit_data
+  - risk_evidence
+  time_scope: 2025FY
+  confidence: 高
+  used_for: *id001
+  not_allowed_for: *id002
+  limitation: Annual report may not disclose named customer contracts, order amount, product model revenue split or certification files.
+  missing_fields: *id003
+- evidence_id: EV-CCL-HIGH-FREQUENCY-MATERIALS-FIN-VALUATION-20260624
+  source_id: TUSHARE-INCOME-CCL-HIGH-FREQUENCY-MATERIALS-20260624
+  source_ids:
+  - TUSHARE-INCOME-CCL-HIGH-FREQUENCY-MATERIALS-20260624
+  - TUSHARE-DAILY-BASIC-CCL-HIGH-FREQUENCY-MATERIALS-20260624
+  project_id: tech_ai_semiconductor
+  sector_id: ccl_high_frequency_materials
+  subject_type: sector
+  subject_id: ccl_high_frequency_materials
+  subject_name: CCL/高频高速材料/铜箔/树脂
+  company_code: ''
+  company_name: ''
+  evidence_level: strong
+  evidence_type: financial_data
+  source_url: ''
+  source_file: investment_system/data/raw/tushare/p1_batch_evidence_20260624.json
+  source_date: '2026-06-24'
+  extracted_text: Tushare income and daily_basic returned financial, valuation and turnover fields for the selected official-evidence company sample.
+  claim: 'Tushare income/daily_basic facts: 2025FY total_revenue=28431138459.44 yuan, n_income_attr_p=3333954377.92 yuan, ann_date=20260425; 2026Q1 total_revenue=8141455910.4 yuan, n_income_attr_p=1158139324.56 yuan; daily_basic 20260623 pe_ttm=103.8009, pb=22.7455, turnover_rate=4.1689, total_mv=40777624.0104 (Tushare unit). ; Tushare income/daily_basic facts: 2025FY total_revenue=5227828810.43 yuan, n_income_attr_p=240327620.48 yuan, ann_date=20260326; 2026Q1 total_revenue=1832161085.0 yuan, n_income_attr_p=150132663.11 yuan; daily_basic 20260623 pe_ttm=212.0408, pb=27.1519, turnover_rate=3.4702, total_mv=7831507.32 (Tushare unit). ; Tushare income/daily_basic facts: 2025FY total_revenue=4369207731.02 yuan, n_income_attr_p=276713420.07 yuan, ann_date=20260324; 2026Q1 total_revenue=1234291571.69 yuan, n_income_attr_p=30920963.67 yuan; daily_basic 20260623 pe_ttm=125.5478, pb=15.5065, turnover_rate=8.4954, total_mv=3631267.98 (Tushare unit).'
+  metrics_supported:
+  - financial_data
+  - revenue_2025_actual
+  - profit_data
+  - valuation
+  - pe_ttm
+  - pb
+  - turnover_data
+  - risk_evidence
+  time_scope: 2025FY;2026Q1;2026-06-23
+  confidence: 高
+  used_for: *id001
+  not_allowed_for: *id002
+  limitation: Market valuation and financial facts do not prove AI-specific order conversion or customer qualification.
+  missing_fields: *id003
+- evidence_id: EV-CCL-HIGH-FREQUENCY-MATERIALS-TRADING-20260624
+  source_id: TUSHARE-DAILY-CCL-HIGH-FREQUENCY-MATERIALS-20260624
+  source_ids:
+  - TUSHARE-DAILY-CCL-HIGH-FREQUENCY-MATERIALS-20260624
+  project_id: tech_ai_semiconductor
+  sector_id: ccl_high_frequency_materials
+  subject_type: sector
+  subject_id: ccl_high_frequency_materials
+  subject_name: CCL/高频高速材料/铜箔/树脂
+  company_code: ''
+  company_name: ''
+  evidence_level: strong
+  evidence_type: trading_heat_fact
+  source_url: ''
+  source_file: investment_system/data/raw/tushare/p1_batch_evidence_20260624.json
+  source_date: '2026-06-24'
+  extracted_text: Tushare daily returned close, pct_chg, amount and enough observations for 20d/60d return calculations.
+  claim: 'Tushare daily trading heat fact: as_of_date=20260623; close_price=167.87; pct_chg=-9.0136; return_20d_pct=44.07; return_60d_pct=195.13; amount_thousand_yuan=17118007.294. ; Tushare daily trading heat fact: as_of_date=20260623; close_price=333.0; pct_chg=-11.3537; return_20d_pct=68.78; return_60d_pct=112.1; amount_thousand_yuan=2801128.472. ; Tushare daily trading heat fact: as_of_date=20260623; close_price=231.6; pct_chg=-7.0589; return_20d_pct=76.46; return_60d_pct=275.43; amount_thousand_yuan=3131592.508.'
+  metrics_supported:
+  - price_data
+  - close_price
+  - return_20d
+  - return_60d
+  - trading_amount
+  - momentum_data
+  time_scope: '2026-06-23'
+  confidence: 高
+  used_for: *id001
+  not_allowed_for: *id002
+  limitation: Trading heat is only a market-state fact and cannot be used as investment advice or rating.
+  missing_fields: *id003
+missing_evidence:
+- field: named_customer_contracts
+  status: missing_or_incomplete
+  notes: Keep as missing evidence before any candidate generation.
+- field: product_model_revenue_split
+  status: missing_or_incomplete
+  notes: Keep as missing evidence before any candidate generation.
+- field: capacity_by_high_speed_ccl_grade
+  status: missing_or_incomplete
+  notes: Keep as missing evidence before any candidate generation.
+- field: independent_certification_files
+  status: missing_or_incomplete
+  notes: Keep as missing evidence before any candidate generation.

@@ -21,7 +21,6 @@ The system is still an engineering and validation workflow unless the user expli
 - `investment_system/` is the reusable research engine.
 - `investment_system/config/` contains data-source and environment configuration examples.
 - `investment_system/data/` contains raw, processed, and cached data.
-- `investment_system/docs/` contains architecture, workflow, data-source, and quality-standard documents.
 - `investment_system/pipelines/` contains executable pipeline, validation, audit, cleanup, and collection code.
 - `investment_system/pipelines/sector_research/` contains project-aware sector research utilities and audit tools.
 - `investment_system/research/evidence/` contains structured evidence files.
@@ -318,4 +317,3 @@ The default direction is:
 - evidence/source traceability third
 - output schema compliance fourth
 - formal research production last
-

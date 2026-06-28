@@ -17,9 +17,9 @@
 | ERROR | 0 |
 | WARNING | 0 |
 | INFO | 13 |
-| evidence_file_count | 6 |
-| source_count | 47 |
-| evidence_item_count | 44 |
+| evidence_file_count | 8 |
+| source_count | 62 |
+| evidence_item_count | 64 |
 | missing_source_metadata_count | 0 |
 | duplicate_source_count | 0 |
 | orphan_source_count | 0 |
@@ -28,7 +28,7 @@
 | access_method_errors | 0 |
 | missing_location_errors | 0 |
 | legacy_only_field_count | 16 |
-| canonical_sector_binding_count | 7 |
+| canonical_sector_binding_count | 9 |
 
 ---
 
@@ -41,7 +41,9 @@
 | optical_components_fau_precision_optics | 18 | 7 | 0 | 0 | 0 | 5 | card_markdown, company_overrides, comparison_override, description, grade, logs, source_rows, sub_theme |
 | high_speed_copper_connector | 2 | 6 | 0 | 0 | 0 | 0 | - |
 | trading_heat_high_speed_copper_connector | 1 | 5 | 0 | 0 | 0 | 0 | - |
-| high_speed_copper_connector_product_validation | 2 | 5 | 0 | 0 | 0 | 0 | - |
+| high_speed_copper_connector_product_validation | 5 | 13 | 0 | 0 | 0 | 0 | - |
+| ai_server_pcb_high_speed_board | 6 | 6 | 0 | 0 | 0 | 0 | - |
+| ccl_high_frequency_materials | 6 | 6 | 0 | 0 | 0 | 0 | - |
 
 ---
 
@@ -171,7 +173,9 @@ Resolution: Each file retains its own source_id. A `cross_reference` type source
 | optical_components_fau_precision_optics | 18 | 18 | 0 |
 | high_speed_copper_connector | 2 | 2 | 0 |
 | trading_heat_high_speed_copper_connector | 1 | 1 | 0 |
-| high_speed_copper_connector_product_validation | 2 | 2 | 0 |
+| high_speed_copper_connector_product_validation | 5 | 5 | 0 |
+| ai_server_pcb_high_speed_board | 6 | 6 | 0 |
+| ccl_high_frequency_materials | 6 | 6 | 0 |
 
 Note: BaoStock/Tencent/AKShare database sources intentionally lack web URLs. local_path is sufficient for audit trail.
 

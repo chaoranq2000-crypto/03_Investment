@@ -10,9 +10,47 @@ Use this as the fundamental-evidence layer. Store curated evidence as inputs, no
 ## Entry Points
 
 - Evidence directory: `investment_system/research/evidence/`
+- Source manifest stage: `run_sector_stage.py --stage evidence_collect`
+- Draft evidence skeleton stage: `run_sector_stage.py --stage evidence_draft`
+- Evidence registration stage: `run_sector_stage.py --stage evidence_register`
+- Curated evidence validator: `investment_system.pipelines.sector_research.validate_curated_evidence`
+- Tushare cache splitter: `investment_system.pipelines.sector_research.split_tushare_cache`
 - Evidence merge code: `investment_system/pipelines/evidence_overrides.py`
 - Standard output builder: `investment_system/pipelines/run_research.py`
 - Contract: read `references/contract.md` before changing evidence schema.
+
+## Evidence Layers
+
+Use three distinct layers. Do not skip directly from raw files to active evidence.
+
+1. Source manifest
+   - Built by `evidence_collect`.
+   - Lives under `investment_system/data/raw/official_evidence/`.
+   - Records raw file paths, text extraction paths, hashes, source dates, URLs when available, source IDs, sidecar lookup keys, and missing metadata fields.
+   - Use metadata sidecars to fill CNINFO URL, announcement/source date, company code/name, and title before curation when possible.
+   - This is an index of material, not curated evidence.
+
+2. Evidence draft
+   - Built by `evidence_draft`.
+   - Lives under `investment_system/research/projects/<project_id>/audits/evidence_drafts/`.
+   - May contain `status: draft_source_skeleton`, `DRAFT_PLACEHOLDER`, and `TODO_MANUAL_EXTRACTION`.
+   - Drafts are blocked from candidate generation and must not be registered as active evidence.
+
+3. Active evidence
+   - Lives under `investment_system/research/evidence/`.
+   - Created only after manual excerpt, claim, evidence_level, limitation, and missing_fields curation.
+   - Validate with `validate_curated_evidence` before or during registration.
+   - Registered through `evidence_register`, which updates `run_manifest.yaml` and the sector's `evidence_file_ids[]`.
+
+## Tushare Cache Flow
+
+For bundled Tushare JSON caches keyed by stock code and dataset, first split them into dataset-level cache files:
+
+```powershell
+& "C:\Projects\03_Investment\.conda\investment-system\python.exe" -m investment_system.pipelines.sector_research.split_tushare_cache --project tech_ai_semiconductor --sector-id <sector_id> --cache-path investment_system/data/raw/tushare/<cache>.json
+```
+
+Add `--write-split --write-manifest` only when writing raw split files and the source manifest is intended. Then feed the generated source manifest into `evidence_draft`; do not register the resulting draft until it has been manually curated.
 
 ## Source Priority
 
@@ -36,6 +74,12 @@ When BaoStock, Tencent, AKShare, and Tushare cannot provide a required field, se
 
 - Each material assertion should map to a source row or evidence note.
 - Keep exact source name, date, URL/path, short excerpt, supported fields, confidence.
-- Put reusable curated facts in YAML under `investment_system/research/evidence/`.
+- Put raw official-source manifests under `investment_system/data/raw/official_evidence/`.
+- Put uncurated evidence skeletons under the project audit directory, not under active evidence.
+- Put reusable curated facts in YAML under `investment_system/research/evidence/` only after excerpts and claims are reviewed.
+- Never register a YAML file that still contains `DRAFT_PLACEHOLDER`, `TODO_MANUAL_EXTRACTION`, or `status: draft_source_skeleton`.
+- Treat `validate_curated_evidence` ERROR as a hard stop for `evidence_register`.
+- Do not use context-only or unverified secondary material as strong evidence.
+- Do not write final sector cards, formal outputs, score tables, or investment advice from this skill.
 - Avoid final Markdown/CSV as the source of truth.
 - Do not let debug-grade evidence produce final research-grade prose.

@@ -1,0 +1,104 @@
+{
+  "project_id": "tech_ai_semiconductor",
+  "sector_id": "ccl_high_frequency_materials",
+  "created_at": "2026-06-25T07:39:28+00:00",
+  "stage": "formal_publish_readiness_rehearsal",
+  "publish_scope": "sector_card_only",
+  "dry_run": true,
+  "confirm_publish_requested": false,
+  "confirm_publish_supported_in_this_phase": false,
+  "publish_executed": false,
+  "manual_confirmation_required": true,
+  "publish_status": "awaiting_manual_confirmation",
+  "source_stage": "formal_candidate",
+  "source_root": "C:\\Projects\\03_Investment\\investment_system\\research\\projects\\tech_ai_semiconductor\\audits\\formal_candidate_outputs",
+  "gated_formal_root": "C:\\Projects\\03_Investment\\investment_system\\research\\projects\\tech_ai_semiconductor\\audits\\gated_formal_outputs",
+  "formal_candidate_root": "C:\\Projects\\03_Investment\\investment_system\\research\\projects\\tech_ai_semiconductor\\audits\\formal_candidate_outputs",
+  "gated_metadata_path": "C:\\Projects\\03_Investment\\investment_system\\research\\projects\\tech_ai_semiconductor\\audits\\formal_candidate_outputs\\formal_candidate_ccl_high_frequency_materials_20260625_m7_metadata.json",
+  "source_metadata_path": "C:\\Projects\\03_Investment\\investment_system\\research\\projects\\tech_ai_semiconductor\\audits\\formal_candidate_outputs\\formal_candidate_ccl_high_frequency_materials_20260625_m7_metadata.json",
+  "release_manifest_path": "C:\\Projects\\03_Investment\\investment_system\\research\\projects\\tech_ai_semiconductor\\audits\\formal_publish_manifest_ccl_high_frequency_materials_20260625.json",
+  "formal_target_paths_read_only": {
+    "sector_card": "C:\\Projects\\03_Investment\\科技主线调研输出\\4_PCB\\CCL\\载板\\P1_CCL_高频高速材料_铜箔_树脂.md"
+  },
+  "excluded_outputs_read_only": {
+    "company_table": {
+      "target_path": "C:\\Projects\\03_Investment\\科技主线调研输出\\00_总表\\代表公司财务估值总表.csv",
+      "publish_action": false,
+      "reason": "excluded_by_publish_scope:sector_card_only"
+    },
+    "sector_comparison_table": {
+      "target_path": "C:\\Projects\\03_Investment\\科技主线调研输出\\00_总表\\科技细分方向横向比较表.csv",
+      "publish_action": false,
+      "reason": "excluded_by_publish_scope:sector_card_only"
+    },
+    "source_index": {
+      "target_path": "C:\\Projects\\03_Investment\\科技主线调研输出\\00_总表\\数据来源索引.csv",
+      "publish_action": false,
+      "reason": "excluded_by_publish_scope:sector_card_only"
+    },
+    "missing_data_log": {
+      "target_path": "C:\\Projects\\03_Investment\\科技主线调研输出\\99_日志\\缺失数据清单.md",
+      "publish_action": false,
+      "reason": "excluded_by_publish_scope:sector_card_only"
+    },
+    "conflict_data_log": {
+      "target_path": "C:\\Projects\\03_Investment\\科技主线调研输出\\99_日志\\冲突数据清单.md",
+      "publish_action": false,
+      "reason": "excluded_by_publish_scope:sector_card_only"
+    },
+    "score_table": {
+      "target_path": "C:\\Projects\\03_Investment\\科技主线调研输出\\00_总表\\科技细分方向横向比较表.csv",
+      "publish_action": false,
+      "reason": "excluded_by_publish_scope:sector_card_only"
+    },
+    "release_manifest": {
+      "target_path": "C:\\Projects\\03_Investment\\科技主线调研输出\\99_日志\\formal_publish_manifest_ccl_high_frequency_materials_20260625_m7.json",
+      "publish_action": false,
+      "reason": "excluded_by_publish_scope:sector_card_only"
+    }
+  },
+  "file_map": [
+    {
+      "output_type": "sector_card",
+      "source_path": "C:\\Projects\\03_Investment\\investment_system\\research\\projects\\tech_ai_semiconductor\\audits\\formal_candidate_outputs\\formal_candidate_ccl_high_frequency_materials_20260625_m7_sector_card.md",
+      "source_from_gated_staging": false,
+      "source_from_candidate_staging": true,
+      "target_path": "C:\\Projects\\03_Investment\\科技主线调研输出\\4_PCB\\CCL\\载板\\P1_CCL_高频高速材料_铜箔_树脂.md",
+      "target_exists": false,
+      "write_mode_if_confirmed_future": "create_or_replace_same_sector_only",
+      "overwrite_risk": false,
+      "non_sector_overwrite_risk": false,
+      "sha256": "b99739124dd0c23252c55c6fe53d394b86b216f01cf519f5c8eb60474deb3c6b",
+      "size_bytes": 7551
+    }
+  ],
+  "gate_status": {
+    "gated_formal_audit_error_count": 0,
+    "gated_formal_audit_warning_count": 1,
+    "source_id_closure": true,
+    "evidence_id_closure": true,
+    "no_investment_conclusion": true,
+    "score_placeholder": true,
+    "formal_directory_pollution": true,
+    "validate_outputs_exit_code": 0,
+    "metadata_errors": [],
+    "file_errors": [],
+    "all_sources_from_gated_staging": false,
+    "all_sources_from_candidate_staging": true,
+    "candidate_gate_error_count": 0,
+    "candidate_gate_warning_count": 1,
+    "target_overwrite_risk": false,
+    "gates_passed": true,
+    "publish_allowed_after_manual_confirmation": true
+  },
+  "future_confirm_publish_policy": {
+    "requires_explicit_confirm_publish": true,
+    "requires_gated_formal_audit_error_zero": true,
+    "requires_no_investment_conclusion": true,
+    "requires_score_placeholder_or_separate_scoring_gate": true,
+    "requires_source_evidence_closure": true,
+    "requires_release_manifest": true,
+    "refuse_non_sector_overwrite": true,
+    "refuse_unexpected_final_output_writes": true
+  }
+}
