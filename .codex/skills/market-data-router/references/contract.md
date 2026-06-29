@@ -2,7 +2,7 @@
 
 ## Inputs
 
-- `sub_theme`
+- canonical `sector_id`
 - stock list with `code`, `market`, `set_code`, `name`
 - run date
 

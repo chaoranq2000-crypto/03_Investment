@@ -1,0 +1,6 @@
+{
+  "base_url": "https://fast.xiaodefa.cn",
+  "token": "replace-with-your-token",
+  "accept_encoding": "gzip",
+  "user_agent": "tushare-proxy-smoke-test/1.0"
+}

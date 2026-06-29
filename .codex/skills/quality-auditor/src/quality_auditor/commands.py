@@ -2,75 +2,79 @@
 
 from __future__ import annotations
 
-from investment_system.core.legacy_cli import LegacyCommand, dispatch_legacy_commands
+from investment_system.core.command_dispatch import SkillCommand, dispatch_skill_commands
 
 COMMANDS = {
-    "pipeline-readiness": LegacyCommand(
+    "pipeline-readiness": SkillCommand(
         "quality_auditor.pipeline_readiness",
         "Audit project-aware pipeline readiness.",
     ),
-    "stock-universe": LegacyCommand(
+    "stock-universe": SkillCommand(
         "quality_auditor.stock_universe",
         "Audit stock universe coverage and canonical sector references.",
     ),
-    "evidence-bindings": LegacyCommand(
+    "evidence-bindings": SkillCommand(
         "quality_auditor.evidence_bindings",
         "Audit run-manifest evidence bindings.",
     ),
-    "evidence-schema": LegacyCommand(
+    "evidence-schema": SkillCommand(
         "quality_auditor.evidence_schema",
         "Audit canonical evidence YAML schema/source-id readiness.",
     ),
-    "evidence-coverage": LegacyCommand(
+    "evidence-coverage": SkillCommand(
         "quality_auditor.evidence_coverage",
         "Audit source/evidence coverage.",
     ),
-    "evidence-gate": LegacyCommand(
+    "evidence-gate": SkillCommand(
         "sector_research_orchestrator.stage_runner",
         "Run the standardized evidence gate for one sector.",
         ("--stage", "evidence_gate"),
     ),
-    "candidate-gate": LegacyCommand(
+    "candidate-gate": SkillCommand(
         "sector_research_orchestrator.stage_runner",
         "Run the standardized candidate gate for one sector.",
         ("--stage", "candidate_gate"),
     ),
-    "publish-gate": LegacyCommand(
+    "publish-gate": SkillCommand(
         "sector_research_orchestrator.stage_runner",
         "Run publish dry-run checks for one sector.",
         ("--stage", "publish_gate"),
     ),
-    "post-publish-check": LegacyCommand(
+    "post-publish-check": SkillCommand(
         "sector_research_orchestrator.stage_runner",
         "Run post-publish checks for an already published sector card.",
         ("--stage", "post_publish_check"),
     ),
-    "gated-outputs": LegacyCommand(
+    "gated-outputs": SkillCommand(
         "quality_auditor.gated_outputs",
         "Audit gated formal staging outputs.",
     ),
-    "output-schema": LegacyCommand(
+    "output-schema": SkillCommand(
         "quality_auditor.output_schema",
         "Audit output schema readiness.",
     ),
-    "mock-outputs": LegacyCommand(
+    "mock-outputs": SkillCommand(
         "quality_auditor.mock_outputs",
         "Audit mock output fixtures.",
     ),
-    "dry-run-outputs": LegacyCommand(
+    "dry-run-outputs": SkillCommand(
         "quality_auditor.dry_run_outputs",
         "Audit dry-run output artifacts.",
     ),
-    "generator-previews": LegacyCommand(
+    "generator-previews": SkillCommand(
         "quality_auditor.generator_previews",
         "Audit generator preview artifacts.",
     ),
-    "validate-outputs": LegacyCommand(
+    "validate-outputs": SkillCommand(
         "quality_auditor.validate_outputs",
         "Validate project-aware generated outputs.",
+    ),
+    "tushare-raw-cache": SkillCommand(
+        "quality_auditor.tushare_raw_cache",
+        "Audit skill-owned Tushare raw-cache envelopes for schema and token leakage.",
     ),
 }
 
 
 def main(argv: list[str] | None = None) -> int:
-    return dispatch_legacy_commands("quality-auditor", COMMANDS, argv)
+    return dispatch_skill_commands("quality-auditor", COMMANDS, argv)

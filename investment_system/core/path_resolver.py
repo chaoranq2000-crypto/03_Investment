@@ -22,20 +22,10 @@ def safe_filename(s: str) -> str:
     return s
 
 
-def _resolve_sector_id(raw_id: str, valid_sector_ids: set[str], legacy_map: dict[str, str]) -> str:
-    if raw_id in valid_sector_ids:
-        return raw_id
-    return legacy_map.get(raw_id, raw_id)
-
-
 def _get_sector_by_id(config: Any, sector_id: str) -> dict[str, Any] | None:
     sectors = config.raw.get("sectors", [])
-    valid_ids = {s.get("sector_id") for s in sectors}
-    legacy_map = config.raw.get("legacy_sector_map", {})
-
-    resolved = _resolve_sector_id(sector_id, valid_ids, legacy_map)
     for sector in sectors:
-        if sector.get("sector_id") == resolved:
+        if sector.get("sector_id") == sector_id:
             return sector
     return None
 
@@ -51,7 +41,7 @@ def resolve_sector_card_path(
         if sector_dict is None:
             raise ValueError(
                 f"sector_id '{sector_or_id}' not found in sector_universe.yaml "
-                f"(checked legacy aliases as well)"
+                f"(only canonical sector_id values are accepted)"
             )
     else:
         sector_dict = sector_or_id
@@ -95,7 +85,7 @@ def resolve_sector_card_path(
 
 def resolve_output_paths(
     config: Any,
-    sector_id_or_legacy: str | None = None,
+    sector_id: str | None = None,
 ) -> dict[str, Any]:
     """Resolve shared and optional sector-specific output paths without writing."""
     output_spec = config.raw.get("output_spec", {})
@@ -127,11 +117,11 @@ def resolve_output_paths(
         result["conflict_data_log_path"] = str(config.logs_dir / "冲突数据清单.md")
         result["research_log_path"] = str(config.logs_dir / "调研日志.md")
 
-    if sector_id_or_legacy:
-        sector = _get_sector_by_id(config, sector_id_or_legacy)
+    if sector_id:
+        sector = _get_sector_by_id(config, sector_id)
         if sector:
-            sector_id = sector.get("sector_id", sector_id_or_legacy)
-            result["sector_id_resolved"] = sector_id
+            resolved_sector_id = sector.get("sector_id", sector_id)
+            result["sector_id_resolved"] = resolved_sector_id
             result["sector_card_path"] = str(resolve_sector_card_path(config, sector, output_spec))
 
             raw_cfg = dirs.get("raw_data", {})
@@ -139,7 +129,7 @@ def resolve_output_paths(
                 raw_path_template = raw_cfg.get(
                     "path_template", "00_原始数据/{sector_name_safe}"
                 )
-                sector_name_safe = safe_filename(sector.get("sector_name", sector_id))
+                sector_name_safe = safe_filename(sector.get("sector_name", resolved_sector_id))
                 raw_subdir = raw_path_template.replace(
                     "{sector_name_safe}", sector_name_safe
                 )

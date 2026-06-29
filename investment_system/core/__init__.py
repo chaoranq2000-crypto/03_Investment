@@ -1,8 +1,8 @@
 """Shared runtime core for project-aware investment research workflows.
 
-This package is the stable import surface for skill modules. During the first
-migration phase it delegates to the existing pipeline implementation so old
-commands keep working while new skill CLIs gain a common dependency boundary.
+This package is the stable import surface for project-local skill modules.
+Runtime entry points are expected to use canonical project_id and sector_id
+inputs through the skill CLIs.
 """
 
 from __future__ import annotations
@@ -12,6 +12,7 @@ __all__ = [
     "AI_APP_FORBIDDEN_PARENTCHAINS",
     "MD_SCAN_EXCLUDE_DIRS",
     "MD_SCAN_EXCLUDE_FILES",
+    "ResearchRuntimePaths",
     "REQUIRED_OUTPUT_SPEC_FIELDS",
     "REQUIRED_PROJECT_FILES",
     "SCHEMAS_ROOT",
@@ -22,22 +23,28 @@ __all__ = [
     "STOCK_CODE_PATTERN",
     "WORKSPACE_ROOT",
     "ProjectConfig",
+    "SectorContext",
     "ValidationWarning",
+    "check_path_safety",
+    "compute_coverage_status",
     "get_nested",
     "get_sector",
     "get_output_contract",
     "get_output_schema",
     "get_stocks_for_sector",
+    "list_project_sectors_by_priority",
     "list_scoring_sectors",
     "list_output_types",
     "load_project",
     "load_yaml",
     "resolve_output_path",
     "resolve_output_paths",
+    "resolve_sector_context",
     "resolve_evidence_files_for_sector",
     "resolve_sector_card_path",
     "resolve_sector_id",
     "safe_filename",
+    "safe_output_name",
     "validate_output_record_shape",
 ]
 
@@ -62,6 +69,18 @@ def __getattr__(name: str):
         from investment_system.core import project_contracts
 
         return getattr(project_contracts, name)
+    if name in {
+        "ResearchRuntimePaths",
+        "SectorContext",
+        "check_path_safety",
+        "compute_coverage_status",
+        "list_project_sectors_by_priority",
+        "resolve_sector_context",
+        "safe_output_name",
+    }:
+        from investment_system.core import sector_runtime
+
+        return getattr(sector_runtime, name)
     if name in {
         "safe_filename",
         "resolve_output_paths",

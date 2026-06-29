@@ -2,7 +2,6 @@
 from __future__ import annotations
 
 import argparse
-import ast
 import csv
 import re
 from dataclasses import dataclass
@@ -35,47 +34,20 @@ def _read_yaml(path: Path) -> tuple[dict[str, Any], str]:
         return {}, str(exc)
 
 
-def _extract_list_constant(content: str, name: str) -> list[str]:
-    try:
-        tree = ast.parse(content)
-    except Exception:
-        return []
-    for node in tree.body:
-        if isinstance(node, ast.Assign):
-            if not any(isinstance(target, ast.Name) and target.id == name for target in node.targets):
-                continue
-            try:
-                value = ast.literal_eval(node.value)
-            except Exception:
-                return []
-            return [str(item) for item in value if isinstance(item, str)]
-    return []
-
-
 def _csv_header(path: Path) -> list[str]:
     with path.open(newline="", encoding="utf-8-sig") as f:
         return next(csv.reader(f), [])
 
 
-def _contract_field_set(contract: dict[str, Any]) -> set[str]:
-    fields = set(contract.get("required_fields", []) or [])
-    fields.update(contract.get("optional_fields", []) or [])
-    fields.update(contract.get("legacy_display_fields", []) or [])
-    return fields
-
-
 def _audit_contract_definitions(config: Any, findings: list[Finding]) -> dict[str, int]:
     required_field_count = 0
-    deprecated_field_count = 0
-    legacy_display_field_count = 0
+    optional_field_count = 0
     for output_type in list_output_types(config):
         contract = get_output_contract(config, output_type)
         required = contract.get("required_fields", []) or []
-        deprecated = contract.get("deprecated_fields", []) or []
-        legacy_display = contract.get("legacy_display_fields", []) or []
+        optional = contract.get("optional_fields", []) or []
         required_field_count += len(required)
-        deprecated_field_count += len(deprecated)
-        legacy_display_field_count += len(legacy_display)
+        optional_field_count += len(optional)
         if not required:
             findings.append(Finding("ERROR", "OUTPUT_TYPE_REQUIRED_FIELDS_MISSING", f"{output_type} has no required_fields."))
         if output_type == "source_index" and "source_id" not in required:
@@ -96,92 +68,53 @@ def _audit_contract_definitions(config: Any, findings: list[Finding]) -> dict[st
                     )
     return {
         "required_field_count": required_field_count,
-        "deprecated_field_count": deprecated_field_count,
-        "legacy_display_field_count": legacy_display_field_count,
+        "optional_field_count": optional_field_count,
     }
 
 
-def _audit_run_research_fields(config: Any, findings: list[Finding]) -> dict[str, str]:
-    path = WORKSPACE_ROOT / "investment_system" / "pipelines" / "run_research.py"
-    content = path.read_text(encoding="utf-8")
-    company_fields = _extract_list_constant(content, "COMPANY_TABLE_FIELDS")
-    comparison_fields = _extract_list_constant(content, "COMPARISON_FIELDS")
-    source_fields = _extract_list_constant(content, "SOURCE_FIELDS")
-    status = "ok"
-
-    checks = [
-        ("company_table", company_fields, "COMPANY_TABLE_FIELDS"),
-        ("sector_comparison_table", comparison_fields, "COMPARISON_FIELDS"),
-        ("source_index", source_fields, "SOURCE_FIELDS"),
-    ]
-    for output_type, fields, constant in checks:
-        if not fields:
-            findings.append(Finding("ERROR", "FIELD_CONSTANT_MISSING", f"{constant} not found or not parseable.", str(path)))
-            status = "error"
-            continue
-        contract = get_output_contract(config, output_type)
-        allowed = _contract_field_set(contract)
-        required = set(contract.get("required_fields", []) or [])
-        missing_required = sorted(required - set(fields))
-        extra = sorted(set(fields) - allowed)
-        if missing_required:
-            findings.append(
-                Finding("ERROR", "FIELD_CONSTANT_REQUIRED_MISSING", f"{constant} missing required fields: {missing_required}", str(path))
-            )
-            status = "error"
-        if extra:
-            findings.append(Finding("WARNING", "FIELD_CONSTANT_EXTRA_FIELDS", f"{constant} has non-contract fields: {extra}", str(path)))
-            if status == "ok":
-                status = "warning"
-
-    legacy_project_keys = [field for field in ("main_theme", "sub_theme") if field in company_fields]
-    if legacy_project_keys:
-        findings.append(
-            Finding(
-                "ERROR",
-                "COMPANY_TABLE_LEGACY_PRIMARY_KEY",
-                f"COMPANY_TABLE_FIELDS still contains legacy key fields: {legacy_project_keys}",
-                str(path),
-            )
-        )
-        status = "error"
-
-    return {"company_table_contract_status": status}
-
-
-def _audit_paths_and_legacy_calls(findings: list[Finding]) -> dict[str, int]:
+def _audit_removed_runtime_path_calls(findings: list[Finding]) -> dict[str, int]:
     targets = [
-        WORKSPACE_ROOT / "investment_system" / "pipelines" / "run_research.py",
-        WORKSPACE_ROOT / "investment_system" / "pipelines" / "validate_outputs.py",
+        WORKSPACE_ROOT / ".codex" / "skills" / "research-writer",
+        WORKSPACE_ROOT / ".codex" / "skills" / "quality-auditor",
+        WORKSPACE_ROOT / "investment_system" / "core",
+        WORKSPACE_ROOT / "investment_system" / "pipelines",
     ]
-    hardcoded_count = 0
-    for path in targets:
-        if not path.exists():
+    removed_refs = {
+        "investment_system.core.legacy_broad_cli",
+        "investment_system.core.legacy_broad_runner",
+        "investment_system.core.legacy_broad_collection",
+        "research_writer.legacy_broad_outputs",
+        "quality_auditor.retired_surfaces",
+    }
+    reference_count = 0
+    for root in targets:
+        if not root.exists():
             continue
-        content = path.read_text(encoding="utf-8", errors="replace")
-        for pattern in ("科技主线调研输出", "01_AI算力硬件"):
-            count = content.count(pattern)
-            hardcoded_count += count
-            if count:
-                severity = "WARNING" if "tools" in str(path) else "INFO"
-                findings.append(
-                    Finding(
-                        severity,
-                        "HARDCODED_OUTPUT_PATH_LITERAL",
-                        f"found {count} literal occurrence(s) of {pattern}; verify legacy-only or loader-backed use.",
-                        str(path),
+        paths = [root] if root.is_file() else root.rglob("*")
+        for path in paths:
+            if path.is_dir() or path.suffix not in {".py", ".md", ".yaml", ".yml"}:
+                continue
+            if "__pycache__" in path.parts:
+                continue
+            rel = str(path.relative_to(WORKSPACE_ROOT)).replace("\\", "/")
+            if rel in {
+                ".codex/skills/quality-auditor/src/quality_auditor/output_schema.py",
+                ".codex/skills/quality-auditor/src/quality_auditor/pipeline_readiness.py",
+            }:
+                continue
+            content = path.read_text(encoding="utf-8", errors="replace")
+            for token in sorted(removed_refs):
+                if token in content:
+                    reference_count += content.count(token)
+                    findings.append(
+                        Finding(
+                            "ERROR",
+                            "REMOVED_RUNTIME_REFERENCE",
+                            f"Removed runtime reference remains: {token}",
+                            rel,
+                        )
                     )
-                )
-        if "THEME_REGISTRY_CSV" in content and "if args.project" in content:
-            findings.append(
-                Finding(
-                    "WARNING",
-                    "THEME_REGISTRY_CSV_PRESENT",
-                    "THEME_REGISTRY_CSV remains in file; audit requires it stay outside project-aware primary path.",
-                    str(path),
-                )
-            )
-    return {"hardcoded_output_path_count": hardcoded_count}
+    return {"removed_runtime_reference_count": reference_count}
 
 
 def _audit_existing_outputs(config: Any, findings: list[Finding]) -> None:
@@ -198,13 +131,9 @@ def _audit_existing_outputs(config: Any, findings: list[Finding]) -> None:
         header = _csv_header(path)
         contract = get_output_contract(config, output_type)
         required = set(contract.get("required_fields", []) or [])
-        deprecated = set(contract.get("deprecated_fields", []) or [])
         missing = sorted(required - set(header))
         if missing:
             findings.append(Finding("ERROR", "FORMAL_OUTPUT_REQUIRED_FIELDS_MISSING", f"{output_type} missing fields: {missing}", str(path)))
-        deprecated_present = sorted(deprecated.intersection(header))
-        if deprecated_present:
-            findings.append(Finding("ERROR", "FORMAL_OUTPUT_DEPRECATED_FIELDS", f"{output_type} has deprecated fields: {deprecated_present}", str(path)))
     if not formal_found:
         findings.append(Finding("INFO", "NO_FORMAL_OUTPUT_FILES", "No formal output CSV files found; structural contract audit only."))
 
@@ -245,11 +174,10 @@ def audit_project(project_id: str, write_report: bool = True) -> tuple[list[Find
     output_types = list_output_types(config) if output_schema else []
     contract_counts = _audit_contract_definitions(config, findings) if output_schema else {
         "required_field_count": 0,
-        "deprecated_field_count": 0,
-        "legacy_display_field_count": 0,
+        "optional_field_count": 0,
     }
-    field_status = _audit_run_research_fields(config, findings) if output_schema else {"company_table_contract_status": "error"}
-    path_counts = _audit_paths_and_legacy_calls(findings)
+    field_status = {"output_contract_status": "ok" if output_schema else "error"}
+    path_counts = _audit_removed_runtime_path_calls(findings)
     _audit_existing_outputs(config, findings)
 
     validate_status, validate_path = _validate_outputs_contract_status()
@@ -260,10 +188,9 @@ def audit_project(project_id: str, write_report: bool = True) -> tuple[list[Find
         "project_id": project_id,
         "output_type_count": len(output_types),
         "required_field_count": contract_counts["required_field_count"],
-        "deprecated_field_count": contract_counts["deprecated_field_count"],
-        "legacy_display_field_count": contract_counts["legacy_display_field_count"],
-        "hardcoded_output_path_count": path_counts["hardcoded_output_path_count"],
-        "company_table_contract_status": field_status["company_table_contract_status"],
+        "optional_field_count": contract_counts["optional_field_count"],
+        "removed_runtime_reference_count": path_counts["removed_runtime_reference_count"],
+        "output_contract_status": field_status["output_contract_status"],
         "validate_outputs_contract_status": validate_status,
     }
     if write_report:
@@ -298,10 +225,9 @@ def _write_report(project_id: str, findings: list[Finding], summary: dict[str, A
         f"- INFO: {counts['INFO']}",
         f"- output_type_count: {summary['output_type_count']}",
         f"- required_field_count: {summary['required_field_count']}",
-        f"- deprecated_field_count: {summary['deprecated_field_count']}",
-        f"- legacy_display_field_count: {summary['legacy_display_field_count']}",
-        f"- hardcoded_output_path_count: {summary['hardcoded_output_path_count']}",
-        f"- company_table_contract_status: {summary['company_table_contract_status']}",
+        f"- optional_field_count: {summary['optional_field_count']}",
+        f"- removed_runtime_reference_count: {summary['removed_runtime_reference_count']}",
+        f"- output_contract_status: {summary['output_contract_status']}",
         f"- validate_outputs_contract_status: {summary['validate_outputs_contract_status']}",
         "",
         "## Findings",
@@ -330,10 +256,9 @@ def _print_report(findings: list[Finding], summary: dict[str, Any]) -> None:
     print(f"INFO                             : {counts['INFO']}")
     print(f"output_type_count                : {summary['output_type_count']}")
     print(f"required_field_count             : {summary['required_field_count']}")
-    print(f"deprecated_field_count           : {summary['deprecated_field_count']}")
-    print(f"legacy_display_field_count       : {summary['legacy_display_field_count']}")
-    print(f"hardcoded_output_path_count      : {summary['hardcoded_output_path_count']}")
-    print(f"company_table_contract_status    : {summary['company_table_contract_status']}")
+    print(f"optional_field_count             : {summary['optional_field_count']}")
+    print(f"removed_runtime_reference_count  : {summary['removed_runtime_reference_count']}")
+    print(f"output_contract_status           : {summary['output_contract_status']}")
     print(f"validate_outputs_contract_status : {summary['validate_outputs_contract_status']}")
     print()
     for severity in ["ERROR", "WARNING", "INFO"]:

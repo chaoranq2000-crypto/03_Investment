@@ -1,0 +1,48 @@
+{
+  "schema_version": "tushare_raw_cache.v1",
+  "source": "tushare",
+  "group": "market",
+  "dataset": "daily",
+  "api_name": "daily",
+  "project_id": "tech_ai_semiconductor",
+  "sector_id": "high_speed_copper_connector",
+  "stock": {
+    "stock_code": "000001",
+    "market": "SZ",
+    "ts_code": "000001.SZ",
+    "stock_name": "",
+    "target_key": "000001.SZ"
+  },
+  "request": {
+    "params": {
+      "start_date": "20260626",
+      "end_date": "20260626",
+      "ts_code": "000001.SZ"
+    },
+    "fields": "ts_code,trade_date,open,high,low,close,pre_close,change,pct_chg,vol,amount",
+    "row_limit": 1
+  },
+  "fetched_at": "2026-06-28T18:40:45.500569+00:00",
+  "fetch_status": "ok",
+  "error": "",
+  "row_count": 1,
+  "rows": [
+    {
+      "ts_code": "000001.SZ",
+      "trade_date": "20260626",
+      "open": 10.42,
+      "high": 10.47,
+      "low": 10.19,
+      "close": 10.23,
+      "pre_close": 10.42,
+      "change": -0.19,
+      "pct_chg": -1.8234,
+      "vol": 1236481.64,
+      "amount": 1270902.94786
+    }
+  ],
+  "notes": [
+    "Raw API cache only; do not treat as curated evidence without source-manifest and evidence review.",
+    "Private bridge configuration is intentionally omitted."
+  ]
+}

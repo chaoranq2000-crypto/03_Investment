@@ -153,7 +153,7 @@ def _audit_preview_files(config: Any, findings: list[Finding]) -> dict[str, int]
                 findings.append(Finding("ERROR", "PREVIEW_SCORE_TABLE_RATING_INVALID", "score_table must use preview-only rating.", str(path)))
 
         if "main_theme" in header or "sub_theme" in header:
-            findings.append(Finding("ERROR", "LEGACY_PRIMARY_KEY_IN_PREVIEW", f"{output_type} contains legacy key field.", str(path)))
+            findings.append(Finding("ERROR", "OLD_THEME_KEY_IN_PREVIEW", f"{output_type} contains old theme key field.", str(path)))
 
     card_path = preview_dir / GENERATOR_PREVIEW_FILENAMES["sector_card"]
     if not card_path.exists():

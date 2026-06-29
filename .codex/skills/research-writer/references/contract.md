@@ -25,8 +25,8 @@ In the current simplified flow, candidate generation writes review artifacts und
 ## Acceptance
 
 - CSV headers match pipeline constants.
-- One sub-theme card exists.
-- One comparison row per sub-theme after cleanup.
-- Company rows are deduplicated by `(sub_theme, stock_code)`.
+- One sector card exists for the requested canonical `sector_id`.
+- One comparison row per canonical `sector_id` after cleanup.
+- Company rows are deduplicated by `(sector_id, stock_code)`.
 - Research-grade reports have company-level depth, required sections, and no debug placeholders outside the data-gap section.
 - Research-grade reports cite only source rows that have a local cache path or webpage URL.

@@ -1,2 +1,0 @@
-﻿project_id,output_type,sector_id,stock_code,missing_field,severity,reason,source_ids,notes,stock_name,current_value,suggested_acquisition_path,source_id,evidence_id,evidence_ids,status
-tech_ai_semiconductor,company_table,cpo_optical_module_silicon_photonics,300308.SZ,mock_missing_field,mock,MOCK_ONLY_DO_NOT_USE_FOR_RESEARCH,MOCK-SOURCE-001,MOCK_ONLY_DO_NOT_USE_FOR_RESEARCH,中际旭创,mock,MOCK_ONLY_DO_NOT_USE_FOR_RESEARCH,MOCK-SOURCE-001,MOCK-EVIDENCE-001,MOCK-EVIDENCE-001,mock

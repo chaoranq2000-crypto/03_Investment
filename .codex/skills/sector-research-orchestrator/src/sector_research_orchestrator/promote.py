@@ -79,10 +79,10 @@ def _assert_staging_path(config: ProjectConfig, output_root: Path, path: Path) -
     target = path.resolve()
     root = output_root.resolve()
     formal_root = config.output_root.resolve()
-    legacy_root = (WORKSPACE_ROOT / "科技主线调研输出").resolve()
+    final_publication_root = (WORKSPACE_ROOT / "科技主线调研输出").resolve()
     if not str(target).startswith(str(root)):
         raise RuntimeError(f"gated output path outside requested output_root: {target}")
-    if str(target).startswith(str(formal_root)) or str(target).startswith(str(legacy_root)):
+    if str(target).startswith(str(formal_root)) or str(target).startswith(str(final_publication_root)):
         raise RuntimeError(f"gated output path would write to formal output root: {target}")
 
 

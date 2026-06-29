@@ -103,10 +103,10 @@ def _assert_candidate_path(config: ProjectConfig, path: Path) -> None:
     target = path.resolve()
     candidate_dir = get_formal_candidate_output_dir(config).resolve()
     formal_root = config.output_root.resolve()
-    legacy_output = (WORKSPACE_ROOT / "科技主线调研输出").resolve()
+    final_publication_root = (WORKSPACE_ROOT / "科技主线调研输出").resolve()
     if not str(target).startswith(str(candidate_dir)):
         raise RuntimeError(f"candidate output path is outside formal_candidate_outputs: {target}")
-    if str(target).startswith(str(formal_root)) or str(target).startswith(str(legacy_output)):
+    if str(target).startswith(str(formal_root)) or str(target).startswith(str(final_publication_root)):
         raise RuntimeError(f"candidate output path would write to formal output root: {target}")
 
 
@@ -189,7 +189,7 @@ def _source_type(value: Any) -> str:
     mapping = {
         "market_data": "database",
         "financial_data": "database",
-        "legacy_migrated": "other",
+        "historical_migrated": "other",
         "script_query": "direct_api",
     }
     allowed = {

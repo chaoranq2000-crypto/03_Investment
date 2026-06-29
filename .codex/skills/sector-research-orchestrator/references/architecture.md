@@ -9,9 +9,9 @@ This is the current architecture reference for Codex operators.
 - `investment_system/research/evidence/` is the durable evidence layer.
 - `科技主线调研输出/` is generated formal output, not a source of truth.
 - `.codex/skills/` contains Codex operational guidance; Python scripts do not automatically load these files.
-- `.codex/skills/*/scripts/cli.py` is the preferred human-facing workflow interface in Phase 5; `investment_system.pipelines.*` modules remain compatibility wrappers for one validation cycle.
+- `.codex/skills/*/scripts/cli.py` is the human-facing workflow interface. Removed pipeline wrappers and broad-runner compatibility modules must not be reintroduced.
 
-The active project instance is `tech_ai_semiconductor`. Use canonical `sector_id` as the internal sector key. Treat `main_theme`, `sub_theme`, display names, aliases, and old theme registry rows as compatibility surfaces only.
+The active project instance is `tech_ai_semiconductor`. Use canonical `sector_id` as the internal sector key. Treat display names and aliases as metadata only; they must not drive joins, routing, or output identity.
 
 ## Layer Model
 

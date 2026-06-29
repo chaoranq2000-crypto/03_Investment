@@ -5,9 +5,6 @@ project_ids:
   - tech_ai_semiconductor
 canonical_sector_ids:
   - cpo_optical_module_silicon_photonics
-legacy_sector_ids:
-  - cpo_optical_module
-  - high_speed_optical_modules
 _audit_metadata:
   last_schema_normalized: '2026-06-22'
   source_id_convention_version: '1.1'
@@ -209,9 +206,9 @@ source_index:
 
   # ── Per-Company Curated Evidence Bundles ─────────────────────────────────────
   - source_id: HSOM-BUNDLE-300308-20260619
-    source_type: legacy_migrated
-    title: 中际旭创 legacy company evidence bundle
-    publisher: legacy evidence YAML
+    source_type: historical_migrated
+    title: 中际旭创 historical company evidence bundle
+    publisher: historical evidence YAML
     date: '2026-06-19'
     url: ''
     access_method: yaml_migration
@@ -223,9 +220,9 @@ source_index:
       数据来源: Tencent direct(行情); BaoStock(财务); 年报/研报(基本面); 同花顺一致预期。
       可能bundle数据库、年报、研报和本地缓存引用。
   - source_id: HSOM-BUNDLE-300502-20260619
-    source_type: legacy_migrated
-    title: 新易盛 legacy company evidence bundle
-    publisher: legacy evidence YAML
+    source_type: historical_migrated
+    title: 新易盛 historical company evidence bundle
+    publisher: historical evidence YAML
     date: '2026-06-19'
     url: ''
     access_method: yaml_migration
@@ -237,9 +234,9 @@ source_index:
       数据来源: Tencent direct(行情); BaoStock(财务); 年报(深交所/巨潮); 同花顺一致预期; 山西证券研报。
       可能bundle数据库、年报、研报和本地缓存引用。
   - source_id: HSOM-BUNDLE-300394-20260619
-    source_type: legacy_migrated
-    title: 天孚通信 legacy company evidence bundle
-    publisher: legacy evidence YAML
+    source_type: historical_migrated
+    title: 天孚通信 historical company evidence bundle
+    publisher: historical evidence YAML
     date: '2026-06-19'
     url: ''
     access_method: yaml_migration
@@ -251,9 +248,9 @@ source_index:
       数据来源: Tencent direct(行情); BaoStock(财务); 年报(巨潮); 同花顺一致预期。
       可能bundle数据库、年报、研报和本地缓存引用。
   - source_id: HSOM-BUNDLE-603083-20260619
-    source_type: legacy_migrated
-    title: 剑桥科技 legacy company evidence bundle
-    publisher: legacy evidence YAML
+    source_type: historical_migrated
+    title: 剑桥科技 historical company evidence bundle
+    publisher: historical evidence YAML
     date: '2026-06-19'
     url: ''
     access_method: yaml_migration
@@ -265,9 +262,9 @@ source_index:
       数据来源: Tencent direct(行情); BaoStock(财务); 年报(巨潮); 国泰海通/光大证券研报。
       可能bundle数据库、年报、研报和本地缓存引用。
   - source_id: HSOM-BUNDLE-002281-20260619
-    source_type: legacy_migrated
-    title: 光迅科技 legacy company evidence bundle
-    publisher: legacy evidence YAML
+    source_type: historical_migrated
+    title: 光迅科技 historical company evidence bundle
+    publisher: historical evidence YAML
     date: '2026-06-19'
     url: ''
     access_method: yaml_migration
@@ -279,9 +276,9 @@ source_index:
       数据来源: Tencent direct(行情); BaoStock(财务); 年报(巨潮); 国泰海通研报。
       可能bundle数据库、年报、研报和本地缓存引用。
   - source_id: HSOM-BUNDLE-000988-20260619
-    source_type: legacy_migrated
-    title: 华工科技 legacy company evidence bundle
-    publisher: legacy evidence YAML
+    source_type: historical_migrated
+    title: 华工科技 historical company evidence bundle
+    publisher: historical evidence YAML
     date: '2026-06-19'
     url: ''
     access_method: yaml_migration
@@ -293,9 +290,9 @@ source_index:
       数据来源: Tencent direct(行情); BaoStock(财务); 年报(巨潮); 国海证券研报。
       可能bundle数据库、年报、研报和本地缓存引用。
   - source_id: HSOM-BUNDLE-300570-20260619
-    source_type: legacy_migrated
-    title: 太辰光 legacy company evidence bundle
-    publisher: legacy evidence YAML
+    source_type: historical_migrated
+    title: 太辰光 historical company evidence bundle
+    publisher: historical evidence YAML
     date: '2026-06-19'
     url: ''
     access_method: yaml_migration
@@ -307,9 +304,9 @@ source_index:
       数据来源: Tencent direct(行情); BaoStock(财务); 年报(深交所); 研报(华鑫/国金); 互动易。
       可能bundle数据库、年报、研报和本地缓存引用。
   - source_id: HSOM-BUNDLE-300548-20260619
-    source_type: legacy_migrated
-    title: 博创科技 legacy company evidence bundle
-    publisher: legacy evidence YAML
+    source_type: historical_migrated
+    title: 博创科技 historical company evidence bundle
+    publisher: historical evidence YAML
     date: '2026-06-19'
     url: ''
     access_method: yaml_migration
@@ -323,9 +320,9 @@ source_index:
 
   # ── Sector Comparison Bundle ─────────────────────────────────────────────────
   - source_id: HSOM-COMPARISON-20260619
-    source_type: legacy_migrated
+    source_type: historical_migrated
     title: 光模块/CPO/硅光 横向比较 evidence bundle
-    publisher: legacy evidence YAML
+    publisher: historical evidence YAML
     date: '2026-06-19'
     url: ''
     access_method: yaml_migration
@@ -333,7 +330,7 @@ source_index:
     dataset_ref: ''
     reliability_level: 中
     notes: >
-      Migrated from comparison_override; original source_index_refs retained in legacy field。
+      Migrated from comparison_override; original source_index_refs retained in historical field。
 
   # ── Diagnostic / Error Records (for audit trail) ────────────────────────────
   - source_id: AKSHARE-ERR-001-20260619
@@ -350,21 +347,6 @@ source_index:
       ProxyError/RemoteDisconnected; 禁用代理后仍 RemoteDisconnected。
       endpoint=push2his.eastmoney.com。
       记录为诊断信息，不作为事实来源。
-  - source_id: LEGACY-DISABLED-001-20260619
-    source_type: diagnostic_disabled
-    title: Legacy 已禁用接口记录
-    publisher: Legacy
-    date: '2026-06-19'
-    url: ''
-    access_method: legacy_migration
-    local_path: investment_system/data/raw/diagnostics/legacy_disabled/
-    dataset_ref: ''
-    reliability_level: 高
-    notes: >
-      历史接口记录已移除，不作为本项目事实来源。
-      当前统一数据源使用 BaoStock、Tencent direct、AKShare、Tushare、公告和公开可验证来源。
-      此条目仅作审计追踪，不被任何 evidence_item 引用。
-
   # ── Cross-Reference to optical_components Evidence (for shared CNINFO data) ────
   - source_id: OCFP-CNINFO-SHARED-20260619
     source_type: cross_reference
@@ -401,7 +383,7 @@ evidence_items:
       预测变化: 2026E净利润289.70亿（29家均值）；2027E 506亿；开源预测2028E 750亿；高盛目标价1187元。
       催化剂: CSP资本开支2026预计+53%；800G规模化放量；1.6T量产出货；工信部《AI+通信》政策；深圳推动光模块向1.6T/3.2T升级；LightCounting预测1.6T 2027年需求7100万只。
       风险: 涨幅较大（近6月+148%，PE TTM 101x）；两头在外（汇率/关税风险）；客户集中度高；CPO/LPO路线竞争。
-    evidence_type: legacy_company_override_bundle
+    evidence_type: historical_company_override_bundle
     metrics_supported:
       - revenue_2026E
       - revenue_2027E
@@ -410,7 +392,7 @@ evidence_items:
       - pe_2026E
       - pe_2027E
       - peg_2026E
-      - main_theme_revenue_exposure
+      - sector_revenue_exposure
       - order_or_customer_evidence
       - capacity_progress
       - product_stage
@@ -429,7 +411,7 @@ evidence_items:
       - investment_conclusion
       - position_sizing
       - final_rating
-    notes: Canonical evidence item generated from legacy company_overrides; original field-level values are retained unchanged.
+    notes: Canonical evidence item generated from historical company_overrides; original field-level values are retained unchanged.
 
   - evidence_id: EV-HSOM-COMPANY-300502-001
     source_ids:
@@ -449,7 +431,7 @@ evidence_items:
       预测变化: 2026E净利润189.14亿（19家均值）；2027E 299.47亿；山西证券预测2026E 212亿/2027E 405亿；高盛看好环比增长；山西证券目标价对应PE 32.8x(2026E)。
       催化剂: CSP资本开支2026预计+53%；新易盛1.6T量产；800G市占率提升；工信部/深圳政策加持；供应链物料紧张Q2起逐渐缓解；CSP远期锁定2027年订单。
       风险: PE 42x(2026E)相对合理但近1月+44%加速涌入；客户集中度极高（前5大72.34%）；汇兑损失风险（2026Q1 5.22亿）；两端在外汇率风险。
-    evidence_type: legacy_company_override_bundle
+    evidence_type: historical_company_override_bundle
     metrics_supported:
       - revenue_2026E
       - revenue_2027E
@@ -458,7 +440,7 @@ evidence_items:
       - pe_2026E
       - pe_2027E
       - peg_2026E
-      - main_theme_revenue_exposure
+      - sector_revenue_exposure
       - order_or_customer_evidence
       - capacity_progress
       - product_stage
@@ -477,7 +459,7 @@ evidence_items:
       - investment_conclusion
       - position_sizing
       - final_rating
-    notes: Canonical evidence item generated from legacy company_overrides; original field-level values are retained unchanged.
+    notes: Canonical evidence item generated from historical company_overrides; original field-level values are retained unchanged.
 
   - evidence_id: EV-HSOM-COMPANY-300394-001
     source_ids:
@@ -497,7 +479,7 @@ evidence_items:
       预测变化: 2026E净利润32.62亿（19家均值）；2027E 42.58亿；中信证券预测2026E 33.85亿；天风证券预测2026E 30.51亿；2026Q1 4.92亿同比+46%。
       催化剂: 工信部/深圳政策加持；1.6T规模量产；CPO器件国产替代；薄膜铌酸锂/磷化铟材料景气；数据中心网络升级带动需求。
       风险: PE 80x(2026E)偏高；客户集中度极高（Fabrinet占63.31%）；无源器件竞争激烈（2025年毛利率下滑3.67pct）；Q1毛利率56.6%环比+2.64pct改善。
-    evidence_type: legacy_company_override_bundle
+    evidence_type: historical_company_override_bundle
     metrics_supported:
       - revenue_2026E
       - revenue_2027E
@@ -506,7 +488,7 @@ evidence_items:
       - pe_2026E
       - pe_2027E
       - peg_2026E
-      - main_theme_revenue_exposure
+      - sector_revenue_exposure
       - order_or_customer_evidence
       - capacity_progress
       - product_stage
@@ -525,7 +507,7 @@ evidence_items:
       - investment_conclusion
       - position_sizing
       - final_rating
-    notes: Canonical evidence item generated from legacy company_overrides; original field-level values are retained unchanged.
+    notes: Canonical evidence item generated from historical company_overrides; original field-level values are retained unchanged.
 
   - evidence_id: EV-HSOM-COMPANY-603083-001
     source_ids:
@@ -545,7 +527,7 @@ evidence_items:
       预测变化: 2026E净利润17.72亿（国泰海通）；光大预测2026E 20.72亿；股权激励考核线2026E 3.35亿；2026Q1 1.18亿同比+276%。
       催化剂: 800G规模化放量；1.6T量产进展；CSP资本开支+53%；工信部/深圳政策；马来西亚产能释放。
       风险: PE 43x(2026E)看似便宜但净利润仅2.23亿体量小；1.6T尚未量产；股权激励行权价113.99元（现价214元高管有强动机）；汇兑风险。
-    evidence_type: legacy_company_override_bundle
+    evidence_type: historical_company_override_bundle
     metrics_supported:
       - revenue_2026E
       - revenue_2027E
@@ -554,7 +536,7 @@ evidence_items:
       - pe_2026E
       - pe_2027E
       - peg_2026E
-      - main_theme_revenue_exposure
+      - sector_revenue_exposure
       - order_or_customer_evidence
       - capacity_progress
       - product_stage
@@ -573,7 +555,7 @@ evidence_items:
       - investment_conclusion
       - position_sizing
       - final_rating
-    notes: Canonical evidence item generated from legacy company_overrides; original field-level values are retained unchanged.
+    notes: Canonical evidence item generated from historical company_overrides; original field-level values are retained unchanged.
 
   - evidence_id: EV-HSOM-COMPANY-002281-001
     source_ids:
@@ -593,7 +575,7 @@ evidence_items:
       预测变化: 2026E净利润15.88亿（6家均值）；国泰海通上调至18.70亿；2027E 37.77亿（国泰海通）；2026Q1 2.40亿同比+60%。
       催化剂: CSP资本开支+53%；1.6T订单放量关键节点；3.2T验证进展；国内算力中心建设；工信部/深圳政策。
       风险: PE 207x(TTM)/135x(2026E)极度高估；近6月+327%极度拥挤；3.2T尚未形成规模收入；1.6T放量节奏不确定。
-    evidence_type: legacy_company_override_bundle
+    evidence_type: historical_company_override_bundle
     metrics_supported:
       - revenue_2026E
       - revenue_2027E
@@ -602,7 +584,7 @@ evidence_items:
       - pe_2026E
       - pe_2027E
       - peg_2026E
-      - main_theme_revenue_exposure
+      - sector_revenue_exposure
       - order_or_customer_evidence
       - capacity_progress
       - product_stage
@@ -621,7 +603,7 @@ evidence_items:
       - investment_conclusion
       - position_sizing
       - final_rating
-    notes: Canonical evidence item generated from legacy company_overrides; original field-level values are retained unchanged.
+    notes: Canonical evidence item generated from historical company_overrides; original field-level values are retained unchanged.
 
   - evidence_id: EV-HSOM-COMPANY-000988-001
     source_ids:
@@ -641,7 +623,7 @@ evidence_items:
       预测变化: 2025年实际低于Wind一致预期：营收低于预期12.65%，净利润低于预期19.78%；国海证券预测2026E/2027E PE 53x/39x；目标5年AI相关收入占比60%。
       催化剂: CSP资本开支+53%；1.6T持续放量；2026中报验证；H股上市；工信部/深圳政策；3.2T迭代。
       风险: PE 53x(2026E)相对合理但近6月+145%偏高；光联接占42%而非100%（有其他业务）；实际低于机构预期12-20%；目标AI相关收入占比60%尚未实现。
-    evidence_type: legacy_company_override_bundle
+    evidence_type: historical_company_override_bundle
     metrics_supported:
       - revenue_2026E
       - revenue_2027E
@@ -650,7 +632,7 @@ evidence_items:
       - pe_2026E
       - pe_2027E
       - peg_2026E
-      - main_theme_revenue_exposure
+      - sector_revenue_exposure
       - order_or_customer_evidence
       - capacity_progress
       - product_stage
@@ -669,7 +651,7 @@ evidence_items:
       - investment_conclusion
       - position_sizing
       - final_rating
-    notes: Canonical evidence item generated from legacy company_overrides; original field-level values are retained unchanged.
+    notes: Canonical evidence item generated from historical company_overrides; original field-level values are retained unchanged.
 
   - evidence_id: EV-HSOM-COMPANY-300570-001
     source_ids:
@@ -689,7 +671,7 @@ evidence_items:
       预测变化: 2026E净利润6.17亿（华鑫/国金预测）；国金预测2026E 6.17亿；华鑫预测2027E 4.32亿；Q1 0.66亿同比-17%⚠️。
       催化剂: 数据中心互联需求增长；MPO/光纤连接器景气；光模块放量带动上游需求；康宁扩产10倍（太辰光是其MPO最高份额供应商）。
       风险: ⚠️ Q1净利润-17%（唯一负增长标的）；PE 213x(TTM)/101x(2026E)极度高估；营收增速仅12%（低于板块平均）；规模体量小；PE透支未来3-4年。
-    evidence_type: legacy_company_override_bundle
+    evidence_type: historical_company_override_bundle
     metrics_supported:
       - revenue_2026E
       - revenue_2027E
@@ -698,7 +680,7 @@ evidence_items:
       - pe_2026E
       - pe_2027E
       - peg_2026E
-      - main_theme_revenue_exposure
+      - sector_revenue_exposure
       - order_or_customer_evidence
       - capacity_progress
       - product_stage
@@ -717,7 +699,7 @@ evidence_items:
       - investment_conclusion
       - position_sizing
       - final_rating
-    notes: Canonical evidence item generated from legacy company_overrides; original field-level values are retained unchanged.
+    notes: Canonical evidence item generated from historical company_overrides; original field-level values are retained unchanged.
 
   - evidence_id: EV-HSOM-COMPANY-300548-001
     source_ids:
@@ -737,7 +719,7 @@ evidence_items:
       预测变化: 2026E净利润8.03亿（2家均值）；东北证券预测2026E 10.94亿；5家机构预测2026E均值7亿；2027E 20.41亿（东北）；Q1 1.30亿同比+45%。
       催化剂: 800G规模化放量；高速铜缆需求；OCS布局；CSP资本开支+53%；长芯盛谷歌MPO逐季放量（25年十亿级体量）；CPO交换机配套需求。
       风险: PE 219x(TTM)/102x(2026E)极度高估；Q1增速+45%低于全年目标；净利润体量小(3.35亿)；长芯盛故事强但短期PE透支。
-    evidence_type: legacy_company_override_bundle
+    evidence_type: historical_company_override_bundle
     metrics_supported:
       - revenue_2026E
       - revenue_2027E
@@ -746,7 +728,7 @@ evidence_items:
       - pe_2026E
       - pe_2027E
       - peg_2026E
-      - main_theme_revenue_exposure
+      - sector_revenue_exposure
       - order_or_customer_evidence
       - capacity_progress
       - product_stage
@@ -765,7 +747,7 @@ evidence_items:
       - investment_conclusion
       - position_sizing
       - final_rating
-    notes: Canonical evidence item generated from legacy company_overrides; original field-level values are retained unchanged.
+    notes: Canonical evidence item generated from historical company_overrides; original field-level values are retained unchanged.
 
   # ── Sector-Level Evidence Item ───────────────────────────────────────────────
   - evidence_id: EV-HSOM-SECTOR-COMPARISON-001
@@ -778,10 +760,8 @@ evidence_items:
     subject_id: cpo_optical_module_silicon_photonics
     subject_name: 光模块/CPO/硅光
     claim: 全部8家公司2025年净利润增速40-365%，Q1继续验证。中际旭创800G全球市占>40%、1.6T 50-70%全球第一；新易盛全球首批1.6T量产+ROE72%；天孚通信1.6T光引擎规模量产+CPO配套；光迅3.2T国内头部CSP验证通过；华工800G+1.6T规模化交付+订单排产至2026Q4；工信部/深圳政策催化。
-    evidence_type: legacy_sector_comparison_bundle
+    evidence_type: historical_sector_comparison_bundle
     metrics_supported:
-      - main_theme
-      - sub_theme
       - chain_position
       - industry_logic_summary
       - representative_companies
@@ -809,220 +789,8 @@ evidence_items:
       - investment_conclusion
       - position_sizing
       - final_rating
-    notes: Canonical evidence item generated from legacy comparison_override; scoring/rating fields remain legacy-only until output schema alignment.
+    notes: Canonical evidence item generated from historical comparison_override; scoring/rating fields remain historical-only until output schema alignment.
 
 # ── Legacy Compatibility Block ─────────────────────────────────────────────────
 # Fields below are retained for backward compatibility.
 # Do NOT use them for project-aware primary keys.
-legacy:
-  original_sub_theme: 高速光模块
-  original_grade: research
-  original_top_level_fields:
-    - sub_theme
-    - grade
-    - description
-    - company_overrides
-    - comparison_override
-    - source_rows
-    - logs
-    - card_markdown
-  legacy_only_fields_retained_at_top_level:
-    - sub_theme
-    - grade
-    - description
-    - company_overrides
-    - comparison_override
-    - source_rows
-    - logs
-    - card_markdown
-  migration_note: >
-    Canonical wrapper added in Phase 1E-d-b.
-    Legacy fields are retained for backward compatibility; status remains indexed_existing_evidence
-    and must not be treated as research-grade output.
-  missing_source_metadata_policy: >
-    Do not fabricate missing source metadata.
-    Audit warnings identify empty url fields for local_cache/database sources.
-    These are intentional — BaoStock, Tencent direct, and local cache have no web URLs.
-
-# ── Legacy Data (unchanged from migration) ───────────────────────────────────
-sub_theme: 高速光模块
-grade: research
-description: Curated evidence migrated from the manually enriched high-speed optical module output.
-company_overrides:
-  '300308':
-    revenue_2026E: 793亿+（研报预测）
-    revenue_2027E: '>1000亿'
-    net_profit_2026E: 289.70亿（29家一致预期）
-    net_profit_2027E: 506亿（29家一致预期）
-    pe_2026E: 52x（2026E/收盘价）
-    pe_2027E: 29x（2027E）
-    peg_2026E: 约1.0x
-    main_theme_revenue_exposure: 光通信收发模块占97.95%（含800G/1.6T）；境外收入346.37亿占90.58%；前5大客户占75.98%（含英伟达/谷歌/Meta/MS/亚马逊）
-    order_or_customer_evidence: 800G全球市占率>40%，1.6T市占率50-70%全球第一；前5大客户占75.98%，第一大客户24.06%；1.6T季度出货量环比提升；已锁定2026全年订单
-    capacity_progress: 1.6T季度环比出货提升；3.2T产能准备中；部分原材料供给偏紧张
-    product_stage: 已量产800G/1.6T；3.2T产能准备中
-    institution_forecast_change: 2026E净利润289.70亿（29家均值）；2027E 506亿；开源预测2028E 750亿；高盛目标价1187元
-    catalysts: CSP资本开支2026预计+53%；800G规模化放量；1.6T量产出货；工信部《AI+通信》政策；深圳推动光模块向1.6T/3.2T升级；LightCounting预测1.6T 2027年需求7100万只
-    risks: 涨幅较大（近6月+148%，PE TTM 101x）；两头在外（汇率/关税风险）；客户集中度高；CPO/LPO路线竞争
-    data_source: Tencent direct(行情); BaoStock(财务); 年报/研报(基本面); 同花顺一致预期
-    source_date: '2026-06-19'
-    source_url: investment_system/data/raw/baostock/daily_kline/2026-06-19/300308.json; investment_system/data/raw/baostock/profit/2026-06-19/300308.json; 年报(巨潮); 同花顺机构预期
-    confidence_level: 高
-  '300502':
-    revenue_2026E: 预估300亿+（山西证券预测212亿/19家均值189亿）
-    revenue_2027E: 预估500亿+（19家均值299亿）
-    net_profit_2026E: 189.14亿（19家一致预期）
-    net_profit_2027E: 299.47亿（19家一致预期）
-    pe_2026E: 42x（2026E/收盘价）
-    pe_2027E: 27x（2027E）
-    peg_2026E: 约1.0x
-    main_theme_revenue_exposure: 光互联产品占99.72%（含800G/1.6T）；境外收入238.72亿占96.16%；前5大客户占72.34%，第一大22.97%；800G全球市占25-30%
-    order_or_customer_evidence: 全球少数具备800G以上规模化量产和交付能力的公司之一；全球首批1.6T量产交付；ROE 72.66%；1.6T良率95%+，毛利率50%+
-    capacity_progress: 800G硅光+薄膜铌酸锂双路线；1.6T已量产；泰国工厂二期高效运行；LPO/XPO/NPO/CPO全布局
-    product_stage: 已量产800G/1.6T；全球首批量产1.6T
-    institution_forecast_change: 2026E净利润189.14亿（19家均值）；2027E 299.47亿；山西证券预测2026E 212亿/2027E 405亿；高盛看好环比增长；山西证券目标价对应PE 32.8x(2026E)
-    catalysts: CSP资本开支2026预计+53%；新易盛1.6T量产；800G市占率提升；工信部/深圳政策加持；供应链物料紧张Q2起逐渐缓解；CSP远期锁定2027年订单
-    risks: PE 42x(2026E)相对合理但近1月+44%加速涌入；客户集中度极高（前5大72.34%）；汇兑损失风险（2026Q1 5.22亿）；两端在外汇率风险
-    data_source: Tencent direct(行情); BaoStock(财务); 年报(深交所/巨潮); 同花顺一致预期; 山西证券研报
-    source_date: '2026-06-19'
-    source_url: investment_system/data/raw/baostock/daily_kline/2026-06-19/300502.json; investment_system/data/raw/baostock/profit/2026-06-19/300502.json; 年报(深交所/巨潮); 同花顺一致预期; 山西证券研报
-    confidence_level: 高
-  '300394':
-    revenue_2026E: 约54亿（研报预测）
-    revenue_2027E: 约70亿+（研报预测）
-    net_profit_2026E: 32.62亿（19家一致预期）
-    net_profit_2027E: 42.58亿（19家一致预期）
-    pe_2026E: 80x（2026E/收盘价）
-    pe_2027E: 62x（2027E）
-    peg_2026E: 约1.3x
-    main_theme_revenue_exposure: 光通信元器件100%；境外收入74.35%；前5大客户占89.73%（Fabrinet FN为第一大客户占63.31%）
-    order_or_customer_evidence: Fabrinet为全球顶级光器件代工厂；前5大客户89.73%；1.6T光引擎规模量产；CPO配套器件研发完成；泰国工厂二期已投产
-    capacity_progress: 1.6T光引擎规模量产；CPO配套器件研发完成；泰国工厂二期已投产；外销74.35%
-    product_stage: 已量产1.6T光引擎；CPO配套
-    institution_forecast_change: 2026E净利润32.62亿（19家一致预期）；2027E 42.58亿；中信证券预测2026E 33.85亿；天风证券预测2026E 30.51亿；2026Q1 4.92亿同比+46%
-    catalysts: 工信部/深圳政策加持；1.6T规模量产；CPO器件国产替代；薄膜铌酸锂/磷化铟材料景气；数据中心网络升级带动需求
-    risks: PE 80x(2026E)偏高；客户集中度极高（Fabrinet占63.31%）；无源器件竞争激烈（2025年毛利率下滑3.67pct）；Q1毛利率56.6%环比+2.64pct改善
-    data_source: Tencent direct(行情); BaoStock(财务); 年报(巨潮); 同花顺一致预期
-    source_date: '2026-06-19'
-    source_url: investment_system/data/raw/baostock/daily_kline/2026-06-19/300394.json; investment_system/data/raw/baostock/profit/2026-06-19/300394.json; 年报(巨潮); 同花顺一致预期
-    confidence_level: 高
-  '603083':
-    revenue_2026E: 约65亿（光大预测80亿/国泰海通预测64亿）
-    revenue_2027E: 约100亿+（光大预测114亿/国泰海通预测110亿）
-    net_profit_2026E: 17.72亿（国泰海通）；股权激励考核线3.35亿
-    net_profit_2027E: 33.07亿（国泰海通）
-    pe_2026E: 43x（2026E/收盘价）
-    pe_2027E: 23x（2027E）
-    peg_2026E: 约1.5x
-    main_theme_revenue_exposure: 高速光模块为核心；800G硅光已批量发货；1.6T送样中；马来西亚产能通过大客户认证；H股已上市（港交所主板）
-    order_or_customer_evidence: 高速光模块为核心引擎；800G硅光批量发货；1.6T送样中；马来西亚工厂通过大客户认证；绑定上游光芯片供应商
-    capacity_progress: 马来西亚工厂通过北美大客户认证扩产顺利；1.6T量产节奏视客户认证进度；H股已上市
-    product_stage: 已量产800G硅光；1.6T送样中
-    institution_forecast_change: 2026E净利润17.72亿（国泰海通）；光大预测2026E 20.72亿；股权激励考核线2026E 3.35亿；2026Q1 1.18亿同比+276%
-    catalysts: 800G规模化放量；1.6T量产进展；CSP资本开支+53%；工信部/深圳政策；马来西亚产能释放
-    risks: PE 43x(2026E)看似便宜但净利润仅2.23亿体量小；1.6T尚未量产；股权激励行权价113.99元（现价214元高管有强动机）；汇兑风险
-    data_source: Tencent direct(行情); BaoStock(财务); 年报(巨潮); 国泰海通/光大证券研报
-    source_date: '2026-06-19'
-    source_url: investment_system/data/raw/baostock/daily_kline/2026-06-19/603083.json; investment_system/data/raw/baostock/profit/2026-06-19/603083.json; 年报(巨潮); 国泰海通/光大证券研报
-    confidence_level: 高
-  '002281':
-    revenue_2026E: 约140亿（研报预测）
-    revenue_2027E: 约250亿+（国泰海通预测160亿+）
-    net_profit_2026E: 15.88亿（6家一致预期）；国泰海通预测18.70亿
-    net_profit_2027E: 37.77亿（国泰海通预测），6家均值20.95亿
-    pe_2026E: 135x（2026E/收盘价）
-    pe_2027E: 57x（2027E/国泰海通预测）
-    peg_2026E: '>2.0x'
-    main_theme_revenue_exposure: 数通光模块70.94%（含800G/1.6T）；国内头部CSP为核心；境外31.84亿（+36%）；前5大客户48.49%
-    order_or_customer_evidence: 800G批量出货且占比提升；1.6T批量交付能力具备；3.2T硅光NPO国内头部CSP系统验证通过；合同负债10.95亿（预付款大幅增加）
-    capacity_progress: 1.6T批量交付能力具备（节奏视客户需求）；3.2T验证通过；定增扩产计划；预付款大幅增长反映供应链提前锁定
-    product_stage: 已量产800G；1.6T批量交付能力具备；3.2T验证通过
-    institution_forecast_change: 2026E净利润15.88亿（6家均值）；国泰海通上调至18.70亿；2027E 37.77亿（国泰海通）；2026Q1 2.40亿同比+60%
-    catalysts: CSP资本开支+53%；1.6T订单放量关键节点；3.2T验证进展；国内算力中心建设；工信部/深圳政策
-    risks: PE 207x(TTM)/135x(2026E)极度高估；近6月+327%极度拥挤；3.2T尚未形成规模收入；1.6T放量节奏不确定
-    data_source: Tencent direct(行情); BaoStock(财务); 年报(巨潮); 国泰海通研报
-    source_date: '2026-06-19'
-    source_url: investment_system/data/raw/baostock/daily_kline/2026-06-19/002281.json; investment_system/data/raw/baostock/profit/2026-06-19/002281.json; 年报(巨潮); 国泰海通研报
-    confidence_level: 高
-  '000988':
-    revenue_2026E: 约163亿（国海预测），Wind一致预期约164亿
-    revenue_2027E: 约200亿+（国海预测211亿）
-    net_profit_2026E: 国海预测164亿；Wind一致预期约164亿
-    net_profit_2027E: 国海预测211亿
-    pe_2026E: 53x（2026E/收盘价）
-    pe_2027E: 39x（2027E/收盘价）
-    peg_2026E: 约1.2x
-    main_theme_revenue_exposure: 光联接业务60.97亿（占总收入42.48%，同比+53.39%）；目标5年AI相关营收占比60%；国内头部CSP为主
-    order_or_customer_evidence: 800G硅光LPO+1.6T全球第一梯队规模化交付；3.2T NPO/CPO首发；国内头部CSP+设备商；目标5年AI相关收入>60%；H股已上市
-    capacity_progress: 泰国海外光模块基地竣工投产；武汉光电子信息产业园竣工；1.6T订单排产至2026Q4；H股发行上市推进中（已上市）
-    product_stage: 已量产800G硅光LPO+1.6T；3.2T NPO/CPO首发
-    institution_forecast_change: 2025年实际低于Wind一致预期：营收低于预期12.65%，净利润低于预期19.78%；国海证券预测2026E/2027E PE 53x/39x；目标5年AI相关收入占比60%
-    catalysts: CSP资本开支+53%；1.6T持续放量；2026中报验证；H股上市；工信部/深圳政策；3.2T迭代
-    risks: PE 53x(2026E)相对合理但近6月+145%偏高；光联接占42%而非100%（有其他业务）；实际低于机构预期12-20%；目标AI相关收入占比60%尚未实现
-    data_source: Tencent direct(行情); BaoStock(财务); 年报(巨潮); 国海证券研报
-    source_date: '2026-06-19'
-    source_url: investment_system/data/raw/baostock/daily_kline/2026-06-19/000988.json; investment_system/data/raw/baostock/profit/2026-06-19/000988.json; 年报(巨潮); 国海证券研报
-    confidence_level: 高
-  '300570':
-    revenue_2026E: 约27亿+（华鑫预测28亿/国金预测30亿）
-    revenue_2027E: 约48亿+（国金预测49亿/研报预测43亿）
-    net_profit_2026E: 6.17亿（华鑫/国金预测）；股权激励考核线含营收目标
-    net_profit_2027E: 10.45亿（国金预测），华鑫预测4.32亿
-    pe_2026E: 101x（2026E/收盘价）
-    pe_2027E: 80x（2027E/收盘价）
-    peg_2026E: '>2.0x'
-    main_theme_revenue_exposure: 光连接器件为主；MPO等高密度光互联产品数据中心市场份额领先；境外收入占主要比例；通过康宁间接供应英伟达/微软/谷歌/亚马逊；自供谷歌Shuffle Box小批量
-    order_or_customer_evidence: MPO全球核心玩家；通过康宁(占收入70%)间接供应英伟达/微软/谷歌/亚马逊；Shuffle Box小批量供谷歌；CPO交换机光纤路由柔性板已完成头部客户验证；越南产能爬坡至80%设计产能
-    capacity_progress: 产能稳定；越南基地产能爬坡中；CPO交换机核心器件已头部客户验证；自产MT插芯规模化替代
-    product_stage: 数据中心MPO高密度互联产品；Shuffle Box小批量供谷歌
-    institution_forecast_change: 2026E净利润6.17亿（华鑫/国金预测）；国金预测2026E 6.17亿；华鑫预测2027E 4.32亿；Q1 0.66亿同比-17%⚠️
-    catalysts: 数据中心互联需求增长；MPO/光纤连接器景气；光模块放量带动上游需求；康宁扩产10倍（太辰光是其MPO最高份额供应商）
-    risks: ⚠️ Q1净利润-17%（唯一负增长标的）；PE 213x(TTM)/101x(2026E)极度高估；营收增速仅12%（低于板块平均）；规模体量小；PE透支未来3-4年
-    data_source: Tencent direct(行情); BaoStock(财务); 年报(深交所); 研报(华鑫/国金); 互动易
-    source_date: '2026-06-19'
-    source_url: investment_system/data/raw/baostock/daily_kline/2026-06-19/300570.json; investment_system/data/raw/baostock/profit/2026-06-19/300570.json; 年报(深交所); 研报(华鑫/国金); 互动易
-    confidence_level: 高
-  '300548':
-    revenue_2026E: 约43亿（东北预测70亿/研报均值43亿），2026E 8.03亿（2家均值），2027E 20亿（东北）
-    revenue_2027E: '>40亿+（东北预测70亿/研报均值43亿）'
-    net_profit_2026E: 8.03亿（2家一致预期），东北预测10.94亿
-    net_profit_2027E: 20.41亿（东北预测），10.94亿（东北预测）
-    pe_2026E: 102x（2026E/收盘价）
-    pe_2027E: 40x（2027E/收盘价）
-    peg_2026E: '>2.0x'
-    main_theme_revenue_exposure: 数据通信+消费工业互联业务10.74亿（+87.75%，含400G/800G数通+高速铜缆）；境外59.44%；长芯盛(控股60.45%)为谷歌MPO核心供应商(占谷歌采购30%+)
-    order_or_customer_evidence: 长芯盛为谷歌MPO连接器核心供应商（占谷歌全球采购30%+）；谷歌AOC/MPO等光互联部件；长芯盛通过谷歌认证；800G AEC通过英伟达GB200认证；博创主体400G/800G数通+高速DAC/AEC小批量
-    capacity_progress: 长芯盛成都蓉博工厂2025年6月投产（光模块产能）；印尼三期扩产中；MEMS光开关市场推广；OCS布局
-    product_stage: 400G/800G数通光模块小批量；高速DAC/AEC批量
-    institution_forecast_change: 2026E净利润8.03亿（2家均值）；东北证券预测2026E 10.94亿；5家机构预测2026E均值7亿；2027E 20.41亿（东北）；Q1 1.30亿同比+45%
-    catalysts: 800G规模化放量；高速铜缆需求；OCS布局；CSP资本开支+53%；长芯盛谷歌MPO逐季放量（25年十亿级体量）；CPO交换机配套需求
-    risks: PE 219x(TTM)/102x(2026E)极度高估；Q1增速+45%低于全年目标；净利润体量小(3.35亿)；长芯盛故事强但短期PE透支
-    data_source: Tencent direct(行情); BaoStock(财务); 年报(巨潮); 研报(东北/中信/华泰/国盛/大摩); 互动易
-    source_date: '2026-06-19'
-    source_url: investment_system/data/raw/baostock/daily_kline/2026-06-19/300548.json; investment_system/data/raw/baostock/profit/2026-06-19/300548.json; 年报(巨潮); 研报(东北/中信/华泰/国盛/大摩); 互动易
-    confidence_level: 中高
-comparison_override:
-  main_theme: AI算力硬件
-  sub_theme: 高速光模块
-  chain_position: 中游核心
-  industry_logic_summary: >
-    AI训练与推理集群带动数据中心高速互联升级，是当前AI硬件链最强兑现环节之一。
-    2025年净利润增速：中际旭创+109%、新易盛+236%、博创+365%、光迅+43%。
-    CSP资本开支2026预计+53%，800G规模化放量，1.6T已量产或具备交付能力。
-    工信部2026年6月《AI+通信》政策加持，深圳推动光模块向1.6T/3.2T升级。
-  representative_companies: 中际旭创、新易盛、天孚通信、剑桥科技，光迅科技、华工科技、太辰光、博创科技
-  performance_stage_score: '4'
-  industry_prosperity_score: '5'
-  upside_score: '4'
-  bubble_safety_score: '2'
-  fund_recognition_score: '5'
-  catalyst_score: '5'
-  total_score: '65'
-  recommended_next_action: 首选新易盛(PE53x+增速最快+全球首批1.6T量产)和中际旭创(1.6T全球市占50-70%+龙头确定性最高)；次选华工科技(订单排产至2026Q4)和天孚通信(毛利最高53%+1.6T光引擎量产)；光迅科技近3月+220%极度拥挤等待估值消化
-  key_evidence: 全部8家公司2025年净利润增速40-365%，Q1继续验证。中际旭创800G全球市占>40%、1.6T 50-70%全球第一；新易盛全球首批1.6T量产+ROE72%；天孚通信1.6T光引擎规模量产+CPO配套；光迅3.2T国内头部CSP验证通过；华工800G+1.6T规模化交付+订单排产至2026Q4；工信部/深圳政策催化。
-  key_risks: 板块整体涨幅过大（光迅+327%、太辰+142%、中际+148%），PE中位数超150x，拥挤度极高；华工科技2025年低于机构预期；光迅/太辰/博创/剑桥PE>200x，赔率不足
-  missing_data: 各公司800G/1.6T具体收入占比（部分未公开）；2026E/2027E机构一致预期（仅华工有）；PE/PB历史分位；2026Q1净利润（部分缺失）；博创/太辰/剑桥具体客户名称
-  source_index_refs: TENCENT-DAILY-HSOM-20260619; BAO-PROFIT-HSOM-20260619; 年报/研报基本面核实
-source_rows: []
-logs: {}
-card_markdown: ''

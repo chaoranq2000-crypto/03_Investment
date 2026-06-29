@@ -27,7 +27,7 @@ top_level_fields:
     required: true
     enum:
       - indexed_existing_evidence
-      - migrated_legacy_evidence
+      - migrated_historical_evidence
       - schema_normalized
       - pending_source_verification
     description: Must not be completed/research-grade by default.
@@ -38,10 +38,6 @@ top_level_fields:
     type: list[string]
     required: true
     description: Canonical sector_id values from sector_universe.yaml.
-  legacy_sector_ids:
-    type: list[string]
-    required: false
-    description: Legacy ids retained for migration compatibility only.
 
 source_index:
   type: list[object]
@@ -161,10 +157,3 @@ evidence_items:
     notes:
       type: string
       required: false
-
-legacy:
-  type: object
-  required: false
-  description: >
-    Preserves old theme names, old field names, old grading labels, and notes on
-    legacy-only structures that remain at top level for backward compatibility.

@@ -1,6 +1,8 @@
-# Unified data source registry.
+# Runtime data-source policy and diagnostics config.
 # Copy to data_sources.local.toml if you need local overrides.
 # Keep secrets in environment variables, not in this file.
+# Tushare endpoint/dataset registry is skill-owned:
+# .codex/skills/market-data-router/src/tushare_data_router/datasets.py
 
 [runtime]
 default_timezone = "Asia/Shanghai"
@@ -19,7 +21,9 @@ cache_policy = "batch_then_cache"
 default_ttl_seconds = 86400
 rate_limit_seconds = 2.0
 max_retries = 3
-notes = "Use for A-share spot, daily kline, financial statements, and low-frequency data. Avoid full-market realtime hard pulls. The unified Conda runtime is the only supported runtime."
+rate_limit_seconds_public_web = 8.0
+rate_limit_jitter_seconds_public_web = 4.0
+notes = "Compatibility fallback for small-batch public-web gaps. Avoid full-market realtime hard pulls; Eastmoney-like public endpoints should use 8-12s total wait."
 
 [baostock]
 enabled = true
@@ -40,18 +44,34 @@ requires_token = true
 token_env = "TUSHARE_TOKEN"
 http_url_env = "TUSHARE_HTTP_URL"
 disable_proxy_env = "TUSHARE_DISABLE_PROXY"
+request_interval_env = "TUSHARE_REQUEST_INTERVAL_SECONDS"
+request_jitter_env = "TUSHARE_REQUEST_JITTER_SECONDS"
 python = "C:/Projects/03_Investment/.conda/investment-system/python.exe"
 module_check = "tushare"
-cache_policy = "query_then_snapshot"
-rate_limit_seconds = 1.0
+cache_policy = "query_then_raw_envelope"
+rate_limit_seconds = 0.7
+rate_limit_jitter_seconds = 0.2
 max_retries = 2
-notes = "Use Tushare Pro through the configured HTTP bridge endpoint. Keep token in investment_system/config/.env.local."
+notes = "Primary structured data source through the configured HTTP bridge endpoint. Keep token in investment_system/config/.env.local and never write it to cache/manifests."
 
+# Policy only. Concrete Tushare endpoints and fields live in the skill-owned
+# DatasetSpec registry, not in this file.
 [priority]
-realtime_quote = ["akshare", "tushare"]
-daily_kline = ["baostock", "akshare", "tushare"]
-adjustment_factor = ["baostock", "akshare", "tushare"]
-stock_basic = ["baostock", "akshare", "tushare"]
-financial_statement = ["baostock", "akshare", "tushare"]
-fund_flow = ["akshare"]
-stock_screening = ["baostock", "akshare", "tushare"]
+realtime_quote = ["tencent", "tushare", "akshare"]
+daily_kline = ["tushare", "tencent", "baostock", "akshare"]
+adjustment_factor = ["tushare", "baostock", "akshare"]
+stock_basic = ["tushare", "baostock", "akshare"]
+financial_statement = ["tushare", "company_report", "baostock", "akshare"]
+fund_flow = ["tushare", "eastmoney_public_web", "akshare"]
+stock_screening = ["tushare", "tencent", "baostock", "akshare"]
+evidence_index = ["tushare", "cninfo", "exchange_qa", "eastmoney_public_web"]
+forecast = ["tushare", "curated_broker_report", "user_provided", "public_web"]
+
+[skill_boundaries]
+dataset_registry = ".codex/skills/market-data-router/src/tushare_data_router/datasets.py"
+raw_cache_helpers = ".codex/skills/market-data-router/src/tushare_data_router/raw_cache.py"
+rate_limit_helpers = ".codex/skills/market-data-router/src/tushare_data_router/rate_limit.py"
+notes = [
+  "investment_system/core/data_sources keeps connection facades and diagnostics.",
+  "Skill modules own dataset coverage, raw-cache envelopes, and source-manifest handoff.",
+]

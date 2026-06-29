@@ -1,0 +1,269 @@
+# Scoring Rules — tech_ai_semiconductor
+# Sector Build-Position Score Model
+# All scores require a reason field — no bare numbers without explanation.
+# Rule: high price run-up does NOT increase scores; it may decrease trading_comfort.
+# Rule: high valuation MUST decrease valuation_score; bubbles must be reflected.
+
+score_model: sector_build_position_score
+version: "1"
+created_date: "2026-06-20"
+
+# ── Seven-Dimension Weight Model ────────────────────────────────────────────
+# Weights must sum to 1.0 (100%)
+# Rationale: 景气度+业绩确定性 = 40% (最重要的基本面因子)
+#           估值性价比 = 20% (安全边际)
+#           筹码舒适度 = 15% (择时因子)
+#           催化剂强度 = 10% (未来催化)
+#           产业纯度 = 10% (避免蹭概念)
+#           风险可控性 = 5%  (风控底线)
+
+dimensions:
+  prosperity:
+    name: 景气度
+    weight: 0.20
+    description: >
+      产业需求强度、订单可见性、产能扩张进度、价格趋势、资本开支规模。
+      评分标准（满分10）：
+      10 — 需求爆发且订单能见度超12个月
+      8-9 — 需求高增，订单可见度6-12个月
+      6-7 — 需求稳定，订单可见度3-6个月
+      4-5 — 需求平稳但有不确定性
+      2-3 — 需求下行或高度不确定
+      0-1 — 需求明显下滑
+    # Evidence signals for scoring:
+    evidence_signals:
+      positive:
+        - 客户合同负债环比大幅提升
+        - 产能利用率持续处于高位
+        - 季度新增订单创历史新高
+        - 资本开支指引上调
+        - 价格指数持续上行
+      negative:
+        - 产能利用率下降
+        - 订单环比下滑
+        - 客户去库存
+        - 资本开支指引下调
+
+  earnings_certainty:
+    name: 业绩确定性
+    weight: 0.20
+    description: >
+      收入利润兑现质量、毛利率趋势、预测上修频率、客户集中度。
+      评分标准（满分10）：
+      10 — 连续2+年超预期，预测持续上修，毛利率稳定或提升
+      8-9 — 连续高增，有上调，验证充分
+      6-7 — 增长确定但未超预期，或有一定波动
+      4-5 — 增速放缓或存在不确定性
+      2-3 — 业绩预测大幅下修或高度不确定
+      0-1 — 业绩明显低于预期或持续亏损
+    evidence_signals:
+      positive:
+        - 季度营收/净利润连续超预期
+        - 毛利率环比提升
+        - 预测被持续上调
+        - 预收/合同负债大幅增长
+      negative:
+        - 季度营收/净利润低于预期
+        - 毛利率持续下滑
+        - 预测被下调
+        - 应收账款异常增长
+
+  valuation:
+    name: 估值性价比
+    weight: 0.20
+    description: >
+      PE、PEG、PS 与增速的匹配度；历史分位；与同行比较。
+      评分标准（满分10）：
+      10 — PEG<0.8且处于历史低位
+      8-9 — PEG约1x且处于历史中低位
+      6-7 — PEG 1-1.5x，处于历史中位
+      4-5 — PEG 1.5-2x，处于历史高位
+      2-3 — PEG>2x或处于历史极高水位（PE>200x）
+      0-1 — 估值极度透支（PE>300x且无高增速支撑）
+    critical_rules:
+      - 若 PE_TTM > 200x，必须 ≤3分，无论增速多高
+      - 若 PE_2026E > 150x，必须 ≤4分
+      - 若涨幅 > 200% 且无业绩上修，估值评分上限 ≤2分
+      - 若 PEG > 2.0，估值评分上限 ≤3分
+    evidence_signals:
+      positive:
+        - PE处于历史10年20%分位以下
+        - PEG<1x
+        - 预测被持续上调而PE未跟涨
+      negative:
+        - PE处于历史10年80%分位以上
+        - PEG>1.5x
+        - 涨幅远超业绩增速
+
+  trading_comfort:
+    name: 筹码舒适度
+    weight: 0.15
+    description: >
+      近1/3/6月涨幅、换手率、成交额变化、均线偏离度、拥挤度。
+      注意：涨幅大≠好机会，反而需要降低筹码舒适度评分。
+      评分标准（满分10）：
+      10 — 近6月涨幅 < 20%，量能稳定
+      8-9 — 近6月涨幅 20-50%，量能温和
+      6-7 — 近6月涨幅 50-100%，需关注拥挤度
+      4-5 — 近6月涨幅 100-200%，拥挤度高
+      2-3 — 近6月涨幅 200-300%，极度拥挤
+      0-1 — 近6月涨幅 > 300%，危险区域
+    critical_rules:
+      - 近6月涨幅 > 200% 且机构持仓集中 → 最高3分
+      - 近6月涨幅 > 300% → 最高2分
+      - 出现放量滞涨 → 直接扣至2分以下
+      - 成交额历史高位但股价无力 → 最高2分
+    evidence_signals:
+      positive:
+        - 均线多头排列但涨幅可控
+        - 机构持仓比例适中
+        - 融资融券余额未异常放大
+      negative:
+        - 近6月涨幅 > 100%
+        - 融资余额大幅增加
+        - 机构持仓高度集中
+        - 出现放量滞涨或高位放量
+
+  catalyst:
+    name: 催化剂强度
+    weight: 0.10
+    description: >
+      未来1-6个月内的产业/政策/业绩/事件催化及可见性。
+      评分标准（满分10）：
+      10 — 有明确时间节点的高确定性催化（财报/大单/政策）
+      8-9 — 有2+项具体催化，时间可见
+      6-7 — 有1-2项具体催化
+      4-5 — 催化存在但时间不确定
+      2-3 — 仅有叙事性催化，无具体时间
+      0-1 — 无明确催化或叙事已过度反应
+    evidence_signals:
+      positive:
+        - 财报发布在即且预期高增
+        - 客户大单公告
+        - 政策文件明确规定
+        - 产能爬坡节点在即
+      negative:
+        - 催化已落地或过度反应
+        - 催化时间不确定
+        - 仅有叙事性利好
+
+  purity:
+    name: 产业纯度
+    weight: 0.10
+    description: >
+      主营相关度、收入占比、客户验证。
+      评分标准（满分10）：
+      10 — 主营完全贴合，AI相关收入>90%，有客户公告
+      8-9 — 主营高度贴合，AI收入>70%，有直接客户证据
+      6-7 — 主营相关，AI收入40-70%，有间接证据
+      4-5 — 有相关业务但占比低，或收入暴露不透明
+      2-3 — 蹭概念嫌疑，AI收入<20%且无客户证据
+      0-1 — 主营业务与AI完全无关
+    evidence_signals:
+      positive:
+        - 年报/公告明确披露AI相关收入占比
+        - 直接客户名称可核实
+        - 前5大客户均为AI产业链
+      negative:
+        - AI收入占比<20%
+        - 仅有概念沾边
+        - 客户穿透无法核实
+
+  risk_control:
+    name: 风险可控性
+    weight: 0.05
+    description: >
+      估值风险、供给风险、技术路线风险、客户集中风险、证伪概率。
+      注意：此维度为扣分方向，5%=极低权重，但风险失控可能导致全部投资失败。
+      评分标准（满分10）：
+      10 — 几乎无显著风险
+      8-9 — 风险低且可量化管理
+      6-7 — 存在1-2项可跟踪风险
+      4-5 — 存在多项风险但有跟踪机制
+      2-3 — 风险较高或难以跟踪（技术路线、证伪风险）
+      0-1 — 风险极高（高度集中、路线替代风险、证伪信号已出现）
+    critical_rules:
+      - 证伪信号已出现 → 风险评分 ≤2分
+      - 客户集中度>80% → 最高5分
+      - 技术路线替代风险已出现 → 最高3分
+    evidence_signals:
+      positive:
+        - 客户分散（前5大<50%）
+        - 无明显技术路线替代风险
+        - 无证伪信号
+        - 供应链多元化
+      negative:
+        - 前5大客户>80%
+        - 技术路线替代风险已出现
+        - 证伪信号已出现（订单放缓、毛利率下滑等）
+
+# ── Rating Thresholds ────────────────────────────────────────────────────────
+# Total score is weighted sum of all 7 dimensions (max 10.0)
+
+ratings:
+  A:
+    name: 优先建仓
+    min_total_score: 7.5
+    required:
+      prosperity: 7
+      earnings_certainty: 7
+      valuation: 6
+      trading_comfort: 6
+    description: >
+      景气度高、业绩确定、估值合理、筹码舒适。
+      可作为核心持仓配置。
+
+  B:
+    name: 逻辑强但等回调
+    min_total_score: 7.0
+    required:
+      prosperity: 7
+      earnings_certainty: 6
+      valuation: 5
+    description: >
+      产业逻辑强，业绩有支撑，但当前估值偏高或筹码拥挤。
+      建议等回调后再建仓，观察估值回归合理区间。
+
+  C:
+    name: 低位但需验证
+    min_total_score: 6.0
+    required:
+      prosperity: 5
+      earnings_certainty: 5
+    description: >
+      估值低或筹码舒适，但景气度或业绩存在不确定性。
+      建议轻仓或观察，等待进一步验证信号后再加仓。
+
+  D:
+    name: 只买龙头
+    min_total_score: 5.5
+    required:
+      purity: 7
+      prosperity: 5
+    description: >
+      板块逻辑存在但整体拥挤或估值高，只能配置纯度高、
+      确定性最强的龙头，且仓位需控制。
+
+  E:
+    name: 暂不参与
+    min_total_score: 0
+    description: >
+      估值极度透支、筹码极度拥挤、证伪信号出现、
+      或产业逻辑存在根本性问题。不参与或清仓。
+
+# ── Score Output Format ────────────────────────────────────────────────────
+# Every score output must include:
+score_output_format:
+  required_fields:
+    - dimension
+    - score
+    - reason
+    - evidence_summary
+    - max_score_possible
+  forbidden:
+    - bare_number_without_reason
+    - score_increased_due_to_high_price_run_up
+  missing_data_handling: >
+    若关键字段缺失（如PE历史分位未查到），
+    评分时必须假设最保守情况处理，并在reason中说明缺失项。
+    不能因为数据缺失而默认满分。

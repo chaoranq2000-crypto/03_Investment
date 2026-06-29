@@ -1,2 +1,0 @@
-﻿project_id,source_id,subject_type,subject_id,subject_name,sector_id,claim_supported,source_type,source_title,source_date,url_or_path,confidence,evidence_ids,extracted_fields,notes,access_status,retrieved_date
-tech_ai_semiconductor,MOCK-SOURCE-001,sector,cpo_optical_module_silicon_photonics,光模块/CPO/硅光,cpo_optical_module_silicon_photonics,MOCK_ONLY_DO_NOT_USE_FOR_RESEARCH,other,MOCK_ONLY_DO_NOT_USE_FOR_RESEARCH,mock_date,audits/mock_outputs/mock_source_index.csv,mock,MOCK-EVIDENCE-001,mock,MOCK_ONLY_DO_NOT_USE_FOR_RESEARCH,mock,mock_date

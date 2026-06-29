@@ -5,9 +5,6 @@ project_ids:
   - tech_ai_semiconductor
 canonical_sector_ids:
   - optical_chip_components
-legacy_sector_ids:
-  - optical_components
-  - optical_components_fau_precision_optics
 _audit_metadata:
   last_schema_normalized: '2026-06-22'
   source_id_convention_version: '1.1'
@@ -146,9 +143,9 @@ source_index:
 
   # ── Per-Company Curated Evidence Bundles ─────────────────────────────────────
   - source_id: OCFP-BUNDLE-300394-20260407
-    source_type: legacy_migrated
-    title: 天孚通信 legacy company evidence bundle
-    publisher: legacy evidence YAML
+    source_type: historical_migrated
+    title: 天孚通信 historical company evidence bundle
+    publisher: historical evidence YAML
     date: '2026-04-07'
     url: http://static.cninfo.com.cn/finalpage/2026-04-08/1225082705.PDF
     access_method: yaml_migration
@@ -160,9 +157,9 @@ source_index:
       数据来源: BaoStock 行情/财务; CNINFO 2025年年度报告; 本地 PDF 摘录。
       可能 bundle 数据库、年报、研报和本地缓存引用。
   - source_id: OCFP-BUNDLE-300570-20260330
-    source_type: legacy_migrated
-    title: 太辰光 legacy company evidence bundle
-    publisher: legacy evidence YAML
+    source_type: historical_migrated
+    title: 太辰光 historical company evidence bundle
+    publisher: historical evidence YAML
     date: '2026-03-30'
     url: http://static.cninfo.com.cn/finalpage/2026-03-31/1225061015.PDF
     access_method: yaml_migration
@@ -174,9 +171,9 @@ source_index:
       数据来源: BaoStock 行情/财务; CNINFO 2025年年度报告; 本地 PDF 摘录。
       可能 bundle 数据库、年报、研报和本地缓存引用。
   - source_id: OCFP-BUNDLE-688195-20260424
-    source_type: legacy_migrated
-    title: 腾景科技 legacy company evidence bundle
-    publisher: legacy evidence YAML
+    source_type: historical_migrated
+    title: 腾景科技 historical company evidence bundle
+    publisher: historical evidence YAML
     date: '2026-04-24'
     url: http://static.cninfo.com.cn/finalpage/2026-04-25/1225177429.PDF
     access_method: yaml_migration
@@ -188,9 +185,9 @@ source_index:
       数据来源: BaoStock 行情/财务; CNINFO 2025年年度报告; 本地 PDF 摘录。
       可能 bundle 数据库、年报、研报和本地缓存引用。
   - source_id: OCFP-BUNDLE-300620-20260323
-    source_type: legacy_migrated
-    title: 光库科技 legacy company evidence bundle
-    publisher: legacy evidence YAML
+    source_type: historical_migrated
+    title: 光库科技 historical company evidence bundle
+    publisher: historical evidence YAML
     date: '2026-03-23'
     url: http://static.cninfo.com.cn/finalpage/2026-03-24/1225026091.PDF
     access_method: yaml_migration
@@ -202,9 +199,9 @@ source_index:
       数据来源: BaoStock 行情/财务; CNINFO 2025年年度报告; 本地 PDF 摘录。
       可能 bundle 数据库、年报、研报和本地缓存引用。
   - source_id: OCFP-BUNDLE-688025-20260327
-    source_type: legacy_migrated
-    title: 杰普特 legacy company evidence bundle
-    publisher: legacy evidence YAML
+    source_type: historical_migrated
+    title: 杰普特 historical company evidence bundle
+    publisher: historical evidence YAML
     date: '2026-03-27'
     url: http://static.cninfo.com.cn/finalpage/2026-03-28/1225048090.PDF
     access_method: yaml_migration
@@ -216,9 +213,9 @@ source_index:
       数据来源: BaoStock 行情/财务; CNINFO 2025年年度报告; 本地 PDF 摘录。
       可能 bundle 数据库、年报、研报和本地缓存引用。
   - source_id: OCFP-BUNDLE-688127-20260316
-    source_type: legacy_migrated
-    title: 蓝特光学 legacy company evidence bundle
-    publisher: legacy evidence YAML
+    source_type: historical_migrated
+    title: 蓝特光学 historical company evidence bundle
+    publisher: historical evidence YAML
     date: '2026-03-16'
     url: http://static.cninfo.com.cn/finalpage/2026-03-17/1225013060.PDF
     access_method: yaml_migration
@@ -232,9 +229,9 @@ source_index:
 
   # ── Sector Comparison Bundle ─────────────────────────────────────────────────
   - source_id: OCFP-COMPARISON-20260620
-    source_type: legacy_migrated
+    source_type: historical_migrated
     title: 光芯片/激光器/光器件 横向比较 evidence bundle
-    publisher: legacy evidence YAML
+    publisher: historical evidence YAML
     date: '2026-06-20'
     url: ''
     access_method: yaml_migration
@@ -242,7 +239,7 @@ source_index:
     dataset_ref: ''
     reliability_level: 中
     notes: >
-      Migrated from comparison_override; original source_index_refs retained in legacy field。
+      Migrated from comparison_override; original source_index_refs retained in historical field。
 
   # ── Evidence YAML Self-Reference ─────────────────────────────────────────────
   - source_id: EVIDENCE-YAML-OCFP-20260620
@@ -296,7 +293,7 @@ evidence_items:
       预测变化: 未取得 Wind/iFind/同花顺可索引一致预期；不将单一市场传闻写入正文。
       催化剂: AI算力资本开支、数据中心建设、CPO技术升级，高速光引擎募投项目收入提升。
       风险: 客户集中、产品技术升级、泰国工厂爬坡成本，光器件价格竞争和毛利率下行。
-    evidence_type: legacy_company_override_bundle
+    evidence_type: historical_company_override_bundle
     metrics_supported:
       - revenue_2026E
       - revenue_2027E
@@ -305,7 +302,7 @@ evidence_items:
       - pe_2026E
       - pe_2027E
       - peg_2026E
-      - main_theme_revenue_exposure
+      - sector_revenue_exposure
       - order_or_customer_evidence
       - capacity_progress
       - product_stage
@@ -324,7 +321,7 @@ evidence_items:
       - investment_conclusion
       - position_sizing
       - final_rating
-    notes: Canonical evidence item generated from legacy company_overrides; original field-level values are retained unchanged.
+    notes: Canonical evidence item generated from historical company_overrides; original field-level values are retained unchanged.
 
   - evidence_id: EV-OCFP-COMPANY-300570-001
     source_ids:
@@ -344,7 +341,7 @@ evidence_items:
       预测变化: 未取得 Wind/iFind/同花顺可索引一致预期；不将单一市场传闻写入正文。
       催化剂: 算力与云计算数据中心建设、高密度光纤连接器需求，光模块上游传导。
       风险: 近6月涨幅和PE均高，客户穿透证据不足，若订单兑现慢于股价预期则估值压力大。
-    evidence_type: legacy_company_override_bundle
+    evidence_type: historical_company_override_bundle
     metrics_supported:
       - revenue_2026E
       - revenue_2027E
@@ -353,7 +350,7 @@ evidence_items:
       - pe_2026E
       - pe_2027E
       - peg_2026E
-      - main_theme_revenue_exposure
+      - sector_revenue_exposure
       - order_or_customer_evidence
       - capacity_progress
       - product_stage
@@ -372,7 +369,7 @@ evidence_items:
       - investment_conclusion
       - position_sizing
       - final_rating
-    notes: Canonical evidence item generated from legacy company_overrides; original field-level values are retained unchanged.
+    notes: Canonical evidence item generated from historical company_overrides; original field-level values are retained unchanged.
 
   - evidence_id: EV-OCFP-COMPANY-688195-001
     source_ids:
@@ -392,7 +389,7 @@ evidence_items:
       预测变化: 未取得 Wind/iFind/同花顺可索引一致预期；不将单一市场传闻写入正文。
       催化剂: OCS光交换、硅光/CPO、AI算力高速光互联、北美光测试仪器业务。
       风险: PE和PS处于高位，收入体量小，若高速光模块无源元组件持续性不足，估值容易回撤。
-    evidence_type: legacy_company_override_bundle
+    evidence_type: historical_company_override_bundle
     metrics_supported:
       - revenue_2026E
       - revenue_2027E
@@ -401,7 +398,7 @@ evidence_items:
       - pe_2026E
       - pe_2027E
       - peg_2026E
-      - main_theme_revenue_exposure
+      - sector_revenue_exposure
       - order_or_customer_evidence
       - capacity_progress
       - product_stage
@@ -420,7 +417,7 @@ evidence_items:
       - investment_conclusion
       - position_sizing
       - final_rating
-    notes: Canonical evidence item generated from legacy company_overrides; original field-level values are retained unchanged.
+    notes: Canonical evidence item generated from historical company_overrides; original field-level values are retained unchanged.
 
   - evidence_id: EV-OCFP-COMPANY-300620-001
     source_ids:
@@ -440,7 +437,7 @@ evidence_items:
       预测变化: 未取得 Wind/iFind/同花顺可索引一致预期；不将单一市场传闻写入正文。
       催化剂: 1.6T以上光模块、CPO、薄膜铌酸锂、超高速数据中心、AI和超算中心建设。
       风险: PE TTM极高，年报口径下部分利润字段仍需复核，薄膜铌酸锂和泰国产能爬坡若不达预期会放大估值波动。
-    evidence_type: legacy_company_override_bundle
+    evidence_type: historical_company_override_bundle
     metrics_supported:
       - revenue_2026E
       - revenue_2027E
@@ -449,7 +446,7 @@ evidence_items:
       - pe_2026E
       - pe_2027E
       - peg_2026E
-      - main_theme_revenue_exposure
+      - sector_revenue_exposure
       - order_or_customer_evidence
       - capacity_progress
       - product_stage
@@ -468,7 +465,7 @@ evidence_items:
       - investment_conclusion
       - position_sizing
       - final_rating
-    notes: Canonical evidence item generated from legacy company_overrides; original field-level values are retained unchanged.
+    notes: Canonical evidence item generated from historical company_overrides; original field-level values are retained unchanged.
 
   - evidence_id: EV-OCFP-COMPANY-688025-001
     source_ids:
@@ -488,7 +485,7 @@ evidence_items:
       预测变化: 未取得 Wind/iFind/同花顺可索引一致预期；不将单一市场传闻写入正文。
       催化剂: MPO/MMC、FAU、数据中心光连接需求、CPO带来内部光纤通道数量提升。
       风险: 公司整体业务更偏激光器和装备，光通信收入占比若提升不及预期，主线映射会弱于市场叙事。
-    evidence_type: legacy_company_override_bundle
+    evidence_type: historical_company_override_bundle
     metrics_supported:
       - revenue_2026E
       - revenue_2027E
@@ -497,7 +494,7 @@ evidence_items:
       - pe_2026E
       - pe_2027E
       - peg_2026E
-      - main_theme_revenue_exposure
+      - sector_revenue_exposure
       - order_or_customer_evidence
       - capacity_progress
       - product_stage
@@ -516,7 +513,7 @@ evidence_items:
       - investment_conclusion
       - position_sizing
       - final_rating
-    notes: Canonical evidence item generated from legacy company_overrides; original field-level values are retained unchanged.
+    notes: Canonical evidence item generated from historical company_overrides; original field-level values are retained unchanged.
 
   - evidence_id: EV-OCFP-COMPANY-688127-001
     source_ids:
@@ -536,7 +533,7 @@ evidence_items:
       预测变化: 未取得 Wind/iFind/同花顺可索引一致预期；不将单一市场传闻写入正文。
       催化剂: 硅光/CPO对准直透镜、微透镜、镀膜和光学晶圆工艺提出更高要求。
       风险: 消费电子、车载和显示类业务影响较大，AI光通信收入暴露不透明，容易被主题估值牵引。
-    evidence_type: legacy_company_override_bundle
+    evidence_type: historical_company_override_bundle
     metrics_supported:
       - revenue_2026E
       - revenue_2027E
@@ -545,7 +542,7 @@ evidence_items:
       - pe_2026E
       - pe_2027E
       - peg_2026E
-      - main_theme_revenue_exposure
+      - sector_revenue_exposure
       - order_or_customer_evidence
       - capacity_progress
       - product_stage
@@ -564,7 +561,7 @@ evidence_items:
       - investment_conclusion
       - position_sizing
       - final_rating
-    notes: Canonical evidence item generated from legacy company_overrides; original field-level values are retained unchanged.
+    notes: Canonical evidence item generated from historical company_overrides; original field-level values are retained unchanged.
 
   # ── Sector-Level Evidence Item ───────────────────────────────────────────────
   - evidence_id: EV-OCFP-SECTOR-COMPARISON-001
@@ -577,10 +574,8 @@ evidence_items:
     subject_id: optical_chip_components
     subject_name: 光芯片/激光器/光器件
     claim: CNINFO 2025年报显示天孚、太辰、腾景，光库、杰普特均存在光通信/数据中心/FAU/MPO/OCS/CPO相关产品证据；蓝特为精密光学潜在配套，直接收入暴露较弱。
-    evidence_type: legacy_sector_comparison_bundle
+    evidence_type: historical_sector_comparison_bundle
     metrics_supported:
-      - main_theme
-      - sub_theme
       - chain_position
       - industry_logic_summary
       - representative_companies
@@ -608,180 +603,8 @@ evidence_items:
       - investment_conclusion
       - position_sizing
       - final_rating
-    notes: Canonical evidence item generated from legacy comparison_override; scoring/rating fields remain legacy-only until output schema alignment.
+    notes: Canonical evidence item generated from historical comparison_override; scoring/rating fields remain historical-only until output schema alignment.
 
 # ── Legacy Compatibility Block ─────────────────────────────────────────────────
 # Fields below are retained for backward compatibility.
 # Do NOT use them for project-aware primary keys.
-legacy:
-  original_sub_theme: 光器件/FAU/精密光学
-  original_grade: research
-  original_top_level_fields:
-    - sub_theme
-    - grade
-    - description
-    - company_overrides
-    - comparison_override
-    - source_rows
-    - logs
-    - card_markdown
-  legacy_only_fields_retained_at_top_level:
-    - sub_theme
-    - grade
-    - description
-    - company_overrides
-    - comparison_override
-    - source_rows
-    - logs
-    - card_markdown
-  migration_note: >
-    Canonical wrapper added in Phase 1E-d-b.
-    Legacy fields are retained for backward compatibility; status remains indexed_existing_evidence
-    and must not be treated as research-grade output.
-  missing_source_metadata_policy: >
-    Do not fabricate missing source metadata.
-    Audit warnings identify empty url fields for local_cache/database sources.
-    BaoStock, Tencent direct, and local cache have no web URLs — this is intentional.
-
-# ── Legacy Data (unchanged from migration) ───────────────────────────────────
-sub_theme: 光器件/FAU/精密光学
-grade: research
-description: Research-grade evidence for optical components, FAU, MPO/MTP, laser optics, and precision optical parts, upgraded with CNINFO annual reports and local PDF snippets.
-company_overrides:
-  '300394':
-    revenue_2026E: 未取得可索引一致预期，列入数据缺口
-    revenue_2027E: 未取得可索引一致预期，列入数据缺口
-    net_profit_2026E: 未取得可索引一致预期，列入数据缺口
-    net_profit_2027E: 未取得可索引一致预期，列入数据缺口
-    pe_2026E: 未取得可索引一致预期，列入数据缺口
-    pe_2027E: 未取得可索引一致预期，列入数据缺口
-    peg_2026E: 未取得可索引一致预期，列入数据缺口
-    main_theme_revenue_exposure: 年报明确公司光器件产品在光互连板块销售占比较高，下游包括电信、光纤连接和数据中心市场，AI算力需求是业绩提升的重要背景。
-    order_or_customer_evidence: 年报提示主要客户收入占比较高，说明公司已嵌入头部客户链条，但具体客户名称和份额不在年报中展开。
-    capacity_progress: 泰国工厂处于投产爬坡阶段，年报提示初期熟练度和产能利用率会影响成本与毛利率。
-    product_stage: 光互连光器件是成熟收入来源，高速光引擎和CPO相关产品处于技术升级与放量跟踪阶段。
-    institution_forecast_change: 未取得Wind/iFind/同花顺可索引一致预期；不将单一市场传闻写入正文。
-    catalysts: AI算力资本开支、数据中心建设、CPO技术升级，高速光引擎募投项目收入提升。
-    risks: 客户集中、产品技术升级、泰国工厂爬坡成本，光器件价格竞争和毛利率下行。
-    data_source: BaoStock行情/财务; CNINFO 2025年年度报告; 本地PDF摘录
-    source_date: '2026-04-07'
-    source_url: investment_system/data/raw/baostock/daily_kline/2026-06-20/300394.json; investment_system/data/raw/baostock/profit/2026-06-20/300394.json; investment_system/data/raw/evidence/2026-06-20/cninfo/300394_天孚通信_2025_annual.pdf; http://static.cninfo.com.cn/finalpage/2026-04-08/1225082705.PDF; investment_system/data/raw/evidence/2026-06-20/cninfo/p1_optical_annual_snippets.json
-    confidence_level: 中高
-  '300570':
-    revenue_2026E: 未取得可索引一致预期，列入数据缺口
-    revenue_2027E: 未取得可索引一致预期，列入数据缺口
-    net_profit_2026E: 未取得可索引一致预期，列入数据缺口
-    net_profit_2027E: 未取得可索引一致预期，列入数据缺口
-    pe_2026E: 未取得可索引一致预期，列入数据缺口
-    pe_2027E: 未取得可索引一致预期，列入数据缺口
-    peg_2026E: 未取得可索引一致预期，列入数据缺口
-    main_theme_revenue_exposure: 年报说明公司专注光通信领域，产品涵盖光通信器件及集成功能模块，广泛应用于电信网络、算力与云计算数据中心和政企专网。
-    order_or_customer_evidence: 年报可证实光器件产品用于算力与云计算数据中心，但未直接披露英伟达等终端客户绑定，客户穿透仍需二级证据。
-    capacity_progress: 核心跟踪高密度连接器、MT插芯、PLC/AWG芯片和连接组件的需求放量；越南基地和MPO扩产需要公告或互动平台继续确认。
-    product_stage: 光无源和光有源器件产品已是主营业务，数据中心应用明确，MPO/MTP高密度互联弹性属于需要订单验证的增量逻辑。
-    institution_forecast_change: 未取得Wind/iFind/同花顺可索引一致预期；不将单一市场传闻写入正文。
-    catalysts: 算力与云计算数据中心建设、高密度光纤连接器需求，光模块上游传导。
-    risks: 近6月涨幅和PE均高，客户穿透证据不足，若订单兑现慢于股价预期则估值压力大。
-    data_source: BaoStock行情/财务; CNINFO 2025年年度报告; 本地PDF摘录
-    source_date: '2026-03-30'
-    source_url: investment_system/data/raw/baostock/daily_kline/2026-06-20/300570.json; investment_system/data/raw/baostock/profit/2026-06-20/300570.json; investment_system/data/raw/evidence/2026-06-20/cninfo/300570_太辰光_2025_annual.pdf; http://static.cninfo.com.cn/finalpage/2026-03-31/1225061015.PDF; investment_system/data/raw/evidence/2026-06-20/cninfo/p1_optical_annual_snippets.json
-    confidence_level: 中高
-  '688195':
-    revenue_2026E: 未取得可索引一致预期，列入数据缺口
-    revenue_2027E: 未取得可索引一致预期，列入数据缺口
-    net_profit_2026E: 未取得可索引一致预期，列入数据缺口
-    net_profit_2027E: 未取得可索引一致预期，列入数据缺口
-    pe_2026E: 未取得可索引一致预期，列入数据缺口
-    pe_2027E: 未取得可索引一致预期，列入数据缺口
-    peg_2026E: 未取得可索引一致预期，列入数据缺口
-    main_theme_revenue_exposure: 年报说明光通信领域受AI算力需求推动，高速光模块无源元组件、OCS光交换机大尺寸纯钒酸钇晶体产品量产规模提升。
-    order_or_customer_evidence: 年报称公司具备行业头部客户资源优势，但客户名称和订单规模未在摘录中量化。
-    capacity_progress: 精密光学与先进光电产品矩阵扩展，OCS光交换机相关晶体产品量产规模提升，研发重点布局AI算力高速光互联。
-    product_stage: 高速光模块无源元组件和OCS相关晶体已经从概念转向量产规模提升，AI光通信收入弹性高于一般精密光学平台型公司。
-    institution_forecast_change: 未取得Wind/iFind/同花顺可索引一致预期；不将单一市场传闻写入正文。
-    catalysts: OCS光交换、硅光/CPO、AI算力高速光互联、北美光测试仪器业务。
-    risks: PE和PS处于高位，收入体量小，若高速光模块无源元组件持续性不足，估值容易回撤。
-    data_source: BaoStock行情/财务; CNINFO 2025年年度报告; 本地PDF摘录
-    source_date: '2026-04-24'
-    source_url: investment_system/data/raw/baostock/daily_kline/2026-06-20/688195.json; investment_system/data/raw/baostock/profit/2026-06-20/688195.json; investment_system/data/raw/evidence/2026-06-20/cninfo/688195_腾景科技_2025_annual.pdf; http://static.cninfo.com.cn/finalpage/2026-04-25/1225177429.PDF; investment_system/data/raw/evidence/2026-06-20/cninfo/p1_optical_annual_snippets.json
-    confidence_level: 中高
-  '300620':
-    revenue_2026E: 未取得可索引一致预期，列入数据缺口
-    revenue_2027E: 未取得可索引一致预期，列入数据缺口
-    net_profit_2026E: 未取得可索引一致预期，列入数据缺口
-    net_profit_2027E: 未取得可索引一致预期，列入数据缺口
-    pe_2026E: 未取得可索引一致预期，列入数据缺口
-    pe_2027E: 未取得可索引一致预期，列入数据缺口
-    peg_2026E: 未取得可索引一致预期，列入数据缺口
-    main_theme_revenue_exposure: 年报列明DR4/DR8 FAU、MT-FAU、CPO用光纤阵列、MPO/MTP连接器用于数据中心、云计算、移动通信；薄膜铌酸锂产品用于超高速数据中心、AI和超算中心。
-    order_or_customer_evidence: 年报披露铌酸锂新产品存在送样、小批量生产、批量出货及头部客户小批量订单，泰国基地通过重要客户现场稽核并启动小批量试生产。
-    capacity_progress: 铌酸锂高速调制器芯片产业化项目实施中；泰国光库生产基地通过ISO9001、PCN认证并实现一款Pigtail产品规模化量产。
-    product_stage: FAU/MPO/CPO光纤阵列和薄膜铌酸锂调制器均已进入从验证、小批量到部分批量出货的阶段，是本方向弹性最高但波动也最大的标的。
-    institution_forecast_change: 未取得Wind/iFind/同花顺可索引一致预期；不将单一市场传闻写入正文。
-    catalysts: 1.6T以上光模块、CPO、薄膜铌酸锂、超高速数据中心、AI和超算中心建设。
-    risks: PE TTM极高，年报口径下部分利润字段仍需复核，薄膜铌酸锂和泰国产能爬坡若不达预期会放大估值波动。
-    data_source: BaoStock行情/财务; CNINFO 2025年年度报告; 本地PDF摘录
-    source_date: '2026-03-23'
-    source_url: investment_system/data/raw/baostock/daily_kline/2026-06-20/300620.json; investment_system/data/raw/baostock/profit/2026-06-20/300620.json; investment_system/data/raw/evidence/2026-06-20/cninfo/300620_光库科技_2025_annual.pdf; http://static.cninfo.com.cn/finalpage/2026-03-24/1225026091.PDF; investment_system/data/raw/evidence/2026-06-20/cninfo/p1_optical_annual_snippets.json
-    confidence_level: 中高
-  '688025':
-    revenue_2026E: 未取得可索引一致预期，列入数据缺口
-    revenue_2027E: 未取得可索引一致预期，列入数据缺口
-    net_profit_2026E: 未取得可索引一致预期，列入数据缺口
-    net_profit_2027E: 未取得可索引一致预期，列入数据缺口
-    pe_2026E: 未取得可索引一致预期，列入数据缺口
-    pe_2027E: 未取得可索引一致预期，列入数据缺口
-    peg_2026E: 未取得可索引一致预期，列入数据缺口
-    main_theme_revenue_exposure: 年报说明光纤器件围绕光连接/光通信，面向数据中心、云计算、人工智能行业需求，开发MPO、FAU及各类光纤组件。
-    order_or_customer_evidence: 年报披露光纤器件业务销售额同比增长560.42%，并积极布局MPO产能和FAU产线扩产及自动化。
-    capacity_progress: 公司布局FAU产线扩产和产线自动化程度提升，MPO/MMC连接器和FAU进入业务加速布局阶段。
-    product_stage: 主业仍以激光器和激光/光学智能装备为主，光纤器件是高速增长新业务，AI光通信弹性需要看后续收入占比提升。
-    institution_forecast_change: 未取得Wind/iFind/同花顺可索引一致预期；不将单一市场传闻写入正文。
-    catalysts: MPO/MMC、FAU、数据中心光连接需求、CPO带来内部光纤通道数量提升。
-    risks: 公司整体业务更偏激光器和装备，光通信收入占比若提升不及预期，主线映射会弱于市场叙事。
-    data_source: BaoStock行情/财务; CNINFO 2025年年度报告; 本地PDF摘录
-    source_date: '2026-03-27'
-    source_url: investment_system/data/raw/baostock/daily_kline/2026-06-20/688025.json; investment_system/data/raw/baostock/profit/2026-06-20/688025.json; investment_system/data/raw/evidence/2026-06-20/cninfo/688025_杰普特_2025_annual.pdf; http://static.cninfo.com.cn/finalpage/2026-03-28/1225048090.PDF; investment_system/data/raw/evidence/2026-06-20/cninfo/p1_optical_annual_snippets.json
-    confidence_level: 中高
-  '688127':
-    revenue_2026E: 未取得可索引一致预期，列入数据缺口
-    revenue_2027E: 未取得可索引一致预期，列入数据缺口
-    net_profit_2026E: 未取得可索引一致预期，列入数据缺口
-    net_profit_2027E: 未取得可索引一致预期，列入数据缺口
-    pe_2026E: 未取得可索引一致预期，列入数据缺口
-    pe_2027E: 未取得可索引一致预期，列入数据缺口
-    peg_2026E: 未取得可索引一致预期，列入数据缺口
-    main_theme_revenue_exposure: 年报说明准直类透镜、微透镜等产品可应用于光通信，AI驱动算力、数据存储与传输需求提升，为光学光电子元器件提供需求背景。
-    order_or_customer_evidence: 年报显示公司采用以销定产和直销模式服务客户，但未披露数据中心光通信客户或订单占比。
-    capacity_progress: 公司具备精密光学元器件，光学晶圆、镀膜和微透镜加工能力，属于潜在配套方向而非已充分证实的AI光通信放量标的。
-    product_stage: 精密光学平台能力明确，但AI光通信直接收入弹性弱于天孚、太辰、腾景，光库和杰普特，需要后续订单证据确认。
-    institution_forecast_change: 未取得Wind/iFind/同花顺可索引一致预期；不将单一市场传闻写入正文。
-    catalysts: 硅光/CPO对准直透镜、微透镜、镀膜和光学晶圆工艺提出更高要求。
-    risks: 消费电子、车载和显示类业务影响较大，AI光通信收入暴露不透明，容易被主题估值牵引。
-    data_source: BaoStock行情/财务; CNINFO 2025年年度报告; 本地PDF摘录
-    source_date: '2026-03-16'
-    source_url: investment_system/data/raw/baostock/daily_kline/2026-06-20/688127.json; investment_system/data/raw/baostock/profit/2026-06-20/688127.json; investment_system/data/raw/evidence/2026-06-20/cninfo/688127_蓝特光学_2025_annual.pdf; http://static.cninfo.com.cn/finalpage/2026-03-17/1225013060.PDF; investment_system/data/raw/evidence/2026-06-20/cninfo/p1_optical_annual_snippets.json
-    confidence_level: 中
-comparison_override:
-  main_theme: AI算力硬件
-  sub_theme: 光器件/FAU/精密光学
-  chain_position: 上游/中游配套
-  industry_logic_summary: >
-    高速光模块放量会把需求传导到FAU、MPO/MTP，光纤阵列、精密光学元件、激光加工和光学镀膜等配套环节。
-    该P1方向弹性来自小而美环节的价值量提升，但公司之间AI数据中心收入暴露差异较大，需要用年报、公告和互动易继续拆分。
-  representative_companies: 天孚通信、太辰光、腾景科技，光库科技、杰普特、蓝特光学
-  performance_stage_score: '4'
-  industry_prosperity_score: '4'
-  upside_score: '2'
-  bubble_safety_score: '2'
-  fund_recognition_score: '4'
-  catalyst_score: '4'
-  total_score: '66'
-  recommended_next_action: P1方向可继续深挖，但只优先跟踪有年报产品证据和估值尚能解释的标的；高涨幅高PE公司不追高。
-  key_evidence: CNINFO 2025年报显示天孚、太辰、腾景，光库、杰普特均存在光通信/数据中心/FAU/MPO/OCS/CPO相关产品证据；蓝特为精密光学潜在配套，直接收入暴露较弱。
-  key_risks: 多家公司近3/6月涨幅很大，光库、腾景、太辰等估值压力突出；一致预期和历史估值分位仍未接入可索引来源。
-  missing_data: 2026E/2027E一致预期、PE/PB历史分位、客户穿透到终端CSP的比例、FAU/MPO单模块价值量。
-  source_index_refs: BAO-DAILY-OCFP-20260620; BAO-PROFIT-OCFP-20260620; CNINFO-AR-300394-20260407; CNINFO-AR-300570-20260330; CNINFO-AR-688195-20260424; CNINFO-AR-300620-20260323; CNINFO-AR-688025-20260327; CNINFO-AR-688127-20260316
-source_rows: []
-logs: {}
-card_markdown: ''

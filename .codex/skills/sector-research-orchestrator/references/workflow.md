@@ -9,7 +9,7 @@ This file is the current operational workflow reference.
    - Read `investment_system/research/projects/<project_id>/sector_universe.yaml` for canonical sector definitions.
    - Read `investment_system/research/projects/<project_id>/stock_universe.yaml` for project-aware stock pools.
    - Inspect current outputs before writing.
-   - For data-source health, run `investment_system/scripts/check_data_sources.py`; use `market-data-router tushare-ping` or `financial-data-router tushare-ping` only when Tushare connectivity matters.
+   - For data-source health, run `python -m investment_system.core.data_sources.diagnostics`; use `market-data-router tushare-ping` or `financial-data-router tushare-ping` only when Tushare connectivity matters.
    - Prefer the skill CLI scope check:
 
 ```powershell
@@ -18,13 +18,13 @@ This file is the current operational workflow reference.
 
 1. Market data step: call `market-data-router`.
    - Purpose: K-line, latest price, 1/3/6 month return, turnover, index relative strength, realtime/fund-flow diagnostics.
-   - Script boundary: `investment_system/scripts/research_client.py`.
+   - Fallback client boundary: `investment_system/core/data_sources/research_client.py`.
    - Raw output: `investment_system/data/raw/<source>/<dataset>/<date>/`.
    - Acceptance: all representative companies have daily rows or explicit failure records.
 
 2. Financial data step: call `financial-data-router`.
    - Purpose: revenue, net profit, gross margin, net margin, EPS, total shares, PE TTM, PS TTM.
-   - Script boundary: `investment_system/scripts/research_client.py`, `market-data-router` / `financial-data-router` Tushare CLI diagnostics, and project-aware output writers/validators.
+   - Fallback client boundary: `investment_system/core/data_sources/research_client.py`, `market-data-router` / `financial-data-router` Tushare CLI diagnostics, and project-aware output writers/validators.
    - Raw output: `investment_system/data/raw/baostock/profit/<date>/`.
    - Acceptance: financial units are normalized and derived valuation fields are filled or logged as missing.
 
@@ -114,16 +114,7 @@ This file is the current operational workflow reference.
 & "C:\Projects\03_Investment\.conda\investment-system\python.exe" .codex\skills\quality-auditor\scripts\cli.py post-publish-check --project tech_ai_semiconductor --sector-id <canonical_sector_id>
 ```
 
-9. Legacy broad command, only when the user explicitly asks for broad generation:
-
-```powershell
-# Project-aware single sector:
-& "C:\Projects\03_Investment\.conda\investment-system\python.exe" investment_system\pipelines\run_research.py --project tech_ai_semiconductor --sector-id <canonical_sector_id> --skip-guosen
-# After generation, validate the structural contract:
-& "C:\Projects\03_Investment\.conda\investment-system\python.exe" .codex\skills\quality-auditor\scripts\cli.py validate-outputs --project tech_ai_semiconductor
-```
-
-10. Repair loop.
+9. Repair loop.
    - If market data fails, return to `market-data-router`.
    - If financial values are inconsistent, return to `financial-data-router`.
    - If assertions lack sources, return to `evidence-miner`.

@@ -95,8 +95,6 @@ def validate_output_record_shape(
     warnings: list[str] = []
     contract = get_output_contract(config, output_type)
     required = list(contract.get("required_fields", []) or [])
-    deprecated = set(contract.get("deprecated_fields", []) or [])
-    legacy_display = set(contract.get("legacy_display_fields", []) or [])
     primary_keys = set(contract.get("primary_key", []) or [])
     optional = set(contract.get("optional_fields", []) or [])
     allowed_placeholders = set(
@@ -111,20 +109,15 @@ def validate_output_record_shape(
     for field in missing_required:
         errors.append(f"{output_type} record missing required field '{field}'")
 
-    deprecated_fields_present = sorted(deprecated.intersection(record))
-    for field in deprecated_fields_present:
-        warnings.append(f"{output_type} record contains deprecated field '{field}'")
-
-    legacy_fields_present = sorted(legacy_display.intersection(record))
-    forbidden = {"main_theme", "sub_theme", "legacy_theme_name"}
+    forbidden = {"main_theme", "sub_theme", "old_theme_name"}
     for key in sorted(primary_keys.intersection(forbidden)):
-        errors.append(f"{output_type} contract uses legacy field '{key}' as primary key")
+        errors.append(f"{output_type} contract uses removed theme field '{key}' as primary key")
 
     for key in sorted(forbidden.intersection(record)):
         if key in primary_keys:
-            errors.append(f"{output_type} record uses legacy field '{key}' as primary key")
-        elif key not in legacy_display:
-            warnings.append(f"{output_type} record contains legacy field '{key}' outside legacy_display_fields")
+            errors.append(f"{output_type} record uses removed theme field '{key}' as primary key")
+        else:
+            warnings.append(f"{output_type} record contains removed theme field '{key}'")
 
     empty_required = [
         field for field in required
@@ -175,8 +168,8 @@ def validate_output_record_shape(
             if field not in record or str(record.get(field, "")).strip() == "":
                 errors.append(f"conflict_data_log missing canonical field '{field}'")
 
-    contract_fields = set(required) | optional | legacy_display
-    extra_fields = sorted(set(record) - contract_fields - deprecated)
+    contract_fields = set(required) | optional
+    extra_fields = sorted(set(record) - contract_fields)
     if extra_fields:
         warnings.append(f"{output_type} record has fields outside contract: {extra_fields}")
 
@@ -186,7 +179,5 @@ def validate_output_record_shape(
         "warnings": warnings,
         "output_type": output_type,
         "missing_required_fields": missing_required,
-        "deprecated_fields_present": deprecated_fields_present,
-        "legacy_fields_present": legacy_fields_present,
         "source_evidence_status": source_status,
     }

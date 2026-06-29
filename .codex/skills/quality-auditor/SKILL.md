@@ -10,10 +10,12 @@ Use this as the final gate before presenting investment research outputs.
 ## Entry Points
 
 - Validation: `.codex/skills/quality-auditor/scripts/cli.py validate-outputs`
+- Tushare raw-cache audit: `.codex/skills/quality-auditor/scripts/cli.py tushare-raw-cache`
+- Runtime readiness audit: `.codex/skills/quality-auditor/scripts/cli.py pipeline-readiness` (default reports active issues and core INFO only; add `--include-retired-checks` for maintenance-time retired compatibility absence details)
 - Standard sector stage gates: `.codex/skills/quality-auditor/scripts/cli.py evidence-gate|candidate-gate|publish-gate|post-publish-check`
 - Curated evidence validation: `.codex/skills/evidence-miner/scripts/cli.py validate-curated`
 - Project stage policy: `investment_system/research/projects/tech_ai_semiconductor/workflow_stages.yaml`
-- Diagnostics: `investment_system/scripts/validate_research_client.py`
+- Diagnostics: `python -m investment_system.core.data_sources.diagnostics`
 - Contract: read `references/contract.md` before adding audit checks.
 - Research-grade review standard: read `references/research_grade_standard.md` when auditing investment-reading-ready reports.
 
@@ -44,11 +46,12 @@ Use direct `validate-outputs` only when debugging the underlying contract or whe
 - Ensure no `缺失` placeholder remains unless it is intentionally listed as a gap.
 - Record conflicts instead of silently choosing convenient values.
 - Check Tushare fallback rows for source traceability and avoid exposing `TUSHARE_TOKEN`.
+- Check skill-owned Tushare raw-cache envelopes with `tushare-raw-cache` before promoting cache files into source manifests.
 - Fail claims that imply Guosen, Wind, or iFind database access unless the user explicitly supplied that source data.
 - Do not delete files during audit.
 - Treat stage policy from `workflow_stages.yaml` as the source of truth for warning-only exit handling and formal-output write boundaries.
 - Fail candidate or research-grade outputs containing `DRAFT_PLACEHOLDER`, `TODO_MANUAL_EXTRACTION`, `draft_source_skeleton`, or `EV-DRAFT-` references.
 - Fail candidate or formal outputs that contain buy/sell/build/add/reduce/clear-position wording, target price, position sizing, A/B/C/D/E ratings, or formal scoring unless a separate explicit scoring/investment process is in scope.
-- Do not use legacy broad validation as the default workflow entry point; use skill CLI gates first.
+- Use skill CLI gates as the workflow entry points.
 - For research-grade output, fail reports that contain debug placeholders outside the data-gap section.
 - For research-grade output, fail source rows that have neither a local cache path nor an http(s) URL.

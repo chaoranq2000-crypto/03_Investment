@@ -19,6 +19,12 @@ DATASET_SOURCE_TYPES = {
     "cashflow": "financial_data",
     "daily_basic": "market_data",
     "daily": "market_data",
+    "anns_d": "announcement",
+    "research_report": "broker_report",
+    "report_rc": "forecast_data",
+    "stk_surv": "investor_relations",
+    "irm_qa_sz": "exchange_qa",
+    "irm_qa_sh": "exchange_qa",
 }
 
 
@@ -56,6 +62,55 @@ def _dataset_payload(cache: dict[str, Any], dataset: str) -> dict[str, Any]:
         if isinstance(payload, dict) and dataset in payload:
             result[str(stock_code)] = payload[dataset]
     return result
+
+
+def _is_raw_envelope(cache: dict[str, Any]) -> bool:
+    return str(cache.get("schema_version") or "") == "tushare_raw_cache.v1"
+
+
+def _raw_envelope_record(
+    *,
+    project_id: str,
+    sector_id: str,
+    cache_path: Path,
+    cache: dict[str, Any],
+    run_date: str,
+    source_date: str,
+) -> dict[str, Any]:
+    dataset = str(cache.get("dataset") or cache_path.stem)
+    source_type = DATASET_SOURCE_TYPES.get(dataset, str(cache.get("source_type") or "data_cache"))
+    payload_bytes = (json.dumps(cache, ensure_ascii=False, indent=2) + "\n").encode("utf-8")
+    target = "all"
+    stock = cache.get("stock")
+    if isinstance(stock, dict):
+        target = str(stock.get("ts_code") or stock.get("target_key") or stock.get("stock_code") or "all")
+    compact_date = run_date.replace("-", "")
+    return {
+        "source_id": f"TUSHARE-CACHE-{_slug(sector_id)}-{_slug(dataset)}-{_slug(target)}-{compact_date}",
+        "project_id": project_id,
+        "sector_id": sector_id,
+        "source_type": source_type,
+        "evidence_level": "data_cache",
+        "company_code": target if target != "all" else "",
+        "company_name": str(stock.get("stock_name") or "") if isinstance(stock, dict) else "",
+        "title": f"Tushare {dataset} raw cache for {target}",
+        "publisher": "Tushare Pro",
+        "source_date": source_date or run_date,
+        "source_url": "",
+        "local_path": _workspace_relative(cache_path),
+        "text_path": "",
+        "file_sha256": _sha256_bytes(payload_bytes),
+        "file_size": len(payload_bytes),
+        "access_method": "tushare_api",
+        "parser": "tushare_data_router",
+        "parser_status": str(cache.get("fetch_status") or "unknown"),
+        "metadata_sidecar_key": dataset,
+        "metadata_missing_fields": [],
+        "notes": (
+            "Indexed from skill-owned Tushare raw cache envelope. "
+            "Use evidence_draft before manual curation into active evidence."
+        ),
+    }
 
 
 def _record(
@@ -113,6 +168,28 @@ def build_split_manifest(
     cache = json.loads(cache_path.read_text(encoding="utf-8"))
     if not isinstance(cache, dict):
         raise ValueError(f"Tushare cache must be a JSON object keyed by stock code: {cache_path}")
+
+    if _is_raw_envelope(cache):
+        record = _raw_envelope_record(
+            project_id=project_id,
+            sector_id=canonical_sector_id,
+            cache_path=cache_path,
+            cache=cache,
+            run_date=run_date,
+            source_date=source_date,
+        )
+        manifest = {
+            "manifest_version": "1.0",
+            "created_at": datetime.now(timezone.utc).isoformat(),
+            "project_id": project_id,
+            "sector_id": canonical_sector_id,
+            "source_set": "tushare_raw_cache_envelope",
+            "run_date": run_date,
+            "original_cache_path": _workspace_relative(cache_path),
+            "record_count": 1,
+            "records": [record],
+        }
+        return manifest, []
 
     files_to_write: list[tuple[Path, bytes]] = []
     records: list[dict[str, Any]] = []

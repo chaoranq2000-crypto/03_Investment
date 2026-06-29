@@ -14,9 +14,11 @@ Use this as the fundamental-evidence layer. Store curated evidence as inputs, no
 - Draft evidence skeleton stage: `.codex/skills/evidence-miner/scripts/cli.py draft`
 - Evidence registration stage: `.codex/skills/evidence-miner/scripts/cli.py register` or `register-apply`
 - Curated evidence validator: `.codex/skills/evidence-miner/scripts/cli.py validate-curated`
+- Tushare evidence-index fetcher: `.codex/skills/evidence-miner/scripts/cli.py tushare-fetch`
+- Tushare evidence-index aliases: `announcements-index`, `research-report-index`, `survey-index`, `irm-qa-index`
+- Tushare source manifest alias: `.codex/skills/evidence-miner/scripts/cli.py tushare-source-manifest`
 - Tushare cache splitter: `.codex/skills/evidence-miner/scripts/cli.py split-tushare-cache`
-- Evidence merge code: `investment_system/pipelines/evidence_overrides.py`
-- Standard output builder: `investment_system/pipelines/run_research.py`
+- Standard output builder: skill CLIs and `research_writer` candidate flow.
 - Contract: read `references/contract.md` before changing evidence schema.
 
 ## Evidence Layers
@@ -44,6 +46,15 @@ Use three distinct layers. Do not skip directly from raw files to active evidenc
 
 ## Tushare Cache Flow
 
+Use Tushare first for structured evidence indexes such as announcements, broker report metadata, broker forecast rows, institutional surveys, and exchange Q&A when permissions allow it:
+
+```powershell
+& "C:\Projects\03_Investment\.conda\investment-system\python.exe" .codex\skills\evidence-miner\scripts\cli.py tushare-fetch --dataset anns_d --code 000001.SZ
+& "C:\Projects\03_Investment\.conda\investment-system\python.exe" .codex\skills\evidence-miner\scripts\cli.py tushare-fetch --dataset research_report --code 000001.SZ --fetch --write-cache --write-manifest
+```
+
+Fetched Tushare rows are raw indexes, not curated evidence. They must become source manifests/drafts before active evidence registration.
+
 For bundled Tushare JSON caches keyed by stock code and dataset, first split them into dataset-level cache files:
 
 ```powershell
@@ -52,14 +63,17 @@ For bundled Tushare JSON caches keyed by stock code and dataset, first split the
 
 Add `--write-split --write-manifest` only when writing raw split files and the source manifest is intended. Then feed the generated source manifest into `evidence_draft`; do not register the resulting draft until it has been manually curated.
 
+For new skill-owned Tushare raw-cache envelopes under `investment_system/data/raw/tushare/<dataset>/<date>/`, `split-tushare-cache` can index the envelope directly into a source manifest without rewriting the cache file.
+
 ## Source Priority
 
 1. Company annual/interim/quarterly reports.
 2. Company announcements and investor-relations records.
 3. Exchange Q&A: 互动易/上证e互动.
 4. Government/policy documents.
-5. Broker reports and forecast summaries.
-6. Media summaries only as weak context, not primary evidence.
+5. Tushare announcement/report/survey/Q&A indexes as discovery aids and source rows.
+6. Broker reports and forecast summaries.
+7. Media summaries only as weak context, not primary evidence.
 
 ## Interface Failure Fallback
 

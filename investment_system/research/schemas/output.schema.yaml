@@ -2,8 +2,8 @@ schema_name: canonical_output_contract
 schema_version: "1.0"
 description: >
   Project-aware output contract for sector research. This schema defines stable
-  identifiers, required fields, deprecated legacy fields, and source/evidence
-  expectations for generated artifacts.
+  identifiers, required fields, and source/evidence expectations for generated
+  artifacts.
 
 primary_key_policy:
   allowed_project_aware_keys:
@@ -15,10 +15,9 @@ primary_key_policy:
   forbidden_project_aware_keys:
     - main_theme
     - sub_theme
-    - legacy_theme_name
+    - old_theme_name
   notes: >
-    main_theme/sub_theme may appear only as legacy or display fields. They must
-    not be used as project-aware primary keys.
+    Old theme-name fields must not appear in project-aware outputs.
 
 empty_value_policy:
   allowed_placeholders:
@@ -47,16 +46,9 @@ output_types:
       - evidence_ids
       - missing_fields
       - conflict_flags
-    legacy_display_fields:
-      - main_theme
-      - sub_theme
-    deprecated_fields: []
     source_evidence_requirements:
       source_ids_required: true
       evidence_ids_required_for_research_grade: true
-    field_aliases:
-      sub_theme: sector_name
-      main_theme: parent_chain
 
   company_table:
     output_kind: csv
@@ -79,6 +71,8 @@ output_types:
       - revenue
       - net_profit
       - gross_margin
+      - chain_position
+      - sector_revenue_exposure
       - pe_ttm
       - pe_2026e
       - pe_2027e
@@ -87,21 +81,9 @@ output_types:
       - missing_fields
       - conflict_flags
       - notes
-    legacy_display_fields:
-      - company_name
-      - chain_position
-      - main_theme_revenue_exposure
-    deprecated_fields:
-      - main_theme
-      - sub_theme
     source_evidence_requirements:
       source_ids_required: true
       evidence_ids_required_for_research_grade: true
-    field_aliases:
-      company_name: stock_name
-      pe_2026E: pe_2026e
-      pe_2027E: pe_2027e
-      peg_2026E: peg
 
   sector_comparison_table:
     output_kind: csv
@@ -140,21 +122,12 @@ output_types:
       - missing_data_flags
       - key_evidence
       - key_risk
+      - representative_companies
       - evidence_ids
       - confidence_level
-    legacy_display_fields:
-      - main_theme
-      - sub_theme
-      - representative_companies
-    deprecated_fields:
-      - industry_logic_summary
-      - source_index_refs
     source_evidence_requirements:
       source_ids_required: true
       evidence_ids_required_for_research_grade: true
-    field_aliases:
-      industry_logic_summary: core_logic
-      source_index_refs: source_ids
 
   source_index:
     output_kind: csv
@@ -178,22 +151,12 @@ output_types:
       - notes
       - access_status
       - retrieved_date
-    legacy_display_fields:
       - source_name
-      - related_main_theme
-      - related_sub_theme
       - related_company
       - quote_or_excerpt
       - confidence_level
-    deprecated_fields:
-      - source_url
     source_evidence_requirements:
       source_id_required: true
-    field_aliases:
-      source_name: source_title
-      source_url: url_or_path
-      confidence_level: confidence
-      data_fields_supported: extracted_fields
 
   missing_data_log:
     output_kind: markdown_or_csv
@@ -216,16 +179,8 @@ output_types:
       - evidence_id
       - evidence_ids
       - status
-    legacy_display_fields:
-      - company_name
-      - sub_theme
-    deprecated_fields: []
     source_evidence_requirements:
       source_id_required_when_resolved: true
-    field_aliases:
-      company_code: stock_code
-      company_name: stock_name
-      priority: severity
 
   conflict_data_log:
     output_kind: markdown_or_csv
@@ -246,21 +201,8 @@ output_types:
       - resolution_note
       - handling
       - evidence_ids
-    legacy_display_fields:
-      - company_name
-      - sub_theme
-    deprecated_fields:
-      - value_from_source_a
-      - value_from_source_b
-      - source_a
-      - source_b
     source_evidence_requirements:
       source_ids_required: true
-    field_aliases:
-      company_code: stock_code
-      field_name: field
-      source_id_a: source_ids
-      source_id_b: source_ids
 
   score_table:
     output_kind: csv_or_embedded_table
@@ -293,16 +235,6 @@ output_types:
     optional_fields:
       - score_version
       - generated_at
-    legacy_display_fields:
-      - performance_stage_score
-      - industry_prosperity_score
-      - upside_score
-      - bubble_safety_score
-      - fund_recognition_score
-    deprecated_fields: []
     source_evidence_requirements:
       every_score_has_reason: true
       evidence_ids_required_for_research_grade: true
-    field_aliases:
-      industry_prosperity_score: prosperity_score
-      bubble_safety_score: trading_comfort_score

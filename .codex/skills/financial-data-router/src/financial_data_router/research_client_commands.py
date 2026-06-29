@@ -8,7 +8,7 @@ import sys
 from typing import Any
 
 from investment_system.core.project_loader import get_stocks_for_sector, load_project
-from investment_system.scripts.research_client import ResearchClient
+from investment_system.core.data_sources.research_client import ResearchClient
 
 
 def _print_json(payload: dict[str, Any]) -> None:

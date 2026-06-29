@@ -13,9 +13,9 @@ Checks performed:
 - canonical sector_id in evidence_items
 - orphan source_id detection (referenced but not in source_index)
 - unused source detection (in source_index but never referenced)
-- legacy fields are flagged
+- migration-only fields are flagged
 - duplicate source detection
-- seed document / retired legacy output misuse
+- seed document / retired output misuse
 """
 from __future__ import annotations
 
@@ -28,10 +28,8 @@ import yaml
 
 from investment_system.core.project_loader import (
     WORKSPACE_ROOT,
-    get_sector,
     load_project,
     resolve_evidence_files_for_sector,
-    resolve_sector_id,
 )
 
 
@@ -45,7 +43,7 @@ REQUIRED_TOP_LEVEL = [
     "evidence_items",
 ]
 
-LEGACY_TOP_LEVEL = {
+MIGRATION_TOP_LEVEL = {
     "sub_theme",
     "grade",
     "description",
@@ -78,7 +76,7 @@ LEGAL_SOURCE_TYPES = frozenset({
     "news",
     "regulatory_filing",
     "curated_evidence",
-    "legacy_migrated",
+    "historical_migrated",
     "self_reference",
     "cross_reference",
     "database",
@@ -100,7 +98,7 @@ LEGAL_ACCESS_METHODS = frozenset({
     "manual_entry",
     "yaml_migration",
     "cross_file_reference",
-    "legacy_migration",
+    "historical_migration",
 })
 
 
@@ -159,7 +157,6 @@ def audit_project(project_id: str, write_report: bool = True) -> tuple[list[Find
     config = load_project(project_id, silent=True, strict=False)
     sectors = config.raw.get("sectors", []) or []
     valid_sector_ids = {s.get("sector_id") for s in sectors if s.get("sector_id")}
-    legacy_map = config.raw.get("legacy_sector_map", {})
     manifest = config.raw.get("run_manifest", {})
     seed_paths = {
         _path(str(row.get("path", ""))).resolve()
@@ -168,7 +165,7 @@ def audit_project(project_id: str, write_report: bool = True) -> tuple[list[Find
     }
     retired_paths = {
         _path(str(row.get("path", ""))).resolve()
-        for row in (config.raw.get("retired_legacy_outputs", []) or [])
+        for row in (config.raw.get("retired_outputs", []) or [])
         if row.get("path")
     }
 
@@ -178,7 +175,7 @@ def audit_project(project_id: str, write_report: bool = True) -> tuple[list[Find
     total_sources = 0
     total_items = 0
     missing_source_metadata_count = 0
-    legacy_only_field_count = 0
+    migration_field_count = 0
     canonical_sector_binding_count = 0
     duplicate_source_count = 0
     orphan_source_count = 0
@@ -197,7 +194,7 @@ def audit_project(project_id: str, write_report: bool = True) -> tuple[list[Find
             "source_count": 0,
             "evidence_item_count": 0,
             "canonical_sector_ids": [],
-            "legacy_only_fields": [],
+            "migration_fields": [],
             "missing_source_metadata_count": 0,
             "duplicate_source_count": 0,
             "orphan_source_count": 0,
@@ -210,7 +207,7 @@ def audit_project(project_id: str, write_report: bool = True) -> tuple[list[Find
         if file_path in seed_paths:
             findings.append(Finding("ERROR", "SEED_DOCUMENT_AS_EVIDENCE", f"seed document registered as evidence: {rel_path}", rel_path))
         if file_path in retired_paths:
-            findings.append(Finding("ERROR", "RETIRED_OUTPUT_AS_EVIDENCE", f"retired legacy output registered as active evidence: {rel_path}", rel_path))
+            findings.append(Finding("ERROR", "RETIRED_OUTPUT_AS_EVIDENCE", f"retired output registered as active evidence: {rel_path}", rel_path))
 
         if not file_path.exists():
             findings.append(Finding("ERROR", "EVIDENCE_FILE_NOT_FOUND", f"active evidence YAML does not exist: {rel_path}", rel_path))
@@ -246,29 +243,18 @@ def audit_project(project_id: str, write_report: bool = True) -> tuple[list[Find
             if sid in valid_sector_ids:
                 canonical_sector_binding_count += 1
                 continue
-            resolved, is_legacy = resolve_sector_id(str(sid), valid_sector_ids, legacy_map)
-            if is_legacy and resolved in valid_sector_ids:
-                findings.append(
-                    Finding(
-                        "ERROR",
-                        "CANONICAL_SECTOR_ID_IS_LEGACY",
-                        f"canonical_sector_ids contains legacy id '{sid}', resolved to '{resolved}'.",
-                        rel_path,
-                    )
-                )
-            else:
-                findings.append(Finding("ERROR", "CANONICAL_SECTOR_ID_INVALID", f"invalid canonical_sector_id '{sid}'.", rel_path))
+            findings.append(Finding("ERROR", "CANONICAL_SECTOR_ID_INVALID", f"invalid canonical_sector_id '{sid}'.", rel_path))
 
-        # Legacy fields check
-        legacy_fields = sorted(LEGACY_TOP_LEVEL.intersection(data))
-        file_summary["legacy_only_fields"] = legacy_fields
-        legacy_only_field_count += len(legacy_fields)
-        if legacy_fields:
+        # Migration-only fields check
+        migration_fields = sorted(MIGRATION_TOP_LEVEL.intersection(data))
+        file_summary["migration_fields"] = migration_fields
+        migration_field_count += len(migration_fields)
+        if migration_fields:
             findings.append(
                 Finding(
                     "INFO",
-                    "LEGACY_FIELDS_RETAINED",
-                    f"legacy top-level fields retained for compatibility: {', '.join(legacy_fields)}",
+                    "MIGRATION_FIELDS_RETAINED",
+                    f"migration-only top-level fields retained: {', '.join(migration_fields)}",
                     rel_path,
                 )
             )
@@ -404,25 +390,14 @@ def audit_project(project_id: str, write_report: bool = True) -> tuple[list[Find
             # ── 7. Sector ID in evidence_items must be canonical ─────────────────
             item_sector = str(item.get("sector_id", "") or "")
             if item_sector not in valid_sector_ids:
-                resolved, is_legacy = resolve_sector_id(item_sector, valid_sector_ids, legacy_map)
-                if is_legacy and resolved in valid_sector_ids:
-                    findings.append(
-                        Finding(
-                            "ERROR",
-                            "EVIDENCE_ITEM_SECTOR_ID_LEGACY",
-                            f"evidence_id '{evidence_id}' uses legacy sector_id '{item_sector}', resolved to '{resolved}'.",
-                            rel_path,
-                        )
+                findings.append(
+                    Finding(
+                        "ERROR",
+                        "EVIDENCE_ITEM_SECTOR_ID_INVALID",
+                        f"evidence_id '{evidence_id}' has invalid sector_id '{item_sector}'.",
+                        rel_path,
                     )
-                else:
-                    findings.append(
-                        Finding(
-                            "ERROR",
-                            "EVIDENCE_ITEM_SECTOR_ID_INVALID",
-                            f"evidence_id '{evidence_id}' has invalid sector_id '{item_sector}'.",
-                            rel_path,
-                        )
-                    )
+                )
 
         # ── 8. Unused Source Detection ─────────────────────────────────────────
         for sid in sorted(source_ids):
@@ -446,7 +421,7 @@ def audit_project(project_id: str, write_report: bool = True) -> tuple[list[Find
         "source_count": total_sources,
         "evidence_item_count": total_items,
         "missing_source_metadata_count": missing_source_metadata_count,
-        "legacy_only_field_count": legacy_only_field_count,
+        "migration_field_count": migration_field_count,
         "canonical_sector_binding_count": canonical_sector_binding_count,
         "duplicate_source_count": duplicate_source_count,
         "orphan_source_count": orphan_source_count,
@@ -505,19 +480,19 @@ def _write_markdown_report(project_id: str, findings: list[Finding], summary: di
         f"| source_type_errors | {summary['source_type_errors']} |",
         f"| access_method_errors | {summary['access_method_errors']} |",
         f"| missing_location_errors | {summary['missing_location_errors']} |",
-        f"| legacy_only_field_count | {summary['legacy_only_field_count']} |",
+        f"| migration_field_count | {summary['migration_field_count']} |",
         f"| canonical_sector_binding_count | {summary['canonical_sector_binding_count']} |",
         "",
         "---",
         "",
         "## 2. Evidence Files",
         "",
-        "| evidence_file_id | sources | items | missing_metadata | duplicates | orphans | unused | legacy_fields |",
+        "| evidence_file_id | sources | items | missing_metadata | duplicates | orphans | unused | migration_fields |",
         "|---|---|---:|---:|---:|---:|---:|---:|---|",
     ]
     for row in summary["file_summaries"]:
         lines.append(
-            "| {ef_id} | {sc} | {ic} | {mm} | {dup} | {orp} | {unused} | {legacy} |".format(
+            "| {ef_id} | {sc} | {ic} | {mm} | {dup} | {orp} | {unused} | {migration} |".format(
                 ef_id=row["evidence_file_id"],
                 sc=row["source_count"],
                 ic=row["evidence_item_count"],
@@ -525,7 +500,7 @@ def _write_markdown_report(project_id: str, findings: list[Finding], summary: di
                 dup=row["duplicate_source_count"],
                 orp=row["orphan_source_count"],
                 unused=row["unused_source_count"],
-                legacy=", ".join(row["legacy_only_fields"]) or "-",
+                migration=", ".join(row["migration_fields"]) or "-",
             )
         )
 
@@ -602,12 +577,12 @@ def _write_markdown_report(project_id: str, findings: list[Finding], summary: di
         "| news | News article |",
         "| regulatory_filing | Exchange/regulator filing |",
         "| curated_evidence | Manually curated evidence bundle |",
-        "| legacy_migrated | Migrated from legacy YAML |",
+        "| historical_migrated | Migrated from historical YAML |",
         "| self_reference | Reference to this evidence YAML itself |",
         "| cross_reference | Reference to another evidence YAML |",
         "| database | BaoStock/Tencent/AKShare query result |",
         "| diagnostic_error | Error/diagnostic record |",
-        "| diagnostic_disabled | Disabled legacy source |",
+        "| diagnostic_disabled | Disabled historical source |",
         "",
         "---",
         "",
@@ -725,7 +700,7 @@ def _print_report(findings: list[Finding], summary: dict[str, Any]) -> None:
     print(f"source_type_errors            : {summary['source_type_errors']}")
     print(f"access_method_errors          : {summary['access_method_errors']}")
     print(f"missing_location_errors       : {summary['missing_location_errors']}")
-    print(f"legacy_only_field_count       : {summary['legacy_only_field_count']}")
+    print(f"migration_field_count       : {summary['migration_field_count']}")
     print(f"canonical_sector_binding_count: {summary['canonical_sector_binding_count']}")
     print()
     print("Evidence files")

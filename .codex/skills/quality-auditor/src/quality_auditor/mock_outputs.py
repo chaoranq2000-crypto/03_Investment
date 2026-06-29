@@ -60,7 +60,6 @@ def _audit_record_shapes(
     results = validate_records(config, records)
     pass_count = 0
     fail_count = 0
-    deprecated_count = 0
 
     for output_type in list_output_types(config):
         result = results.get(output_type, {})
@@ -70,15 +69,10 @@ def _audit_record_shapes(
             fail_count += 1
             for error in result.get("errors", []):
                 findings.append(Finding("ERROR", "MOCK_RECORD_SHAPE_FAILED", error, output_type))
-        deprecated = result.get("deprecated_fields_present", []) or []
-        deprecated_count += len(deprecated)
-        for field in deprecated:
-            findings.append(Finding("ERROR", "MOCK_DEPRECATED_FIELD_PRESENT", f"{output_type} contains deprecated field {field}", output_type))
 
     return {
         "record_shape_pass_count": pass_count,
         "record_shape_fail_count": fail_count,
-        "deprecated_field_violation_count": deprecated_count,
     }
 
 
@@ -139,9 +133,9 @@ def _audit_semantic_requirements(records: dict[str, dict[str, Any]], findings: l
             findings.append(Finding("ERROR", "MOCK_CONFLICT_LOG_FIELD_MISSING", f"conflict_data_log missing {field}."))
 
     for output_type, record in records.items():
-        for legacy_key in ["main_theme", "sub_theme"]:
-            if legacy_key in record:
-                findings.append(Finding("ERROR", "MOCK_LEGACY_KEY_PRESENT", f"{output_type} contains legacy key {legacy_key}."))
+        for old_theme_key in ["main_theme", "sub_theme"]:
+            if old_theme_key in record:
+                findings.append(Finding("ERROR", "MOCK_OLD_THEME_KEY_PRESENT", f"{output_type} contains old theme key {old_theme_key}."))
 
 
 def _read_csv_header(path: Path) -> list[str]:
@@ -207,7 +201,6 @@ def audit_project(project_id: str, write_report: bool = True, sector_id: str | N
         "record_shape_fail_count": shape_counts["record_shape_fail_count"],
         "csv_header_pass_count": csv_header_pass_count,
         "markdown_front_matter_pass_count": markdown_front_matter_pass_count,
-        "deprecated_field_violation_count": shape_counts["deprecated_field_violation_count"],
         "formal_output_write_violation_count": file_counts["formal_output_write_violation_count"],
         "mock_output_dir": str(get_mock_output_dir(config)),
     }
@@ -240,7 +233,7 @@ def _write_report(project_id: str, findings: list[Finding], summary: dict[str, A
         "ERROR", "WARNING", "INFO", "output_type_count", "mock_record_count",
         "mock_file_count", "record_shape_pass_count", "record_shape_fail_count",
         "csv_header_pass_count", "markdown_front_matter_pass_count",
-        "deprecated_field_violation_count", "formal_output_write_violation_count",
+        "formal_output_write_violation_count",
         "mock_output_dir",
     ]:
         lines.append(f"- {key}: {summary.get(key)}")
@@ -263,7 +256,7 @@ def _print_summary(findings: list[Finding], summary: dict[str, Any]) -> None:
         "output_type_count", "mock_record_count",
         "mock_file_count", "record_shape_pass_count", "record_shape_fail_count",
         "csv_header_pass_count", "markdown_front_matter_pass_count",
-        "deprecated_field_violation_count", "formal_output_write_violation_count",
+        "formal_output_write_violation_count",
     ]:
         print(f"{key:40}: {summary.get(key)}")
     if findings:

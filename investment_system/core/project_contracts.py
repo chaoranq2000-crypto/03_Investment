@@ -33,6 +33,8 @@ MD_SCAN_EXCLUDE_DIRS = frozenset({
     "docs", "templates", "schemas", ".git", ".conda",
     "node_modules", "__pycache__", ".codex",
     "projects",
+    "audits",
+    "project_journal",
     "pipelines", "scripts", "tools", "research",
     "decisions", "risk", "portfolio", "data",
 })

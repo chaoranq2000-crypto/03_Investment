@@ -34,16 +34,11 @@ def validate_csv_contract(
 ) -> None:
     header = read_csv_header(path)
     required = contract.get("required_fields", []) or []
-    deprecated = contract.get("deprecated_fields", []) or []
     missing = [field for field in required if field not in header]
     if missing:
         fail(f"{output_type}: missing required fields: {', '.join(missing)}", failures)
     else:
         ok(f"{output_type}: required fields present")
-
-    deprecated_present = [field for field in deprecated if field in header]
-    if deprecated_present:
-        fail(f"{output_type}: deprecated fields present: {', '.join(deprecated_present)}", failures)
 
     if output_type == "company_table":
         for field in ("project_id", "sector_id", "stock_code"):
@@ -241,9 +236,9 @@ def main() -> int:
     print(f"[PROJECT-AWARE] Project: {project_config.project_name}")
     print(f"[PROJECT-AWARE] Output root: {project_config.output_root}")
     print(f"[PROJECT-AWARE] Output contract loaded: {len(list_output_types(project_config))} output types")
-    retired_count = project_config.raw.get("retired_legacy_output_count", 0)
+    retired_count = project_config.raw.get("retired_output_count", 0)
     if retired_count:
-        print(f"[PROJECT-AWARE] Retired legacy outputs: {retired_count} (skipped in validation)")
+        print(f"[PROJECT-AWARE] Retired historical outputs: {retired_count} (skipped in validation)")
 
     for key, dir_path in [
         ("output_root", project_config.output_root),

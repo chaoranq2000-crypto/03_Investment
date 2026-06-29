@@ -1,2 +1,0 @@
-﻿project_id,sector_id,sector_name,research_group_id,stock_code,stock_name,market,role,exposure_type,coverage_status,data_status,financial_period,source_ids,revenue,net_profit,gross_margin,pe_ttm,pe_2026e,pe_2027e,peg,evidence_ids,missing_fields,conflict_flags,notes
-tech_ai_semiconductor,cpo_optical_module_silicon_photonics,光模块/CPO/硅光,optical_interconnect,300308.SZ,中际旭创,A股,龙头,核心收入,mock,mock,mock_period,MOCK-SOURCE-001,mock,mock,mock,mock,mock,mock,mock,MOCK-EVIDENCE-001,mock_missing_field,none,MOCK_ONLY_DO_NOT_USE_FOR_RESEARCH

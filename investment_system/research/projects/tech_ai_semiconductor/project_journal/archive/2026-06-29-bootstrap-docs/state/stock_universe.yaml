@@ -1,0 +1,1184 @@
+# Stock Universe — tech_ai_semiconductor
+# universe_status: seed_pool — represents initial seed companies, not a complete universe
+# verification_status values:
+#   unverified              — no evidence verification done
+#   partially_verified      — some fields verified (e.g. financials only)
+#   verified                — all key fields verified with source_id
+# exposure_type values:
+#   核心收入   — >80% revenue from this sector
+#   高纯度     — 50-80% from this sector
+#   中度暴露   — 20-50% from this sector
+#   低纯度     — <20% from this sector
+# role values:
+#   龙头    — market leader
+#   核心    — core player
+#   弹性    — high-elasticity player
+#   边缘    — peripheral player
+# source values:
+#   migrated_from_existing_outputs  — came from existing CSVs/markdown
+#   migrated_from_mother_table       — came from A股科技前两主线母表
+#   expanded_from_taxonomy_seed      — came from 主线目录.md taxonomy expansion
+#   promoted_from_pending_1E_c_b     — code/name listing matched in A-share code-name list during 1E-c-b
+#   pending_verification             — expanded but not yet verified
+# IMPORTANT: All stock codes must use full exchange suffix: 300308.SZ, 688256.SH, 601138.SH
+# Stock code pattern: ^\d{6}\.(SH|SZ|BJ)$
+
+universe_status: seed_pool
+coverage_status: incomplete
+source_basis:
+  - migrated_from_existing_outputs
+  - migrated_from_mother_table
+  - expanded_from_taxonomy_seed
+verification_default: unverified
+notes: >
+  This is a SEED POOL, not a complete universe. Companies were migrated from
+  existing outputs and expanded from 主线目录.md taxonomy. Coverage is incomplete;
+  additional companies should be added per sector as research progresses.
+  未上市公司不得放入正式 stocks 列表，应移入 reference_companies。
+  所有强结论必须迁移到 evidence/source_id 结构中，不得留在 notes 字段中作为 evidence。
+
+stocks:
+
+  # ── 光模块/CPO/硅光 ─────────────────────────────────────────────────────────
+  # sector_id: cpo_optical_module_silicon_photonics
+
+  - code: "300308.SZ"
+    name: 中际旭创
+    sectors: [cpo_optical_module_silicon_photonics]
+    role: 龙头
+    exposure_type: 核心收入
+    verification_status: partially_verified
+    source: migrated_from_existing_outputs
+    notes: >
+      已有历史输出覆盖，光通信收发模块占97.95%。
+      2026E净利润289.70亿（29家一致预期），2027E 506亿。
+      待核实：PE历史分位。
+
+  - code: "300502.SZ"
+    name: 新易盛
+    sectors: [cpo_optical_module_silicon_photonics]
+    role: 龙头
+    exposure_type: 核心收入
+    verification_status: partially_verified
+    source: migrated_from_existing_outputs
+    notes: >
+      已有历史输出覆盖，光互联产品占99.72%。
+      800G全球市占25-30%，全球首批1.6T量产。
+      待核实：PE历史分位。
+
+  - code: "603083.SH"
+    name: 剑桥科技
+    sectors: [cpo_optical_module_silicon_photonics]
+    role: 弹性
+    exposure_type: 核心收入
+    verification_status: partially_verified
+    source: migrated_from_existing_outputs
+    notes: >
+      已有历史输出覆盖，高速光模块为核心，800G硅光已批量发货。
+      待核实：1.6T量产节奏。
+
+  - code: "002281.SZ"
+    name: 光迅科技
+    sectors: [cpo_optical_module_silicon_photonics]
+    role: 核心
+    exposure_type: 中度暴露
+    verification_status: partially_verified
+    source: migrated_from_existing_outputs
+    notes: >
+      已有历史输出覆盖，数通光模块70.94%（含800G/1.6T）。
+      待核实：PE历史分位。
+
+  - code: "000988.SZ"
+    name: 华工科技
+    sectors: [cpo_optical_module_silicon_photonics]
+    role: 核心
+    exposure_type: 中度暴露
+    verification_status: partially_verified
+    source: migrated_from_existing_outputs
+    notes: >
+      已有历史输出覆盖，光联接业务占总收入42.48%（同比+53.39%）。
+
+  - code: "300548.SZ"
+    name: 博创科技
+    sectors: [cpo_optical_module_silicon_photonics]
+    role: 弹性
+    exposure_type: 中度暴露
+    verification_status: partially_verified
+    source: migrated_from_existing_outputs
+    notes: >
+      已有历史输出覆盖，长芯盛(控股60.45%)为谷歌MPO核心供应商。
+
+  # ── 光芯片/激光器/光器件 ─────────────────────────────────────────────────
+  # sector_id: optical_chip_components
+
+  - code: "300394.SZ"
+    name: 天孚通信
+    sectors: [optical_chip_components]
+    role: 龙头
+    exposure_type: 核心收入
+    verification_status: partially_verified
+    source: migrated_from_existing_outputs
+    notes: >
+      已有历史输出覆盖，光器件100%。
+      1.6T光引擎规模量产；CPO配套器件研发完成。
+      待核实：PE历史分位。
+
+  - code: "300570.SZ"
+    name: 太辰光
+    sectors: [optical_chip_components]
+    role: 核心
+    exposure_type: 核心收入
+    verification_status: partially_verified
+    source: migrated_from_existing_outputs
+    notes: >
+      已有历史输出覆盖，MPO等高密度光互联产品数据中心市场份额领先。
+      ⚠ Q1净利润-17%（唯一负增长标的）。
+      待核实：Q1负增长原因。
+
+  - code: "688195.SH"
+    name: 腾景科技
+    sectors: [optical_chip_components]
+    role: 弹性
+    exposure_type: 中度暴露
+    verification_status: partially_verified
+    source: migrated_from_mother_table
+    notes: >
+      光通信领域受AI算力需求推动，高速光模块无源元组件、OCS光交换机晶体。
+      待核实：一致预期、客户名称和订单。
+
+  - code: "300620.SZ"
+    name: 光库科技
+    sectors: [optical_chip_components]
+    role: 弹性
+    exposure_type: 中度暴露
+    verification_status: partially_verified
+    source: migrated_from_mother_table
+    notes: >
+      DR4/DR8 FAU、MT-FAU、CPO用光纤阵列、薄膜铌酸锂调制器。
+      待核实：一致预期、PE历史分位。
+
+  - code: "688025.SH"
+    name: 杰普特
+    sectors: [optical_chip_components]
+    role: 边缘
+    exposure_type: 低纯度
+    verification_status: partially_verified
+    source: migrated_from_mother_table
+    notes: >
+      光纤器件围绕光连接/光通信，面向数据中心、云计算、人工智能。
+      主业仍以激光器为主，光通信为高速增长新业务。
+      待核实：一致预期、光通信业务收入占比。
+
+  - code: "688127.SH"
+    name: 蓝特光学
+    sectors: [optical_chip_components]
+    role: 边缘
+    exposure_type: 低纯度
+    verification_status: partially_verified
+    source: migrated_from_mother_table
+    notes: >
+      准直类透镜、微透镜等可用于光通信，未披露数据中心光通信客户占比。
+      待核实：光通信收入占比、一致预期。
+
+  # ── PCB/高速通信板（来自母表，待验证）────────────────────────────────────
+  # sector_id: ai_server_pcb_high_speed_board
+
+  - code: "002463.SZ"
+    name: 沪电股份
+    sectors: [ai_server_pcb_high_speed_board]
+    role: 龙头
+    exposure_type: 高纯度
+    verification_status: unverified
+    source: migrated_from_mother_table
+    notes: >
+      PCB核心标的，来自A股科技前两主线母表。
+      待启动PCB方向研究后填充详细信息。
+
+  - code: "002938.SZ"
+    name: 鹏鼎控股
+    sectors: [ai_server_pcb_high_speed_board]
+    role: 核心
+    exposure_type: 中度暴露
+    verification_status: unverified
+    source: migrated_from_mother_table
+    notes: >
+      来自A股科技前两主线母表。
+      待启动PCB方向研究后填充详细信息。
+
+  - code: "002384.SZ"
+    name: 东山精密
+    sectors: [ai_server_pcb_high_speed_board]
+    role: 核心
+    exposure_type: 中度暴露
+    verification_status: unverified
+    source: migrated_from_mother_table
+    notes: >
+      来自A股科技前两主线母表。
+      待启动PCB方向研究后填充详细信息。
+
+  # ── 半导体设备（来自母表，待验证）────────────────────────────────────────
+  # sector_id: semiconductor_frontend_equipment
+
+  - code: "688012.SH"
+    name: 中微公司
+    sectors: [semiconductor_frontend_equipment]
+    role: 龙头
+    exposure_type: 核心收入
+    verification_status: unverified
+    source: migrated_from_mother_table
+    notes: >
+      刻蚀设备龙头，待启动半导体设备方向研究。
+
+  - code: "002371.SZ"
+    name: 北方华创
+    sectors: [semiconductor_frontend_equipment]
+    role: 龙头
+    exposure_type: 核心收入
+    verification_status: unverified
+    source: expanded_from_taxonomy_seed
+    notes: >
+      薄膜沉积/刻蚀/清洗等多品类设备龙头，来自主线目录.md。
+      待启动半导体设备方向研究。
+
+  - code: "688072.SH"
+    name: 拓荆科技
+    sectors: [semiconductor_frontend_equipment]
+    role: 核心
+    exposure_type: 核心收入
+    verification_status: unverified
+    source: expanded_from_taxonomy_seed
+    notes: >
+      CVD设备（薄膜沉积），来自主线目录.md。
+      待启动半导体设备方向研究。
+
+  - code: "688536.SH"
+    name: 芯源微
+    sectors: [semiconductor_frontend_equipment, semiconductor_metrology_test_equipment]
+    role: 核心
+    exposure_type: 核心收入
+    verification_status: unverified
+    source: expanded_from_taxonomy_seed
+    notes: >
+      涂胶显影设备，来自主线目录.md。
+      待启动半导体设备方向研究。
+
+  - code: "688396.SH"
+    name: 华润微
+    sectors: [wafer_foundry_specialty_process]
+    role: 核心
+    exposure_type: 高纯度
+    verification_status: unverified
+    source: migrated_from_mother_table
+    notes: >
+      ⚠ 华润微属于晶圆制造/特色工艺（功率半导体），不归入半导体设备或材料。
+      待启动晶圆制造方向研究。
+
+  # ── 存储/HBM（来自母表，待验证）─────────────────────────────────────────
+  # sector_id: memory_hbm_ddr5
+
+  - code: "688008.SH"
+    name: 澜起科技
+    sectors: [memory_hbm_ddr5]
+    role: 核心
+    exposure_type: 核心收入
+    verification_status: unverified
+    source: expanded_from_taxonomy_seed
+    notes: >
+      HBM接口/DDR5接口芯片，来自主线目录.md。
+      待启动存储方向研究。
+
+  - code: "603986.SH"
+    name: 兆易创新
+    sectors: [memory_hbm_ddr5, edge_ai_soc_mcu]
+    role: 核心
+    exposure_type: 核心收入
+    verification_status: unverified
+    source: expanded_from_taxonomy_seed
+    notes: >
+      DRAM/NAND/NOR存储芯片+MCU，来自主线目录.md。
+      待启动存储/MCU方向研究。
+
+  # ── 先进封装 ──────────────────────────────────────────────────────────────
+  # sector_id: advanced_packaging_chiplet_cowos_tsv
+
+  - code: "600584.SH"
+    name: 长电科技
+    sectors: [advanced_packaging_chiplet_cowos_tsv]
+    role: 龙头
+    exposure_type: 核心收入
+    verification_status: unverified
+    source: expanded_from_taxonomy_seed
+    notes: >
+      封测龙头，AI芯片/存储/Chiplet封装，来自主线目录.md。
+      待启动先进封装方向研究。
+
+  - code: "002156.SZ"
+    name: 通富微电
+    sectors: [advanced_packaging_chiplet_cowos_tsv]
+    role: 核心
+    exposure_type: 核心收入
+    verification_status: unverified
+    source: expanded_from_taxonomy_seed
+    notes: >
+      先进封装，HBM封装，来自主线目录.md。
+      待启动先进封装方向研究。
+
+  - code: "002185.SZ"
+    name: 华天科技
+    sectors: [advanced_packaging_chiplet_cowos_tsv]
+    role: 核心
+    exposure_type: 核心收入
+    verification_status: unverified
+    source: expanded_from_taxonomy_seed
+    notes: >
+      先进封装，来自主线目录.md。
+      待启动先进封装方向研究。
+
+  # ── 半导体设计/EDA ───────────────────────────────────────────────────────
+  # sector_id: eda_ip_design_service
+
+  - code: "688206.SH"
+    name: 概伦电子
+    sectors: [eda_ip_design_service]
+    role: 核心
+    exposure_type: 核心收入
+    verification_status: unverified
+    source: expanded_from_taxonomy_seed
+    notes: >
+      EDA软件，来自主线目录.md。
+      待启动EDA方向研究。
+
+  - code: "688521.SH"
+    name: 芯原股份
+    sectors: [eda_ip_design_service]
+    role: 核心
+    exposure_type: 核心收入
+    verification_status: unverified
+    source: expanded_from_taxonomy_seed
+    notes: >
+      芯片IP/设计服务，来自主线目录.md。
+      待启动EDA/设计服务方向研究。
+
+  - code: "688047.SH"
+    name: 龙芯中科
+    sectors: [ai_chips_gpu_dcu_asic]
+    role: 核心
+    exposure_type: 核心收入
+    verification_status: unverified
+    source: expanded_from_taxonomy_seed
+    notes: >
+      国产CPU/LoongArch生态，来自主线目录.md。
+      待启动AI芯片方向研究。
+
+  - code: "688256.SH"
+    name: 寒武纪-U
+    sectors: [ai_chips_gpu_dcu_asic]
+    role: 龙头
+    exposure_type: 核心收入
+    verification_status: unverified
+    source: expanded_from_taxonomy_seed
+    notes: >
+      国产AI芯片/ASIC，来自主线目录.md。
+      待启动AI芯片方向研究。
+
+  - code: "688041.SH"
+    name: 海光信息
+    sectors: [ai_chips_gpu_dcu_asic]
+    role: 龙头
+    exposure_type: 核心收入
+    verification_status: unverified
+    source: expanded_from_taxonomy_seed
+    notes: >
+      国产GPU/DCU，来自主线目录.md。
+      待启动AI芯片方向研究。
+
+  # ── 端侧AI/SoC ────────────────────────────────────────────────────────────
+  # sector_id: edge_ai_soc_mcu
+
+  - code: "603893.SH"
+    name: 瑞芯微
+    sectors: [edge_ai_soc_mcu]
+    role: 核心
+    exposure_type: 核心收入
+    verification_status: unverified
+    source: expanded_from_taxonomy_seed
+    notes: >
+      AIoT SoC，来自主线目录.md。
+      待启动端侧AI方向研究。
+
+  - code: "688608.SH"
+    name: 恒玄科技
+    sectors: [edge_ai_soc_mcu]
+    role: 核心
+    exposure_type: 核心收入
+    verification_status: unverified
+    source: expanded_from_taxonomy_seed
+    notes: >
+      音频SoC/蓝牙SoC，来自主线目录.md。
+      待启动端侧AI方向研究。
+
+  # ── AI服务器/液冷 ──────────────────────────────────────────────────────────
+  # sector_id: ai_server_rack_supernode_switch / liquid_cooling_thermal
+
+  - code: "601138.SH"
+    name: 工业富联
+    sectors: [ai_server_rack_supernode_switch]
+    role: 龙头
+    exposure_type: 高纯度
+    verification_status: unverified
+    source: expanded_from_taxonomy_seed
+    notes: >
+      AI服务器整机/超节点，来自主线目录.md。
+      待启动AI服务器方向研究。
+
+  - code: "000977.SZ"
+    name: 浪潮信息
+    sectors: [ai_server_rack_supernode_switch]
+    role: 龙头
+    exposure_type: 高纯度
+    verification_status: unverified
+    source: expanded_from_taxonomy_seed
+    notes: >
+      AI服务器整机，来自主线目录.md。
+      待启动AI服务器方向研究。
+
+  - code: "002837.SZ"
+    name: 英维克
+    sectors: [liquid_cooling_thermal]
+    role: 龙头
+    exposure_type: 高纯度
+    verification_status: unverified
+    source: expanded_from_taxonomy_seed
+    notes: >
+      液冷服务器/数据中心温控，来自主线目录.md。
+      待启动液冷方向研究。
+
+  - code: "920808.BJ"
+    name: 曙光数创
+    sectors: [liquid_cooling_thermal]
+    role: 核心
+    exposure_type: 核心收入
+    verification_status: partially_verified
+    source: expanded_from_taxonomy_seed
+    notes: >
+      液冷，来自主线目录.md。
+      1E-c-b：A股代码名称表显示曙光数创当前代码为920808；原301171.SZ需废弃。
+      待启动液冷方向研究。
+
+  # ── 半导体材料 ────────────────────────────────────────────────────────────
+  # sector_id: semiconductor_materials
+
+  - code: "688126.SH"
+    name: 沪硅产业
+    sectors: [semiconductor_materials]
+    role: 核心
+    exposure_type: 核心收入
+    verification_status: unverified
+    source: expanded_from_taxonomy_seed
+    notes: >
+      大硅片（12英寸），来自主线目录.md。
+      待启动半导体材料方向研究。
+
+  - code: "688019.SH"
+    name: 安集科技
+    sectors: [semiconductor_materials]
+    role: 核心
+    exposure_type: 核心收入
+    verification_status: unverified
+    source: expanded_from_taxonomy_seed
+    notes: >
+      CMP抛光液/抛光垫，来自主线目录.md。
+      待启动半导体材料方向研究。
+
+  - code: "688260.SH"
+    name: 鼎龙股份
+    sectors: [semiconductor_materials]
+    role: 核心
+    exposure_type: 核心收入
+    verification_status: unverified
+    source: expanded_from_taxonomy_seed
+    notes: >
+      CMP抛光垫，来自主线目录.md。
+      待启动半导体材料方向研究。
+
+  - code: "300346.SZ"
+    name: 南大光电
+    sectors: [semiconductor_materials]
+    role: 核心
+    exposure_type: 核心收入
+    verification_status: unverified
+    source: expanded_from_taxonomy_seed
+    notes: >
+      光刻胶/前驱体，来自主线目录.md。
+      待启动半导体材料方向研究。
+
+  # ── 1E-c-b promoted / coverage repair stocks ─────────────────────────────
+  # Code/name/listing status matched via A-share code-name list on 2026-06-21.
+  # Sector exposure remains seed-level and must be verified during evidence stage.
+
+  - code: "300474.SZ"
+    name: 景嘉微
+    sectors: [ai_chips_gpu_dcu_asic]
+    role: 核心
+    exposure_type: 中度暴露
+    verification_status: partially_verified
+    source: promoted_from_pending_1E_c_b
+    notes: >
+      1E-c-b：从 pending_code_resolution 升级；代码/名称已通过A股代码名称表核验。
+      国产GPU候选，来自主线目录.md；sector exposure 待 1E-d/正式研究核验。
+
+  - code: "688385.SH"
+    name: 复旦微电
+    sectors: [ai_chips_gpu_dcu_asic]
+    role: 核心
+    exposure_type: 中度暴露
+    verification_status: partially_verified
+    source: promoted_from_pending_1E_c_b
+    notes: >
+      1E-c-b：从 pending_code_resolution 升级；代码/名称已通过A股代码名称表核验。
+      FPGA/AI芯片候选，来自主线目录.md；sector exposure 待后续研究核验。
+
+  - code: "688262.SH"
+    name: 国芯科技
+    sectors: [ai_chips_gpu_dcu_asic, eda_ip_design_service]
+    role: 核心
+    exposure_type: 中度暴露
+    verification_status: partially_verified
+    source: promoted_from_pending_1E_c_b
+    notes: >
+      1E-c-b：从 pending_code_resolution 升级；代码/名称已通过A股代码名称表核验。
+      芯片IP/国产芯片候选，来自主线目录.md；sector exposure 待后续研究核验。
+
+  - code: "603019.SH"
+    name: 中科曙光
+    sectors: [ai_server_rack_supernode_switch]
+    role: 核心
+    exposure_type: 高纯度
+    verification_status: partially_verified
+    source: promoted_from_pending_1E_c_b
+    notes: >
+      1E-c-b：从 pending_code_resolution 升级；代码/名称已通过A股代码名称表核验。
+      AI服务器/超节点候选，来自主线目录.md；业务暴露待证据阶段核验。
+
+  - code: "000938.SZ"
+    name: 紫光股份
+    sectors: [ai_server_rack_supernode_switch]
+    role: 核心
+    exposure_type: 中度暴露
+    verification_status: partially_verified
+    source: promoted_from_pending_1E_c_b
+    notes: >
+      1E-c-b：从 pending_code_resolution 升级；代码/名称已通过A股代码名称表核验。
+      AI服务器/交换机候选，来自主线目录.md；业务暴露待证据阶段核验。
+
+  - code: "000063.SZ"
+    name: 中兴通讯
+    sectors: [ai_server_rack_supernode_switch, fiber_cable_hollow_core_dci]
+    role: 核心
+    exposure_type: 中度暴露
+    verification_status: partially_verified
+    source: promoted_from_pending_1E_c_b
+    notes: >
+      1E-c-b：从 pending_code_resolution 升级；代码/名称已通过A股代码名称表核验。
+      交换机/通信设备候选，来自主线目录.md；跨 AI服务器 与光通信设备方向，需后续核实收入暴露。
+
+  - code: "300442.SZ"
+    name: 润泽科技
+    sectors: [aidc_data_center_compute_leasing]
+    role: 核心
+    exposure_type: 中度暴露
+    verification_status: partially_verified
+    source: promoted_from_pending_1E_c_b
+    notes: >
+      1E-c-b：从 pending_code_resolution 升级；代码/名称已通过A股代码名称表核验。
+      AIDC/智算中心候选，来自主线目录.md；合同质量和回款质量需后续核验。
+
+  - code: "300383.SZ"
+    name: 光环新网
+    sectors: [aidc_data_center_compute_leasing]
+    role: 核心
+    exposure_type: 中度暴露
+    verification_status: partially_verified
+    source: promoted_from_pending_1E_c_b
+    notes: >
+      1E-c-b：从 pending_code_resolution 升级；代码/名称已通过A股代码名称表核验。
+      AIDC/云计算候选，来自主线目录.md；AI相关收入暴露待后续核验。
+
+  - code: "300738.SZ"
+    name: 奥飞数据
+    sectors: [aidc_data_center_compute_leasing]
+    role: 核心
+    exposure_type: 中度暴露
+    verification_status: partially_verified
+    source: expanded_from_taxonomy_seed
+    notes: >
+      1E-c-b：来自主线目录.md AIDC代表股票池；代码/名称已通过A股代码名称表核验。
+      用于补齐 AIDC 研究对象池，AI算力租赁/数据中心暴露待后续核验。
+
+  - code: "603881.SH"
+    name: 数据港
+    sectors: [aidc_data_center_compute_leasing]
+    role: 核心
+    exposure_type: 中度暴露
+    verification_status: partially_verified
+    source: expanded_from_taxonomy_seed
+    notes: >
+      1E-c-b：来自主线目录.md AIDC代表股票池；代码/名称已通过A股代码名称表核验。
+      用于补齐 AIDC 研究对象池，AI相关客户和合同质量待后续核验。
+
+  - code: "600845.SH"
+    name: 宝信软件
+    sectors: [aidc_data_center_compute_leasing]
+    role: 核心
+    exposure_type: 中度暴露
+    verification_status: partially_verified
+    source: expanded_from_taxonomy_seed
+    notes: >
+      1E-c-b：来自主线目录.md AIDC/云计算代表股票池；代码/名称已通过A股代码名称表核验。
+      用于补齐 AIDC 研究对象池，AI云/IDC暴露待后续核验。
+
+  - code: "301018.SZ"
+    name: 申菱环境
+    sectors: [liquid_cooling_thermal]
+    role: 核心
+    exposure_type: 中度暴露
+    verification_status: partially_verified
+    source: expanded_from_taxonomy_seed
+    notes: >
+      1E-c-b：来自主线目录.md 液冷/数据中心温控代表股票池；代码/名称已通过A股代码名称表核验。
+      液冷与温控业务暴露待后续证据核验。
+
+  - code: "300499.SZ"
+    name: 高澜股份
+    sectors: [liquid_cooling_thermal]
+    role: 核心
+    exposure_type: 中度暴露
+    verification_status: partially_verified
+    source: expanded_from_taxonomy_seed
+    notes: >
+      1E-c-b：来自主线目录.md 液冷服务器代表股票池；代码/名称已通过A股代码名称表核验。
+      液冷业务暴露待后续证据核验。
+
+  - code: "300990.SZ"
+    name: 同飞股份
+    sectors: [liquid_cooling_thermal]
+    role: 核心
+    exposure_type: 中度暴露
+    verification_status: partially_verified
+    source: expanded_from_taxonomy_seed
+    notes: >
+      1E-c-b：来自主线目录.md 液冷服务器/冷却部件代表股票池；代码/名称已通过A股代码名称表核验。
+      数据中心液冷暴露待后续证据核验。
+
+  - code: "002335.SZ"
+    name: 科华数据
+    sectors: [data_center_power_hvdc_ups]
+    role: 核心
+    exposure_type: 中度暴露
+    verification_status: partially_verified
+    source: expanded_from_taxonomy_seed
+    notes: >
+      1E-c-b：来自主线目录.md UPS/HVDC代表股票池；代码/名称已通过A股代码名称表核验。
+      数据中心供电业务暴露待后续证据核验。
+
+  - code: "002518.SZ"
+    name: 科士达
+    sectors: [data_center_power_hvdc_ups]
+    role: 核心
+    exposure_type: 中度暴露
+    verification_status: partially_verified
+    source: expanded_from_taxonomy_seed
+    notes: >
+      1E-c-b：来自主线目录.md UPS/HVDC/BBU代表股票池；代码/名称已通过A股代码名称表核验。
+      数据中心电源与储能备电暴露待后续证据核验。
+
+  - code: "300376.SZ"
+    name: 易事特
+    sectors: [data_center_power_hvdc_ups]
+    role: 核心
+    exposure_type: 中度暴露
+    verification_status: partially_verified
+    source: expanded_from_taxonomy_seed
+    notes: >
+      1E-c-b：来自主线目录.md UPS/电源代表股票池；代码/名称已通过A股代码名称表核验。
+      数据中心供电业务暴露待后续证据核验。
+
+  - code: "002334.SZ"
+    name: 英威腾
+    sectors: [data_center_power_hvdc_ups]
+    role: 核心
+    exposure_type: 中度暴露
+    verification_status: partially_verified
+    source: expanded_from_taxonomy_seed
+    notes: >
+      1E-c-b：来自主线目录.md UPS/电源代表股票池；代码/名称已通过A股代码名称表核验。
+      数据中心供电业务暴露待后续证据核验。
+
+  - code: "300870.SZ"
+    name: 欧陆通
+    sectors: [data_center_power_hvdc_ups]
+    role: 核心
+    exposure_type: 中度暴露
+    verification_status: partially_verified
+    source: expanded_from_taxonomy_seed
+    notes: >
+      1E-c-b：来自主线目录.md UPS/电源代表股票池；代码/名称已通过A股代码名称表核验。
+      数据中心电源暴露待后续证据核验。
+
+  - code: "002475.SZ"
+    name: 立讯精密
+    sectors: [high_speed_copper_connector, ai_pc_phone_glasses_earbuds]
+    role: 核心
+    exposure_type: 中度暴露
+    verification_status: partially_verified
+    source: promoted_from_pending_1E_c_b
+    notes: >
+      1E-c-b：从 pending_code_resolution 升级；代码/名称已通过A股代码名称表核验。
+      高速连接器/AI终端候选，来自主线目录.md；AI相关收入暴露待后续核验。
+
+  - code: "002130.SZ"
+    name: 沃尔核材
+    sectors: [high_speed_copper_connector]
+    role: 核心
+    exposure_type: 中度暴露
+    verification_status: partially_verified
+    source: expanded_from_taxonomy_seed
+    notes: >
+      1E-c-b：来自主线目录.md 高速铜缆代表股票池；代码/名称已通过A股代码名称表核验。
+      高速铜缆业务暴露待后续证据核验。
+
+  - code: "300563.SZ"
+    name: 神宇股份
+    sectors: [high_speed_copper_connector]
+    role: 核心
+    exposure_type: 中度暴露
+    verification_status: partially_verified
+    source: expanded_from_taxonomy_seed
+    notes: >
+      1E-c-b：来自主线目录.md 高速铜缆代表股票池；代码/名称已通过A股代码名称表核验。
+      高速线缆业务暴露待后续证据核验。
+
+  - code: "300913.SZ"
+    name: 兆龙互连
+    sectors: [high_speed_copper_connector]
+    role: 核心
+    exposure_type: 中度暴露
+    verification_status: partially_verified
+    source: expanded_from_taxonomy_seed
+    notes: >
+      1E-c-b：来自主线目录.md 高速铜缆代表股票池；代码/名称已通过A股代码名称表核验。
+      DAC/AEC相关业务暴露待后续证据核验。
+
+  - code: "605277.SH"
+    name: 新亚电子
+    sectors: [high_speed_copper_connector]
+    role: 核心
+    exposure_type: 中度暴露
+    verification_status: partially_verified
+    source: expanded_from_taxonomy_seed
+    notes: >
+      1E-c-b：来自主线目录.md 高速铜缆代表股票池；代码/名称已通过A股代码名称表核验。
+      高速线缆业务暴露待后续证据核验。
+
+  - code: "002815.SZ"
+    name: 崇达技术
+    sectors: [ai_server_pcb_high_speed_board, ic_substrate_abf_glass_tgv]
+    role: 核心
+    exposure_type: 中度暴露
+    verification_status: partially_verified
+    source: promoted_from_pending_1E_c_b
+    notes: >
+      1E-c-b：从 pending_code_resolution 升级；代码/名称已通过A股代码名称表核验。
+      PCB/封装基板候选，来自主线目录.md；AI服务器PCB与IC载板暴露待后续核验。
+
+  - code: "002916.SZ"
+    name: 深南电路
+    sectors: [ai_server_pcb_high_speed_board, ic_substrate_abf_glass_tgv]
+    role: 核心
+    exposure_type: 中度暴露
+    verification_status: partially_verified
+    source: promoted_from_pending_1E_c_b
+    notes: >
+      1E-c-b：从 pending_code_resolution 升级；代码/名称已通过A股代码名称表核验。
+      PCB/IC载板候选，来自主线目录.md；AI服务器PCB与IC载板暴露待后续核验。
+
+  - code: "300476.SZ"
+    name: 胜宏科技
+    sectors: [ai_server_pcb_high_speed_board, ic_substrate_abf_glass_tgv]
+    role: 核心
+    exposure_type: 中度暴露
+    verification_status: partially_verified
+    source: promoted_from_pending_1E_c_b
+    notes: >
+      1E-c-b：从 pending_code_resolution 升级；代码/名称已通过A股代码名称表核验。
+      PCB/IC载板候选，来自主线目录.md；AI服务器PCB与IC载板暴露待后续核验。
+
+  - code: "002436.SZ"
+    name: 兴森科技
+    sectors: [ic_substrate_abf_glass_tgv, advanced_packaging_chiplet_cowos_tsv]
+    role: 核心
+    exposure_type: 中度暴露
+    verification_status: partially_verified
+    source: promoted_from_pending_1E_c_b
+    notes: >
+      1E-c-b：从 pending_code_resolution 升级；代码/名称已通过A股代码名称表核验。
+      IC载板/先进封装候选，来自主线目录.md；业务暴露待后续核验。
+
+  - code: "688183.SH"
+    name: 生益电子
+    sectors: [ic_substrate_abf_glass_tgv]
+    role: 核心
+    exposure_type: 中度暴露
+    verification_status: partially_verified
+    source: expanded_from_taxonomy_seed
+    notes: >
+      1E-c-b：来自主线目录.md ABF载板/AI服务器PCB代表股票池；代码/名称已通过A股代码名称表核验。
+      本次仅用于补齐 IC载板研究对象池，业务暴露待后续核验。
+
+  - code: "600183.SH"
+    name: 生益科技
+    sectors: [ccl_high_frequency_materials]
+    role: 龙头
+    exposure_type: 高纯度
+    verification_status: partially_verified
+    source: promoted_from_pending_1E_c_b
+    notes: >
+      1E-c-b：从 pending_code_resolution 升级；代码/名称已通过A股代码名称表核验。
+      高频高速覆铜板候选，来自主线目录.md；AI服务器材料收入暴露待后续核验。
+
+  - code: "688519.SH"
+    name: 南亚新材
+    sectors: [ccl_high_frequency_materials]
+    role: 核心
+    exposure_type: 中度暴露
+    verification_status: partially_verified
+    source: promoted_from_pending_1E_c_b
+    notes: >
+      1E-c-b：从 pending_code_resolution 升级；代码/名称已通过A股代码名称表核验。
+      CCL候选，来自主线目录.md；AI服务器材料收入暴露待后续核验。
+
+  - code: "603186.SH"
+    name: 华正新材
+    sectors: [ccl_high_frequency_materials]
+    role: 核心
+    exposure_type: 中度暴露
+    verification_status: partially_verified
+    source: expanded_from_taxonomy_seed
+    notes: >
+      1E-c-b：来自主线目录.md 高频高速覆铜板/特种树脂代表股票池；代码/名称已通过A股代码名称表核验。
+      CCL相关业务暴露待后续证据核验。
+
+  - code: "002636.SZ"
+    name: 金安国纪
+    sectors: [ccl_high_frequency_materials]
+    role: 核心
+    exposure_type: 中度暴露
+    verification_status: partially_verified
+    source: expanded_from_taxonomy_seed
+    notes: >
+      1E-c-b：来自主线目录.md 高频高速覆铜板代表股票池；代码/名称已通过A股代码名称表核验。
+      CCL相关业务暴露待后续证据核验。
+
+  - code: "300936.SZ"
+    name: 中英科技
+    sectors: [ccl_high_frequency_materials]
+    role: 核心
+    exposure_type: 中度暴露
+    verification_status: partially_verified
+    source: expanded_from_taxonomy_seed
+    notes: >
+      1E-c-b：来自主线目录.md 高频高速覆铜板代表股票池；代码/名称已通过A股代码名称表核验。
+      CCL相关业务暴露待后续证据核验。
+
+  - code: "688120.SH"
+    name: 华海清科
+    sectors: [semiconductor_frontend_equipment]
+    role: 核心
+    exposure_type: 核心收入
+    verification_status: partially_verified
+    source: promoted_from_pending_1E_c_b
+    notes: >
+      1E-c-b：从 pending_code_resolution 升级；代码/名称已通过A股代码名称表核验。
+      CMP设备候选，来自主线目录.md；订单和收入暴露待后续证据核验。
+
+  - code: "688082.SH"
+    name: 盛美上海
+    sectors: [semiconductor_frontend_equipment]
+    role: 核心
+    exposure_type: 核心收入
+    verification_status: partially_verified
+    source: promoted_from_pending_1E_c_b
+    notes: >
+      1E-c-b：从 pending_code_resolution 升级；代码/名称已通过A股代码名称表核验。
+      清洗设备候选，来自主线目录.md；订单和收入暴露待后续证据核验。
+
+  - code: "688147.SH"
+    name: 微导纳米
+    sectors: [semiconductor_frontend_equipment]
+    role: 核心
+    exposure_type: 核心收入
+    verification_status: partially_verified
+    source: promoted_from_pending_1E_c_b
+    notes: >
+      1E-c-b：从 pending_code_resolution 升级；代码/名称已通过A股代码名称表核验。
+      ALD/CVD薄膜沉积设备候选，来自主线目录.md；订单和收入暴露待后续证据核验。
+
+  - code: "301095.SZ"
+    name: 广立微
+    sectors: [semiconductor_metrology_test_equipment, eda_ip_design_service]
+    role: 核心
+    exposure_type: 中度暴露
+    verification_status: partially_verified
+    source: promoted_from_pending_1E_c_b
+    notes: >
+      1E-c-b：从 pending_code_resolution 升级；代码/名称已通过A股代码名称表核验。
+      半导体量检测/EDA良率工具候选，来自主线目录.md；业务暴露待后续证据核验。
+
+  - code: "300604.SZ"
+    name: 长川科技
+    sectors: [semiconductor_metrology_test_equipment]
+    role: 核心
+    exposure_type: 核心收入
+    verification_status: partially_verified
+    source: promoted_from_pending_1E_c_b
+    notes: >
+      1E-c-b：从 pending_code_resolution 升级；代码/名称已通过A股代码名称表核验。
+      半导体测试设备候选，来自主线目录.md；业务暴露待后续证据核验。
+
+  - code: "688361.SH"
+    name: 中科飞测
+    sectors: [semiconductor_metrology_test_equipment]
+    role: 核心
+    exposure_type: 核心收入
+    verification_status: partially_verified
+    source: promoted_from_pending_1E_c_b
+    notes: >
+      1E-c-b：从 pending_code_resolution 升级；代码/名称已通过A股代码名称表核验。
+      前道量测检测候选，来自主线目录.md；业务暴露待后续证据核验。
+
+  - code: "300567.SZ"
+    name: 精测电子
+    sectors: [semiconductor_metrology_test_equipment]
+    role: 核心
+    exposure_type: 中度暴露
+    verification_status: partially_verified
+    source: expanded_from_taxonomy_seed
+    notes: >
+      1E-c-b：来自主线目录.md 前道量测检测/AOI代表股票池；代码/名称已通过A股代码名称表核验。
+      半导体检测收入暴露待后续证据核验。
+
+  - code: "688409.SH"
+    name: 富创精密
+    sectors: [semiconductor_components_parts]
+    role: 核心
+    exposure_type: 中度暴露
+    verification_status: partially_verified
+    source: expanded_from_taxonomy_seed
+    notes: >
+      1E-c-b：来自主线目录.md 半导体零部件代表股票池；代码/名称已通过A股代码名称表核验。
+      半导体腔体/结构件业务暴露待后续证据核验。
+
+  - code: "300260.SZ"
+    name: 新莱应材
+    sectors: [semiconductor_components_parts]
+    role: 核心
+    exposure_type: 中度暴露
+    verification_status: partially_verified
+    source: expanded_from_taxonomy_seed
+    notes: >
+      1E-c-b：来自主线目录.md 半导体零部件代表股票池；代码/名称已通过A股代码名称表核验。
+      阀门/管路/气体系统业务暴露待后续证据核验。
+
+  - code: "688596.SH"
+    name: 正帆科技
+    sectors: [semiconductor_components_parts]
+    role: 核心
+    exposure_type: 中度暴露
+    verification_status: partially_verified
+    source: expanded_from_taxonomy_seed
+    notes: >
+      1E-c-b：来自主线目录.md 半导体零部件代表股票池；代码/名称已通过A股代码名称表核验。
+      工艺设备配套业务暴露待后续证据核验。
+
+  - code: "300285.SZ"
+    name: 国瓷材料
+    sectors: [semiconductor_components_parts]
+    role: 核心
+    exposure_type: 中度暴露
+    verification_status: partially_verified
+    source: expanded_from_taxonomy_seed
+    notes: >
+      1E-c-b：来自主线目录.md 静电卡盘/陶瓷件代表股票池；代码/名称已通过A股代码名称表核验。
+      半导体陶瓷零部件收入暴露待后续证据核验。
+
+  - code: "300408.SZ"
+    name: 三环集团
+    sectors: [semiconductor_components_parts]
+    role: 核心
+    exposure_type: 中度暴露
+    verification_status: partially_verified
+    source: expanded_from_taxonomy_seed
+    notes: >
+      1E-c-b：来自主线目录.md 静电卡盘/陶瓷件代表股票池；代码/名称已通过A股代码名称表核验。
+      半导体陶瓷件收入暴露待后续证据核验。
+
+  - code: "002129.SZ"
+    name: TCL中环
+    sectors: [semiconductor_materials]
+    role: 核心
+    exposure_type: 中度暴露
+    verification_status: partially_verified
+    source: expanded_from_taxonomy_seed
+    notes: >
+      1E-c-b：来自主线目录.md 大硅片代表股票池；代码/名称已通过A股代码名称表核验。
+      半导体硅片收入暴露待后续证据核验。
+
+  - code: "300223.SZ"
+    name: 北京君正
+    sectors: [memory_hbm_ddr5]
+    role: 核心
+    exposure_type: 中度暴露
+    verification_status: partially_verified
+    source: expanded_from_taxonomy_seed
+    notes: >
+      1E-c-b：来自主线目录.md DRAM/NAND/NOR代表股票池；代码/名称已通过A股代码名称表核验。
+      存储业务与AI服务器相关暴露待后续证据核验。
+
+  - code: "688110.SH"
+    name: 东芯股份
+    sectors: [memory_hbm_ddr5]
+    role: 核心
+    exposure_type: 中度暴露
+    verification_status: partially_verified
+    source: expanded_from_taxonomy_seed
+    notes: >
+      1E-c-b：来自主线目录.md DRAM/NAND/NOR代表股票池；代码/名称已通过A股代码名称表核验。
+      存储业务与AI服务器相关暴露待后续证据核验。
+
+  - code: "688766.SH"
+    name: 普冉股份
+    sectors: [memory_hbm_ddr5]
+    role: 核心
+    exposure_type: 中度暴露
+    verification_status: partially_verified
+    source: expanded_from_taxonomy_seed
+    notes: >
+      1E-c-b：来自主线目录.md DRAM/NAND/NOR代表股票池；代码/名称已通过A股代码名称表核验。
+      存储业务与AI服务器相关暴露待后续证据核验。
+
+  - code: "688362.SH"
+    name: 甬矽电子
+    sectors: [advanced_packaging_chiplet_cowos_tsv]
+    role: 核心
+    exposure_type: 中度暴露
+    verification_status: partially_verified
+    source: expanded_from_taxonomy_seed
+    notes: >
+      1E-c-b：来自主线目录.md Chiplet/先进封装代表股票池；代码/名称已通过A股代码名称表核验。
+      先进封装收入暴露待后续证据核验。
+
+  - code: "688018.SH"
+    name: 乐鑫科技
+    sectors: [edge_ai_soc_mcu]
+    role: 核心
+    exposure_type: 核心收入
+    verification_status: partially_verified
+    source: promoted_from_pending_1E_c_b
+    notes: >
+      1E-c-b：从 pending_code_resolution 升级；A股代码名称表核验为688018.SH。
+      此前与晶晨股份存在代码混淆疑点，本次已区分：乐鑫科技=688018.SH，晶晨股份=688099.SH。
+      端侧AI/无线连接芯片业务暴露待后续证据核验。
+
+  - code: "688099.SH"
+    name: 晶晨股份
+    sectors: [edge_ai_soc_mcu]
+    role: 核心
+    exposure_type: 核心收入
+    verification_status: partially_verified
+    source: promoted_from_pending_1E_c_b
+    notes: >
+      1E-c-b：从 pending_code_resolution 升级；A股代码名称表核验为688099.SH。
+      此前与乐鑫科技存在代码混淆疑点，本次已区分：乐鑫科技=688018.SH，晶晨股份=688099.SH。
+      AIoT SoC业务暴露待后续证据核验。
+
+  - code: "300458.SZ"
+    name: 全志科技
+    sectors: [edge_ai_soc_mcu]
+    role: 核心
+    exposure_type: 核心收入
+    verification_status: partially_verified
+    source: promoted_from_pending_1E_c_b
+    notes: >
+      1E-c-b：从 pending_code_resolution 升级；代码/名称已通过A股代码名称表核验。
+      AIoT SoC候选，来自主线目录.md；业务暴露待后续证据核验。
+
+# ── Reference Companies (unlisted, industry reference only) ──────────────────
+reference_companies:
+  - name: 长江存储
+    listed: false
+    role: industry_reference
+    related_sectors:
+      - memory_hbm_ddr5
+    notes: >
+      未上市产业参考公司，不进入A股股票池评分。
+      A股HBM相关标的为澜起科技（接口芯片）、长电科技（封测）等。
+
+  - name: 盛合晶微
+    listed: false
+    role: industry_reference
+    related_sectors:
+      - advanced_packaging_chiplet_cowos_tsv
+    notes: >
+      未上市先进封装公司，来自主线目录.md。
+
+  - name: 中芯国际
+    listed: true
+    code: "688981.SH"
+    role: industry_reference
+    related_sectors:
+      - wafer_foundry_specialty_process
+    notes: >
+      晶圆代工龙头，688981.SH（科创板）。
+      ⚠ 688981.SH同时出现在澜起科技（现已更正为688008.SH）和中芯国际。
+      请确认688981.SH是否属于中芯国际。
+      实际中芯国际688981.SH与澜起科技688008.SH无冲突。
+
+# ── Pending Code Resolution ─────────────────────────────────────────────────
+# Companies from 主线目录.md that remain unresolved or are outside 1E-c-b P0/P1 scope
+pending_code_resolution:
+  - name: 士兰微
+    suggested_sectors: [wafer_foundry_specialty_process]
+    source: expanded_from_taxonomy_seed
+    status: pending_code_resolution
+    needs_verification: [stock_code, listed_status, sector_exposure]
+    notes: >
+      功率半导体/晶圆制造，来自主线目录.md。
+      本阶段优先处理 P0/P1；该 P2 候选保留至后续晶圆制造股票池补全。
+
+  - name: 斯达半导
+    suggested_sectors: [wafer_foundry_specialty_process]
+    source: expanded_from_taxonomy_seed
+    status: pending_code_resolution
+    needs_verification: [stock_code, listed_status, sector_exposure]
+    notes: >
+      IGBT/功率半导体，来自主线目录.md。
+      本阶段优先处理 P0/P1；该 P2 候选保留至后续晶圆制造股票池补全。
+
+  - name: 歌尔股份
+    suggested_sectors: [ai_pc_phone_glasses_earbuds, edge_ai_soc_mcu]
+    source: expanded_from_taxonomy_seed
+    status: pending_code_resolution
+    needs_verification: [stock_code, listed_status, sector_exposure]
+    notes: >
+      AI眼镜/声学/可穿戴，来自主线目录.md。
+      本阶段已补齐 edge_ai_soc_mcu 覆盖；该 P2/消费电子候选留待后续端侧AI硬件补全。
+
+  - name: 华大九天
+    suggested_sectors: [eda_ip_design_service]
+    source: expanded_from_taxonomy_seed
+    status: pending_code_resolution
+    needs_verification: [stock_code, listed_status, sector_exposure]
+    notes: >
+      EDA软件，来自主线目录.md。
+      注意：华大九天（301269.SZ）与688206概伦电子不同。688206已移入概伦电子正式股票。
+      本阶段优先处理 P0/P1；该 P2 EDA候选留待后续 EDA/IP 补全。

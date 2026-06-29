@@ -8,69 +8,25 @@ from typing import Any
 from investment_system.core.constants import WORKSPACE_ROOT
 
 __all__ = [
-    "build_legacy_sector_map",
     "get_sector",
     "get_stocks_for_sector",
     "list_scoring_sectors",
     "resolve_evidence_files_for_sector",
-    "resolve_sector_id",
 ]
 
 
-def build_legacy_sector_map(sectors: list[dict]) -> dict[str, str]:
-    """
-    Build reverse mapping: legacy_id -> canonical sector_id.
-    Collects from legacy_sector_ids[], aliases[], and legacy_theme_names[].
-    """
-    legacy_map: dict[str, str] = {}
-    for sector in sectors:
-        sector_id = sector.get("sector_id", "")
-        for legacy_id in sector.get("legacy_sector_ids", []):
-            legacy_map[str(legacy_id)] = sector_id
-        for alias in sector.get("aliases", []):
-            legacy_map[str(alias)] = sector_id
-        for legacy_theme_name in sector.get("legacy_theme_names", []):
-            legacy_map[str(legacy_theme_name)] = sector_id
-    return legacy_map
-
-
-def resolve_sector_id(
-    raw_id: str,
-    valid_sector_ids: set[str],
-    legacy_map: dict[str, str],
-) -> tuple[str, bool]:
-    """
-    Resolve a sector ID that may be canonical or legacy.
-    Returns (resolved_id, is_legacy).
-    """
-    if raw_id in valid_sector_ids:
-        return raw_id, False
-    if raw_id in legacy_map:
-        return legacy_map[raw_id], True
-    return raw_id, False
-
-
 def _get_sector_by_id(config: Any, sector_id: str) -> dict[str, Any] | None:
-    """Internal lookup: try canonical then legacy map."""
+    """Internal lookup by canonical sector_id."""
     sectors = config.raw.get("sectors", [])
-    valid_ids = {s.get("sector_id") for s in sectors}
-    legacy_map = config.raw.get("legacy_sector_map", {})
-
-    resolved, _ = resolve_sector_id(sector_id, valid_ids, legacy_map)
     for sector in sectors:
-        if sector.get("sector_id") == resolved:
+        if sector.get("sector_id") == sector_id:
             return sector
     return None
 
 
-def get_sector(config: Any, sector_id_or_legacy: str) -> dict[str, Any]:
-    """
-    Look up a sector by canonical sector_id or legacy alias.
-
-    Supports canonical sector_id, legacy_sector_ids[], aliases[], and
-    legacy_theme_names[].
-    """
-    sector = _get_sector_by_id(config, sector_id_or_legacy)
+def get_sector(config: Any, sector_id: str) -> dict[str, Any]:
+    """Look up a sector by canonical sector_id only."""
+    sector = _get_sector_by_id(config, sector_id)
     if sector is not None:
         return sector
 
@@ -80,7 +36,7 @@ def get_sector(config: Any, sector_id_or_legacy: str) -> dict[str, Any]:
         if s.get("sector_id")
     }
     raise KeyError(
-        f"sector_id '{sector_id_or_legacy}' not found in sector_universe.yaml. "
+        f"sector_id '{sector_id}' not found in sector_universe.yaml. "
         f"Valid canonical IDs: {sorted(valid_ids)}"
     )
 
@@ -128,12 +84,12 @@ def _is_listed_stock(entry: dict[str, Any]) -> bool:
 
 def get_stocks_for_sector(
     config: Any,
-    sector_id_or_legacy: str,
+    sector_id: str,
     *,
     include_pending: bool = False,
 ) -> list[dict[str, Any]]:
-    """Return normalized stock records for a canonical sector or legacy alias."""
-    sector = get_sector(config, sector_id_or_legacy)
+    """Return normalized stock records for a canonical sector."""
+    sector = get_sector(config, sector_id)
     canonical_id = sector.get("sector_id", "")
 
     stocks_raw = config.raw.get("stocks", [])
@@ -174,24 +130,18 @@ def get_stocks_for_sector(
 
 def resolve_evidence_files_for_sector(
     config: Any,
-    sector_id_or_legacy: str,
+    sector_id: str,
 ) -> list[dict[str, Any]]:
     """
     Return run_manifest evidence file records associated with a sector.
 
-    The resolver ignores seed_documents and retired_legacy_outputs.
+    The resolver ignores seed_documents and retired_outputs.
     """
-    sector = get_sector(config, sector_id_or_legacy)
+    sector = get_sector(config, sector_id)
     canonical_id = sector.get("sector_id", "")
     evidence_file_ids = set(sector.get("evidence_file_ids", []) or [])
 
     evidence_files = config.raw.get("evidence_files", [])
-    legacy_map = config.raw.get("legacy_sector_map", {})
-    valid_ids = {
-        s.get("sector_id")
-        for s in config.raw.get("sectors", [])
-        if s.get("sector_id")
-    }
     result: list[dict[str, Any]] = []
     seen_ids: set[str] = set()
 
@@ -204,19 +154,11 @@ def resolve_evidence_files_for_sector(
     def _normalize_record(evidence_file: dict[str, Any], match_type: str) -> dict[str, Any]:
         raw_path = str(evidence_file.get("path", ""))
         resolved_path = _resolve_path(raw_path) if raw_path else WORKSPACE_ROOT
-        legacy_sid = str(evidence_file.get("legacy_sector_id", "") or "")
-        legacy_resolved = ""
-        legacy_is_alias = False
-        if legacy_sid:
-            legacy_resolved, legacy_is_alias = resolve_sector_id(
-                legacy_sid, valid_ids, legacy_map
-            )
         return {
             "evidence_file_id": evidence_file.get("evidence_file_id", ""),
             "path": raw_path,
             "type": evidence_file.get("type", ""),
             "sector_id": canonical_id,
-            "legacy_sector_id": legacy_sid,
             "status": evidence_file.get("status", ""),
             "action": evidence_file.get("action", ""),
             "exists": bool(raw_path and resolved_path.exists()),
@@ -225,7 +167,6 @@ def resolve_evidence_files_for_sector(
             "_match_type": match_type,
             "_manifest_sector_id": evidence_file.get("sector_id", ""),
             "_resolved_path": str(resolved_path),
-            "_legacy_resolved_sector_id": legacy_resolved if legacy_is_alias else "",
         }
 
     def _append_once(evidence_file: dict[str, Any], match_type: str) -> None:
@@ -246,11 +187,6 @@ def resolve_evidence_files_for_sector(
 
         if evidence_sector_id == canonical_id:
             _append_once(evidence_file, "canonical_sector_id")
-            continue
-
-        resolved, is_legacy = resolve_sector_id(evidence_sector_id, valid_ids, legacy_map)
-        if is_legacy and resolved == canonical_id:
-            _append_once(evidence_file, "legacy_sector_id")
             continue
 
     return result

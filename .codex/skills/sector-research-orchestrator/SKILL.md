@@ -5,7 +5,7 @@ description: Orchestrates A-share sector research workflows in C:\Projects\03_In
 
 # Sector Research Orchestrator
 
-Use this as the top-level board/sector research workflow. It coordinates lower-level project skills and pipeline scripts; it should not duplicate their logic.
+Use this as the top-level board/sector research workflow. It coordinates lower-level project skills and shared core helpers; it should not duplicate their logic.
 
 ## Required Context
 
@@ -23,7 +23,7 @@ Use the skill CLI entry points first. The current standard flow is:
 
 `scope_check -> evidence_collect -> evidence_draft -> manual curate -> evidence_register -> evidence_gate -> generate_candidate -> candidate_gate -> publish_gate -> manual confirmation -> publish_sector_card_only -> post_publish_check`.
 
-The skill CLIs delegate to migrated skill modules and read project-specific stage policy from `investment_system/research/projects/<project_id>/workflow_stages.yaml`. Old `investment_system.pipelines.*` commands remain compatibility wrappers for one validation cycle.
+The skill CLIs delegate to project-local skill modules and read project-specific stage policy from `investment_system/research/projects/<project_id>/workflow_stages.yaml`. Removed pipeline wrappers and broad-runner compatibility modules must not be reintroduced.
 
 1. Inspect current outputs, docs, registry rows, and pipeline scripts.
 2. Use `sector-research-orchestrator scope-check` before a new phase.
@@ -64,18 +64,15 @@ Use the project Conda runtime:
 & "C:\Projects\03_Investment\.conda\investment-system\python.exe" .codex\skills\sector-research-orchestrator\scripts\cli.py publish-gate --project tech_ai_semiconductor --sector-id <canonical_sector_id> --publish-scope sector_card_only
 & "C:\Projects\03_Investment\.conda\investment-system\python.exe" .codex\skills\quality-auditor\scripts\cli.py post-publish-check --project tech_ai_semiconductor --sector-id <canonical_sector_id>
 
-# Compatibility stage runner, only when a single stage shortcut is needed:
+# Stage runner, only when a single stage shortcut is needed:
 & "C:\Projects\03_Investment\.conda\investment-system\python.exe" .codex\skills\sector-research-orchestrator\scripts\cli.py run-stage --project tech_ai_semiconductor --sector-id <canonical_sector_id> --stage evidence_gate
-
-# Legacy broad research runner remains available only when the user explicitly asks for broad generation:
-& "C:\Projects\03_Investment\.conda\investment-system\python.exe" investment_system\pipelines\run_research.py --project tech_ai_semiconductor --sector-id <canonical_sector_id> --skip-guosen
 ```
 
 ## Rules
 
 - Preserve source traceability: source name, date, URL/path, excerpt, supported fields, confidence.
 - Prefer company reports, announcements, IR records, and exchange Q&A over media or summaries.
-- Use the configured client entry points: BaoStock/Tencent/AKShare through `research_client.py`, and Tushare diagnostics through `market-data-router` or `financial-data-router` `tushare-ping`; do not use disabled Guosen skills or hand-roll duplicate request logic.
+- Use the configured client entry points: BaoStock/Tencent/AKShare through `investment_system.core.data_sources.research_client`, and Tushare diagnostics through `market-data-router` or `financial-data-router` `tushare-ping`; do not use disabled Guosen skills or hand-roll duplicate request logic.
 - If all configured interfaces fail for a required field, invoke web evidence mining and record a verifiable local cache path or webpage URL.
 - AKShare and other public web sources must be rate-limited and small-batch only.
 - Do not write API keys into reports, logs, or generated CSV/Markdown.

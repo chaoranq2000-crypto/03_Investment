@@ -1,4 +1,4 @@
-"""Load project-local skill modules for legacy compatibility wrappers."""
+"""Load project-local skill modules for shared CLI dispatch."""
 
 from __future__ import annotations
 
@@ -51,7 +51,7 @@ def skill_subprocess_env(env: Mapping[str, str] | None = None) -> dict[str, str]
 
 
 def export_skill_module(module_name: str) -> dict[str, Any]:
-    """Return public globals from a skill module for a legacy wrapper."""
+    """Return public globals from a skill module."""
     module = import_skill_module(module_name)
     exported = getattr(module, "__all__", None)
     if exported is not None:

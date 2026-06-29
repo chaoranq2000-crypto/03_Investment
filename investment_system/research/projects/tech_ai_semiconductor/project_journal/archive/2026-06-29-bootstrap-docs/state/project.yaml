@@ -1,0 +1,107 @@
+# Project Configuration — tech_ai_semiconductor
+# Created: 2026-06-20
+# Phase: 1A — project config layer (no existing pipeline modified)
+
+project_id: tech_ai_semiconductor
+project_name: A股科技主线调研
+research_type: sector_research
+market: A股
+version: "1"
+created_date: "2026-06-20"
+
+# Output: kept at existing path to avoid breaking existing pipeline references
+output:
+  root: C:/Projects/03_Investment/科技主线调研输出
+  # Sub-directories follow output_spec.yaml; kept compatible with existing layout
+  sector_cards_dir: 细分方向报告
+  total_tables_dir: 00_总表
+  logs_dir: 99_日志
+  raw_data_dir: 00_原始数据
+  evidence_dir: evidence
+
+# Scope: which sub-sectors are in/out of this research
+scope:
+  include:
+    - AI算力基础设施
+    - 光通信/高速互连
+    - PCB/CCL/载板
+    - 半导体设备/材料
+    - 存储/HBM/先进封装
+    - 半导体设计/制造/EDA
+    - 国产AI芯片
+    - 端侧AI/AI终端
+    - AI应用/数据要素
+    - 外围科技观察
+  exclude:
+    - 机器人
+    - 新能源汽车
+    - 医药
+
+# Runtime environment
+runtime:
+  python: C:/Projects/03_Investment/.conda/investment-system/python.exe
+  # Optional: override conda env name if using .conda/investment-system
+  conda_env: investment-system
+  # Optional: additional PYTHONPATH
+  pythonpath_add: []
+
+# Data source priority order
+data_source_priority:
+  market_data:
+    - baostock
+    - tencent_direct
+    - akshare
+    - tushare
+  financial_data:
+    - baostock
+    - akshare
+    - tushare
+    - company_reports
+  evidence:
+    - cninfo_annual_report
+    - company_announcements
+    - investor_relations
+    - exchange_qa
+    - broker_reports
+    - policy_files
+  forecast:
+    - user_provided
+    - verifiable_public_page
+    - broker_report
+
+# Quality gates
+quality:
+  grade_target: research-grade
+  require_sources: true
+  allow_placeholders: false
+  require_source_id_for_key_conclusions: true
+  require_reason_for_scores: true
+  stale_days:
+    market_data: 3
+    financial_data: 120
+    news_or_announcements: 30
+  confidence_levels_allowed:
+    - 高
+    - 中高
+    - 中
+    - 中低
+    - 低
+  # seed documents must not be treated as completed research-grade outputs
+  seed_document_status:
+    - seeded_unverified
+    - draft_sector_note
+    - unverified_research_seed
+  completed_status:
+    - research-grade
+    - verified
+
+# Provenance: where the initial universe definitions came from
+provenance:
+  sector_universe_source:
+    - A股科技前两主线调研文件包/01_调研板块细分方向列表/A股科技前两主线_板块细分方向母表.csv
+    - investment_system/research/evidence/high_speed_optical_modules.yaml
+    - investment_system/research/evidence/optical_components_fau_precision_optics.yaml
+  stock_universe_source:
+    - 科技主线调研输出/00_总表/代表公司财务估值总表.csv
+    - 科技主线调研输出/01_AI算力硬件/01_高速光模块.md
+    - 科技主线调研输出/01_AI算力硬件/01_光器件_FAU_精密光学.md

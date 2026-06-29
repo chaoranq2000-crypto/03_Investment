@@ -233,7 +233,7 @@ def _audit_candidate_only(
     paths: dict[str, Path],
     candidate_dir: Path,
     formal_root: Path,
-    legacy_root: Path,
+    final_publication_root: Path,
     load_errors: list[Any],
     load_warnings: list[Any],
     write_report: bool,
@@ -281,7 +281,7 @@ def _audit_candidate_only(
         card_text = sector_card.read_text(encoding="utf-8-sig", errors="ignore")
         if not str(resolved).startswith(str(candidate_dir)):
             findings.append(Finding("ERROR", "FILE_OUTSIDE_CANDIDATE_DIR", "candidate-only sector_card outside formal_candidate_outputs.", str(sector_card)))
-        if str(resolved).startswith(str(formal_root)) or str(resolved).startswith(str(legacy_root)):
+        if str(resolved).startswith(str(formal_root)) or str(resolved).startswith(str(final_publication_root)):
             findings.append(Finding("ERROR", "FILE_IN_FORMAL_OUTPUT_ROOT", "candidate-only sector_card in formal output root.", str(sector_card)))
         _append_placeholder_findings(findings, sector_card, card_text)
 
@@ -381,7 +381,7 @@ def audit_project(project_id: str, sector_id: str, write_report: bool = True) ->
     paths = _candidate_files(project_id, sector_id)
     candidate_dir = get_formal_candidate_output_dir(config).resolve()
     formal_root = config.output_root.resolve()
-    legacy_root = (WORKSPACE_ROOT / "科技主线调研输出").resolve()
+    final_publication_root = (WORKSPACE_ROOT / "科技主线调研输出").resolve()
 
     load_errors = [w for w in config.warnings if w.severity == "error"]
     load_warnings = [w for w in config.warnings if w.severity == "warning"]
@@ -395,7 +395,7 @@ def audit_project(project_id: str, sector_id: str, write_report: bool = True) ->
                 paths=paths,
                 candidate_dir=candidate_dir,
                 formal_root=formal_root,
-                legacy_root=legacy_root,
+                final_publication_root=final_publication_root,
                 load_errors=load_errors,
                 load_warnings=load_warnings,
                 write_report=write_report,
@@ -452,7 +452,7 @@ def audit_project(project_id: str, sector_id: str, write_report: bool = True) ->
         resolved = path.resolve()
         if not str(resolved).startswith(str(candidate_dir)):
             findings.append(Finding("ERROR", "FILE_OUTSIDE_CANDIDATE_DIR", f"{output_type} outside formal_candidate_outputs.", str(path)))
-        if str(resolved).startswith(str(formal_root)) or str(resolved).startswith(str(legacy_root)):
+        if str(resolved).startswith(str(formal_root)) or str(resolved).startswith(str(final_publication_root)):
             findings.append(Finding("ERROR", "FILE_IN_FORMAL_OUTPUT_ROOT", f"{output_type} in formal output root.", str(path)))
 
     if formal_root.exists():

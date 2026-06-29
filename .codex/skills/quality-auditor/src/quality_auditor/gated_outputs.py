@@ -125,7 +125,7 @@ def audit_project(project_id: str, sector_id: str, write_report: bool = True) ->
     findings: list[Finding] = []
     gated_root = get_gated_formal_output_dir(config)
     formal_root = config.output_root.resolve()
-    legacy_root = (WORKSPACE_ROOT / "科技主线调研输出").resolve()
+    final_publication_root = (WORKSPACE_ROOT / "科技主线调研输出").resolve()
 
     try:
         metadata_path = _latest_metadata(gated_root, sector_id)
@@ -153,11 +153,11 @@ def audit_project(project_id: str, sector_id: str, write_report: bool = True) ->
             findings.append(Finding("ERROR", "GATED_FILENAME_MARKER_MISSING", f"Invalid gated filename: {name}", str(path)))
         if not str(resolved).startswith(str(gated_root.resolve())):
             findings.append(Finding("ERROR", "GATED_FILE_OUTSIDE_STAGING", f"{output_type} outside gated staging.", str(path)))
-        if str(resolved).startswith(str(formal_root)) or str(resolved).startswith(str(legacy_root)):
+        if str(resolved).startswith(str(formal_root)) or str(resolved).startswith(str(final_publication_root)):
             findings.append(Finding("ERROR", "GATED_FILE_IN_FORMAL_OUTPUT_ROOT", f"{output_type} in formal output root.", str(path)))
 
     if metadata_path.exists():
-        if str(metadata_path.resolve()).startswith(str(formal_root)) or str(metadata_path.resolve()).startswith(str(legacy_root)):
+        if str(metadata_path.resolve()).startswith(str(formal_root)) or str(metadata_path.resolve()).startswith(str(final_publication_root)):
             findings.append(Finding("ERROR", "GATED_METADATA_IN_FORMAL_OUTPUT_ROOT", "metadata in formal output root.", str(metadata_path)))
         if metadata.get("action_rating") != NOT_RATED:
             findings.append(Finding("ERROR", "GATED_ACTION_RATING_INVALID", f"action_rating={metadata.get('action_rating')}", str(metadata_path)))

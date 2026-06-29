@@ -2,7 +2,7 @@
 
 This audit validates only evidence indexing and binding metadata. It does not
 read evidence YAML contents, does not generate research output, and does not use
-seed documents or retired legacy outputs as active evidence.
+seed documents or retired outputs as active evidence.
 """
 from __future__ import annotations
 
@@ -14,10 +14,8 @@ from typing import Any
 
 from investment_system.core.project_loader import (
     WORKSPACE_ROOT,
-    get_sector,
     load_project,
     resolve_evidence_files_for_sector,
-    resolve_sector_id,
 )
 
 
@@ -58,11 +56,10 @@ def audit_project(project_id: str) -> tuple[list[Finding], dict[str, Any]]:
     config = load_project(project_id, silent=True, strict=False)
     sectors = config.raw.get("sectors", [])
     sector_ids = {s.get("sector_id") for s in sectors if s.get("sector_id")}
-    legacy_map = config.raw.get("legacy_sector_map", {})
     evidence_files = config.raw.get("evidence_files", [])
     manifest = config.raw.get("run_manifest", {})
     seed_docs = manifest.get("seed_documents", []) or []
-    retired_outputs = config.raw.get("retired_legacy_outputs", [])
+    retired_outputs = config.raw.get("retired_outputs", [])
     findings: list[Finding] = []
 
     ef_id_to_manifest: dict[str, dict[str, Any]] = {}
@@ -114,7 +111,6 @@ def audit_project(project_id: str) -> tuple[list[Finding], dict[str, Any]]:
         ef_id = str(ef.get("evidence_file_id", "") or "")
         raw_path = str(ef.get("path", "") or "")
         sid = str(ef.get("sector_id", "") or "")
-        legacy_sid = str(ef.get("legacy_sector_id", "") or "")
         ef_path = _path(raw_path).resolve() if raw_path else WORKSPACE_ROOT
 
         if not raw_path:
@@ -123,19 +119,9 @@ def audit_project(project_id: str) -> tuple[list[Finding], dict[str, Any]]:
             findings.append(Finding("WARNING", "EVIDENCE_PATH_NOT_FOUND", f"evidence file path does not exist: {raw_path}"))
 
         if sid not in sector_ids:
-            resolved, is_legacy = resolve_sector_id(sid, sector_ids, legacy_map)
-            if is_legacy and resolved in sector_ids:
-                findings.append(
-                    Finding(
-                        "ERROR",
-                        "EVIDENCE_SECTOR_ID_NOT_CANONICAL",
-                        f"evidence_file_id '{ef_id}' uses legacy sector_id '{sid}', resolved to '{resolved}'.",
-                    )
-                )
-            else:
-                findings.append(
-                    Finding("ERROR", "EVIDENCE_SECTOR_ID_INVALID", f"evidence_file_id '{ef_id}' has invalid sector_id '{sid}'.")
-                )
+            findings.append(
+                Finding("ERROR", "EVIDENCE_SECTOR_ID_INVALID", f"evidence_file_id '{ef_id}' has invalid sector_id '{sid}'.")
+            )
 
         allowed_refs = _manifest_sector_ids(ef)
         refs = sector_ref_ids.get(ef_id, set())
@@ -156,29 +142,10 @@ def audit_project(project_id: str) -> tuple[list[Finding], dict[str, Any]]:
                 )
             )
 
-        if legacy_sid:
-            resolved, is_legacy = resolve_sector_id(legacy_sid, sector_ids, legacy_map)
-            if is_legacy and resolved == sid:
-                findings.append(
-                    Finding(
-                        "WARNING",
-                        "LEGACY_SECTOR_ID_USED",
-                        f"evidence_file_id '{ef_id}' keeps legacy_sector_id '{legacy_sid}' -> '{resolved}' for migration compatibility.",
-                    )
-                )
-            elif not is_legacy or resolved != sid:
-                findings.append(
-                    Finding(
-                        "ERROR",
-                        "LEGACY_SECTOR_ID_INVALID",
-                        f"evidence_file_id '{ef_id}' legacy_sector_id '{legacy_sid}' does not resolve to canonical sector_id '{sid}'.",
-                    )
-                )
-
         if ef_path in seed_paths:
             findings.append(Finding("ERROR", "SEED_DOCUMENT_AS_EVIDENCE", f"seed document reused as evidence: {raw_path}"))
         if ef_path in retired_paths:
-            findings.append(Finding("ERROR", "RETIRED_OUTPUT_AS_EVIDENCE", f"retired legacy output reused as active evidence: {raw_path}"))
+            findings.append(Finding("ERROR", "RETIRED_OUTPUT_AS_EVIDENCE", f"retired output reused as active evidence: {raw_path}"))
 
     coverage: list[dict[str, Any]] = []
     for sector in sectors:
@@ -209,24 +176,21 @@ def audit_project(project_id: str) -> tuple[list[Finding], dict[str, Any]]:
 
     evidence_overrides = WORKSPACE_ROOT / "investment_system" / "pipelines" / "evidence_overrides.py"
     if evidence_overrides.exists():
-        text = evidence_overrides.read_text(encoding="utf-8")
-        if "THEME_EVIDENCE_FILES" in text:
-            if "LEGACY_ONLY_EVIDENCE_REGISTRY = True" in text:
-                findings.append(
-                    Finding(
-                        "WARNING",
-                        "EVIDENCE_OVERRIDES_LEGACY_ONLY",
-                        "evidence_overrides.py retains legacy theme keys but is marked legacy-only.",
-                    )
-                )
-            else:
-                findings.append(
-                    Finding(
-                        "ERROR",
-                        "EVIDENCE_OVERRIDES_ACTIVE_REGISTRY",
-                        "evidence_overrides.py still looks like an active project-aware registry.",
-                    )
-                )
+        findings.append(
+            Finding(
+                "ERROR",
+                "REMOVED_EVIDENCE_OVERRIDES_PRESENT",
+                "evidence_overrides.py is no longer an allowed runtime surface.",
+            )
+        )
+    else:
+        findings.append(
+            Finding(
+                "INFO",
+                "EVIDENCE_OVERRIDES_RETIRED",
+                "evidence_overrides.py is not present; project-aware evidence uses project manifests.",
+            )
+        )
 
     summary = {
         "project_id": config.project_id,
