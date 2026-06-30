@@ -2,7 +2,7 @@
 
 这个目录是 `C:\Projects\03_Investment` 的统一投资体系入口，用来把数据源配置、研究资料、报告产出、实时操作决策和组合管理整合到同一套流程里。
 
-当前可执行流程以 `.codex/skills/*/scripts/cli.py` 为主；可复用实现位于 `investment_system/core/`。`investment_system/pipelines/` 已退役，不再作为源码或文档边界保留。
+当前可执行流程以 `.codex/skills/*/scripts/cli.py` 为主；可复用实现位于 `investment_system/core/`。资料型数据源手册放在 `investment_system/docs/data_sources/`，不作为 workflow skill 激活。`investment_system/pipelines/` 已退役，不再作为源码或文档边界保留。
 
 ## 工作流事实源边界
 
@@ -24,6 +24,7 @@
 |---|---|---|
 | `.conda/investment-system` | 项目根目录 Conda 环境 | 统一 Python 运行环境 |
 | `investment_system` | 投资体系总控目录 | 可复用引擎、配置、数据、证据和质量门 |
+| `investment_system/docs/data_sources` | 数据源资料、接口手册、外部参考包 | 只作参考；需要时将最小可验证逻辑迁移到对应 workflow skill |
 | `.codex/skills` | Codex 操作规程 | 单 skill 职责、入口和契约引用 |
 | `科技主线调研输出` | 正式生成物 | 只通过 gate 后的发布流程写入 |
 
@@ -43,6 +44,7 @@
 6. `.codex/skills/sector-research-orchestrator/references/architecture.md`
 7. `.codex/skills/quality-auditor/references/research_grade_standard.md`
 8. `investment_system/config/data_sources.example.toml`
+9. `investment_system/docs/data_sources/README.md`
 
 ## 当前推荐入口
 

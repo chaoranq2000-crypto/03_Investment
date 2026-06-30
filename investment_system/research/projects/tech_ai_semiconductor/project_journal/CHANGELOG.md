@@ -3,6 +3,15 @@
 This file tracks project setup and workflow-system changes. It does not replace
 Git history, audit reports, or formal research logs.
 
+## 2026-06-30
+
+- Added `archive/2026-06-30-audits-refresh/` to snapshot the two current `audits/` files whose hashes differed from the 2026-06-29 bootstrap archive: `output_schema_audit.md` and `tushare_first_data_skill_refactor_summary_20260629.md`.
+- Kept live `audits/` files in place; this was a copy-only journal archive refresh.
+- After user confirmation, deleted 22 archived original files from `investment_system/research/projects/tech_ai_semiconductor/audits/` one explicit file path at a time. Empty audit output directories were left in place.
+- Retired the root live copy of `investment_system/research/projects/tech_ai_semiconductor/skill_module_refactor_plan.md` after confirming the existing archive snapshot has the same SHA256 hash.
+- Kept the retained copy at `project_journal/archive/2026-06-29-bootstrap-docs/plans/skill_module_refactor_plan.md`.
+- Updated the journal catalog so the skill/module refactor plan is treated as migration history, not a current operation guide.
+
 ## 2026-06-29
 
 - Created `project_journal/` as the collaboration log system for multi-session and parallel work.

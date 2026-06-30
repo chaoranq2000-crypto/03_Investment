@@ -13,7 +13,7 @@ Updated: 2026-06-29
 - Draft rollback completed: the earlier experimental `tushare_data_router/__init__.py` and `commands.py` files were removed before the formal implementation was added.
 - Phase A/B implemented: a skill-owned shared Tushare router now lives under `.codex/skills/market-data-router/src/tushare_data_router/`.
 - Phase C implemented for command surfaces: market, financial, evidence, and forecast skills expose `tushare-fetch` plus dataset aliases.
-- Phase D documented: `a-stock-data` is used as the public-web fallback reference for endpoint patterns, ticker normalization, session reuse, and source-specific rate limits.
+- Phase D documented: `investment_system/docs/data_sources/a-stock-data/` is used as the public-web fallback reference for endpoint patterns, ticker normalization, session reuse, and source-specific rate limits.
 - Phase E partially implemented: Tushare raw-cache envelopes can be written and indexed into source manifests; forecast normalization/source-count preview commands exist.
 - Phase F partially implemented: `quality-auditor tushare-raw-cache` checks raw-cache schema and token/key leakage risk.
 - Remaining extension direction: add more public-web fallback adapters only when a specific Tushare permission gap is encountered; broaden live smoke tests after confirming quota/cooldown requirements.
@@ -25,15 +25,15 @@ Refactor the current data-fetching skills from a relatively coarse BaoStock/AKSh
 Target outcome:
 
 - use Tushare as the main structured data source for A-share market, financial, valuation, governance, capital-flow, sector/theme, forecast, macro, fund/ETF, convertible-bond, and selected cross-asset data;
-- keep scripts and business logic under `.codex/skills/<skill>/scripts` and `.codex/skills/<skill>/src`, following `skill_module_refactor_plan.md`;
+- keep scripts and business logic under `.codex/skills/<skill>/scripts` and `.codex/skills/<skill>/src`, consistent with the completed skill/module migration history archived at `project_journal/archive/2026-06-29-bootstrap-docs/plans/skill_module_refactor_plan.md`;
 - keep `investment_system/core/` for shared project semantics and small connection facades only, not for broad data-source business logic;
 - preserve `project_id`, canonical `sector_id`, stock-universe resolution, evidence/source traceability, dry-run defaults, and formal-output safety;
-- use `a-stock-data` as a reference for public-web endpoint coverage, ticker normalization, and source-specific rate limits, not as a replacement architecture;
+- use `investment_system/docs/data_sources/a-stock-data/` as a reference for public-web endpoint coverage, ticker normalization, and source-specific rate limits, not as a replacement architecture;
 - expand data types without letting transient API rows become unsupported research claims.
 
 ## 2. Non-Goals
 
-- Do not turn `a-stock-data` into the primary project skill.
+- Do not turn the `a-stock-data` reference package into a primary project skill.
 - Do not create a single giant data-fetching skill that bypasses existing workflow skills.
 - Do not put broad endpoint implementations under `investment_system/core/data_sources/`.
 - Do not write formal research outputs during data-fetch refactor work.
@@ -57,7 +57,7 @@ Known issues:
 
 - Existing source priority still says daily K-line and financial statements are BaoStock/AKShare first, with Tushare as fallback.
 - Existing rate-limit guidance uses AKShare's 8-12 seconds plus jitter too broadly; this does not fit Tushare proxy/API behavior or all public-web sources.
-- `a-stock-data` has useful endpoint coverage and anti-ban guidance, but it is a large single-file skill without project-aware cache/evidence/gate integration.
+- `a-stock-data` has useful endpoint coverage and anti-ban guidance, but it is kept as reference material without project-aware cache/evidence/gate integration.
 - A previous independent Tushare proxy smoke test showed broad Tushare coverage works, while some datasets such as announcements, research reports, and IR Q&A may require additional permissions.
 
 ## 4. Design Principles
@@ -101,7 +101,7 @@ Use Tushare first for structured, repeatable datasets. Use other sources when th
 - Tencent direct: fast realtime quote sanity check, PE/PB/market cap fallback.
 - Eastmoney public APIs: useful for public reports, hot rankings, concept data, and some funds/flows when Tushare is unavailable or lacks permission.
 - CNINFO/official documents: stronger than databases for announcements, business claims, customer/order/capacity evidence.
-- `a-stock-data`: reference implementation and public-web fallback catalog.
+- `investment_system/docs/data_sources/a-stock-data/`: reference implementation and public-web fallback catalog.
 
 ### Source-Specific Rate Limits
 
@@ -328,7 +328,7 @@ Those must be supported by annual reports, announcements, IR records, exchange Q
 
 ## 9. a-stock-data Integration Role
 
-Use `a-stock-data` for three things:
+Use the `a-stock-data` reference package for three things:
 
 1. Public-web fallback catalog:
    - Eastmoney reportapi/PDF;

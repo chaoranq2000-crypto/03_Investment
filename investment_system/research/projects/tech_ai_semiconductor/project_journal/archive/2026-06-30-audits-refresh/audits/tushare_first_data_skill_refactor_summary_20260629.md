@@ -17,7 +17,7 @@ The main refactor is complete at the skill and interface-contract level:
 - Shared Tushare request logic lives under `.codex/skills/market-data-router/src/tushare_data_router/`, not under `investment_system/core/`.
 - Tushare rows can be saved as raw-cache envelopes and converted into source-manifest records.
 - `quality-auditor` now has a Tushare raw-cache audit command for schema and secret-leakage checks.
-- `a-stock-data` is integrated as a reference for public-web fallback patterns, not as the primary architecture.
+- `a-stock-data` is preserved under `investment_system/docs/data_sources/a-stock-data/` as a reference for public-web fallback patterns, not as the primary architecture.
 
 The refactor is intentionally Tushare-first, not Tushare-only. Tushare is the main structured data source; Tencent, CNINFO, Eastmoney, Tonghuashun, Sina, BaoStock, and AKShare remain fallback or complementary sources when they are stronger for a specific need.
 
@@ -363,7 +363,7 @@ Those still require annual reports, announcements, IR records, exchange Q&A, pol
 
 ## 8. a-stock-data Integration Role
 
-The installed `a-stock-data` skill is useful, but it is not adopted as the main architecture.
+The `a-stock-data` package is useful as a reference manual, but it is no longer installed as a project workflow skill and is not adopted as the main architecture.
 
 What is reused or referenced:
 

@@ -36,7 +36,7 @@ Use this as the market-data layer for sector research. Keep collection and analy
 1. Structured market data: Tushare first for daily, daily_basic, adjustment factor, moneyflow, margin, dragon-tiger, limit-list, index/fund/CB, and theme heat datasets.
 2. Fast realtime sanity checks: Tencent direct when a focused quote/PE/PB/market-cap check is enough.
 3. BaoStock/AKShare: source fallback for small-batch public-web gaps.
-4. Public-web fallbacks from `a-stock-data`: only for unique capabilities Tushare lacks or lacks permission for; keep source-specific anti-ban limits.
+4. Public-web fallbacks from `investment_system/docs/data_sources/a-stock-data/`: only for unique capabilities Tushare lacks or lacks permission for; keep source-specific anti-ban limits.
 
 ## Rules
 
@@ -44,7 +44,7 @@ Use this as the market-data layer for sector research. Keep collection and analy
 - Do not call disabled Guosen `gs-*` skills or require `GS_API_KEY`.
 - BaoStock must use one batch session and avoid repeated login/logout.
 - Tushare proxy/API calls default to the runtime config (`data_sources.example.toml` unless locally overridden); override with `--interval`, `--jitter`, or env only when the purchased quota allows it.
-- Eastmoney public-web calls copied or adapted from `a-stock-data` must be serial, session-reused, and wait at least 1s + jitter; use 1.5-2s for batches.
+- Eastmoney public-web calls copied or adapted from `investment_system/docs/data_sources/a-stock-data/` must be serial, session-reused, and wait at least 1s + jitter; use 1.5-2s for batches.
 - AKShare public-web calls must wait 8-12 seconds with jitter and stay small-batch.
 - Tushare calls must go through `get_tushare_pro()` so `TUSHARE_HTTP_URL` and proxy clearing are honored.
 - Tencent direct calls must be rate-limited in loops.

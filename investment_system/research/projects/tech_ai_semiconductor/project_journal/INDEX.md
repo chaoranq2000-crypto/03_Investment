@@ -10,7 +10,7 @@ Purpose: multi-session project-building coordination.
 - Human-facing workflow entry points: `.codex/skills/*/scripts/cli.py`
 - Main project config: `investment_system/research/projects/tech_ai_semiconductor/`
 - Formal output root: `C:/Projects/03_Investment/科技主线调研输出`
-- Journal status: initialized with a bootstrap archive snapshot on 2026-06-29.
+- Journal status: initialized with a bootstrap archive snapshot on 2026-06-29; root `skill_module_refactor_plan.md` live duplicate retired to archive on 2026-06-30; changed audit snapshots refreshed on 2026-06-30; archived audit originals retired from live `audits/` on 2026-06-30.
 - Journal access is user-controlled through `LOG_CONTROL.md`.
 - Default behavior is no journal reads and no journal writes unless the user explicitly asks.
 - Lightweight log discovery uses `项目日志总索引.md`; agents should not read full log bodies just to find available logs.
@@ -54,6 +54,13 @@ Start new work from:
   - Scope: existing seed documents, project plans, audit/change records, and selected project state manifests.
   - Method: copied snapshot; original live files were not moved.
   - Manifest: `archive/2026-06-29-bootstrap-docs/archive_manifest.csv`
+  - Note: `plans/skill_module_refactor_plan.md` is now the retained copy after the root live duplicate was retired on 2026-06-30.
+  - Note: archived live `audits/` originals were deleted one by one on 2026-06-30 after user confirmation.
+- `archive/2026-06-30-audits-refresh/`
+  - Scope: current `audits/` files whose hashes changed after the bootstrap archive.
+  - Method: copied snapshot; original live audit files were not moved.
+  - Manifest: `archive/2026-06-30-audits-refresh/archive_manifest.csv`
+  - Note: unchanged audit files remain covered by the 2026-06-29 bootstrap archive; archived live originals were deleted one by one on 2026-06-30 after user confirmation.
 
 ## Reading Rule For New Sessions
 

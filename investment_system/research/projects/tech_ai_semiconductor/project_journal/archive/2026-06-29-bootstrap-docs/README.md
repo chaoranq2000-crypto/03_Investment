@@ -3,8 +3,12 @@
 This archive batch snapshots existing project setup documents before the new
 project journal system was introduced.
 
-The original files were copied, not moved. Live project paths and current
-runtime references remain unchanged.
+The original files were copied, not moved at archive time. Live project paths and
+current runtime references remained unchanged when this snapshot was created.
+
+On 2026-06-30, the archived original files under the live project `audits/`
+directory were deleted one explicit file path at a time after user confirmation.
+The journal snapshots in this archive remain the retained copies.
 
 ## Categories
 
@@ -19,4 +23,3 @@ runtime references remain unchanged.
 - Archived seed documents remain seed context only; they are not formal evidence.
 - Archived audit outputs may be stale; rerun the relevant quality command before relying on them.
 - No private local config files or token-bearing files should be stored in this archive.
-

@@ -19,7 +19,7 @@ Use `market-data-router`, `financial-data-router`, `evidence-miner`, and `foreca
 - Realtime quotes and quick sanity checks: Tencent direct for focused PE/PB/market-cap/quote checks; Tushare realtime/minute only for focused pulls.
 - Business exposure, customers, orders, capacity: company reports, announcements, IR records, exchange Q&A.
 - Forecasts: Tushare `report_rc` and report metadata when available, plus user-provided data, publicly accessible broker reports, and verifiable 同花顺/Choice-style web pages. Do not assume Wind or iFind access.
-- Public-web fallbacks: use `a-stock-data` as a reference for Tencent, Eastmoney, CNINFO, Sina, Tonghuashun, and iwencai endpoint patterns when Tushare has no permission, no coverage, or weaker freshness.
+- Public-web fallbacks: use `investment_system/docs/data_sources/a-stock-data/` as a reference for Tencent, Eastmoney, CNINFO, Sina, Tonghuashun, and iwencai endpoint patterns when Tushare has no permission, no coverage, or weaker freshness.
 - When a public interface and a primary company document conflict, preserve both records and let the candidate/report disclose the conflict instead of silently choosing the convenient value.
 
 ## Rate Limits
@@ -28,7 +28,7 @@ Use `market-data-router`, `financial-data-router`, `evidence-miner`, and `foreca
 - Use `market-data-router tushare-ping` or `financial-data-router tushare-ping` for Tushare diagnostics so the configured HTTP bridge, token, and proxy-clearing policy are applied through the shared facade.
 - Use `tushare-fetch` for new structured data pulls. It is dry-run by default; `--fetch` performs live calls, `--write-cache` writes raw envelopes, and `--write-manifest` writes source-manifest rows.
 - Tushare proxy/API calls: default serial 0.7s + 0-0.2s jitter from `data_sources.example.toml`, configurable by `--interval`/`--jitter` or `TUSHARE_REQUEST_INTERVAL_SECONDS`/`TUSHARE_REQUEST_JITTER_SECONDS`.
-- Eastmoney public-web fallbacks copied or adapted from `a-stock-data`: serial only, session reuse, at least 1s + jitter; 1.5-2s for batches.
+- Eastmoney public-web fallbacks copied or adapted from `investment_system/docs/data_sources/a-stock-data/`: serial only, session reuse, at least 1s + jitter; 1.5-2s for batches.
 - AKShare public web calls: wait 8-12 seconds between calls by default.
 - Tencent direct calls: use small batches and add waiting in looped jobs.
 - BaoStock: use one session for a batch and avoid repeated login/logout.
