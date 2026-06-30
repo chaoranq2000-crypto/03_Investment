@@ -408,7 +408,7 @@ stocks:
 
   - code: "688608.SH"
     name: 恒玄科技
-    sectors: [edge_ai_soc_mcu]
+    sectors: [edge_ai_soc_mcu, ai_pc_phone_glasses_earbuds]
     role: 核心
     exposure_type: 核心收入
     verification_status: unverified
@@ -416,6 +416,7 @@ stocks:
     notes: >
       音频SoC/蓝牙SoC，来自主线目录.md。
       待启动端侧AI方向研究。
+      2026-06-30：补充绑定 AI终端 canonical sector，用于 seed pool 覆盖修复；不构成正式研究结论。
 
   # ── AI服务器/液冷 ──────────────────────────────────────────────────────────
   # sector_id: ai_server_rack_supernode_switch / liquid_cooling_thermal
@@ -1103,7 +1104,7 @@ stocks:
 
   - code: "300458.SZ"
     name: 全志科技
-    sectors: [edge_ai_soc_mcu]
+    sectors: [edge_ai_soc_mcu, ai_pc_phone_glasses_earbuds]
     role: 核心
     exposure_type: 核心收入
     verification_status: partially_verified
@@ -1111,6 +1112,155 @@ stocks:
     notes: >
       1E-c-b：从 pending_code_resolution 升级；代码/名称已通过A股代码名称表核验。
       AIoT SoC候选，来自主线目录.md；业务暴露待后续证据核验。
+      2026-06-30：补充绑定 AI终端 canonical sector，用于 seed pool 覆盖修复；不构成正式研究结论。
+
+  # ── 2026-06-30 P2 sector coverage repair stocks ──────────────────────────
+  # Code/name/listing status checked via BaoStock query_stock_basic on 2026-06-30.
+  # Sector exposure remains seed-level and must be verified during evidence stage.
+
+  - code: "601869.SH"
+    name: 长飞光纤
+    sectors: [fiber_cable_hollow_core_dci]
+    role: 核心
+    exposure_type: 中度暴露
+    verification_status: partially_verified
+    source: expanded_from_taxonomy_seed
+    notes: >
+      2026-06-30：来自主线目录.md 光纤光缆/空芯光纤代表股票池；
+      BaoStock 核验 code_name=长飞光纤、status=1。业务暴露待证据阶段核验。
+
+  - code: "600487.SH"
+    name: 亨通光电
+    sectors: [fiber_cable_hollow_core_dci]
+    role: 核心
+    exposure_type: 中度暴露
+    verification_status: partially_verified
+    source: expanded_from_taxonomy_seed
+    notes: >
+      2026-06-30：来自主线目录.md 光纤光缆/空芯光纤代表股票池；
+      BaoStock 核验 code_name=亨通光电、status=1。业务暴露待证据阶段核验。
+
+  - code: "688981.SH"
+    name: 中芯国际
+    sectors: [wafer_foundry_specialty_process]
+    role: 核心
+    exposure_type: 中度暴露
+    verification_status: partially_verified
+    source: expanded_from_taxonomy_seed
+    notes: >
+      2026-06-30：从 reference_companies 迁入正式 seed stock pool；
+      同时来自主线目录.md 晶圆代工代表股票池。BaoStock 核验 code_name=中芯国际、status=1。
+      仅核验代码/简称/上市状态，业务暴露待证据阶段核验。
+
+  - code: "600460.SH"
+    name: 士兰微
+    sectors: [wafer_foundry_specialty_process]
+    role: 核心
+    exposure_type: 中度暴露
+    verification_status: partially_verified
+    source: promoted_from_pending_1E_c_b
+    notes: >
+      2026-06-30：从 pending_code_resolution 升级；来自主线目录.md 特色工艺/功率半导体代表股票池。
+      BaoStock 核验 code_name=士兰微、status=1。业务暴露待证据阶段核验。
+
+  - code: "002230.SZ"
+    name: 科大讯飞
+    sectors: [llm_aigc_agent_office]
+    role: 核心
+    exposure_type: 中度暴露
+    verification_status: partially_verified
+    source: expanded_from_taxonomy_seed
+    notes: >
+      2026-06-30：来自主线目录.md 通用大模型/多模态AI代表股票池；
+      BaoStock 核验 code_name=科大讯飞、status=1。业务暴露待证据阶段核验。
+
+  - code: "688111.SH"
+    name: 金山办公
+    sectors: [llm_aigc_agent_office]
+    role: 核心
+    exposure_type: 中度暴露
+    verification_status: partially_verified
+    source: expanded_from_taxonomy_seed
+    notes: >
+      2026-06-30：来自主线目录.md AI办公代表股票池；
+      BaoStock 核验 code_name=金山办公、status=1。业务暴露待证据阶段核验。
+
+  - code: "300624.SZ"
+    name: 万兴科技
+    sectors: [llm_aigc_agent_office]
+    role: 核心
+    exposure_type: 中度暴露
+    verification_status: partially_verified
+    source: expanded_from_taxonomy_seed
+    notes: >
+      2026-06-30：来自主线目录.md AI办公/AIGC内容代表股票池；
+      BaoStock 核验 code_name=万兴科技、status=1。业务暴露待证据阶段核验。
+
+  - code: "600570.SH"
+    name: 恒生电子
+    sectors: [industry_ai_applications]
+    role: 核心
+    exposure_type: 中度暴露
+    verification_status: partially_verified
+    source: expanded_from_taxonomy_seed
+    notes: >
+      2026-06-30：来自主线目录.md 金融AI代表股票池；
+      BaoStock 核验 code_name=恒生电子、status=1。业务暴露待证据阶段核验。
+
+  - code: "300033.SZ"
+    name: 同花顺
+    sectors: [industry_ai_applications]
+    role: 核心
+    exposure_type: 中度暴露
+    verification_status: partially_verified
+    source: expanded_from_taxonomy_seed
+    notes: >
+      2026-06-30：来自主线目录.md 金融AI代表股票池；
+      BaoStock 核验 code_name=同花顺、status=1。业务暴露待证据阶段核验。
+
+  - code: "300059.SZ"
+    name: 东方财富
+    sectors: [industry_ai_applications]
+    role: 核心
+    exposure_type: 中度暴露
+    verification_status: partially_verified
+    source: expanded_from_taxonomy_seed
+    notes: >
+      2026-06-30：来自主线目录.md 金融AI代表股票池；
+      BaoStock 核验 code_name=东方财富、status=1。业务暴露待证据阶段核验。
+
+  - code: "688787.SH"
+    name: 海天瑞声
+    sectors: [data_elements_corpus_copyright_security]
+    role: 核心
+    exposure_type: 中度暴露
+    verification_status: partially_verified
+    source: expanded_from_taxonomy_seed
+    notes: >
+      2026-06-30：来自主线目录.md 训练语料代表股票池；
+      BaoStock 核验 code_name=海天瑞声、status=1。业务暴露待证据阶段核验。
+
+  - code: "300766.SZ"
+    name: 每日互动
+    sectors: [data_elements_corpus_copyright_security]
+    role: 核心
+    exposure_type: 中度暴露
+    verification_status: partially_verified
+    source: expanded_from_taxonomy_seed
+    notes: >
+      2026-06-30：来自主线目录.md 训练语料/数据要素代表股票池；
+      BaoStock 核验 code_name=每日互动、status=1。业务暴露待证据阶段核验。
+
+  - code: "300364.SZ"
+    name: 中文在线
+    sectors: [data_elements_corpus_copyright_security]
+    role: 核心
+    exposure_type: 中度暴露
+    verification_status: partially_verified
+    source: expanded_from_taxonomy_seed
+    notes: >
+      2026-06-30：来自主线目录.md 训练语料/版权/IP内容代表股票池；
+      BaoStock 核验 code_name=中文在线、status=1。业务暴露待证据阶段核验。
 
 # ── Reference Companies (unlisted, industry reference only) ──────────────────
 reference_companies:
@@ -1131,30 +1281,9 @@ reference_companies:
     notes: >
       未上市先进封装公司，来自主线目录.md。
 
-  - name: 中芯国际
-    listed: true
-    code: "688981.SH"
-    role: industry_reference
-    related_sectors:
-      - wafer_foundry_specialty_process
-    notes: >
-      晶圆代工龙头，688981.SH（科创板）。
-      ⚠ 688981.SH同时出现在澜起科技（现已更正为688008.SH）和中芯国际。
-      请确认688981.SH是否属于中芯国际。
-      实际中芯国际688981.SH与澜起科技688008.SH无冲突。
-
 # ── Pending Code Resolution ─────────────────────────────────────────────────
 # Companies from 主线目录.md that remain unresolved or are outside 1E-c-b P0/P1 scope
 pending_code_resolution:
-  - name: 士兰微
-    suggested_sectors: [wafer_foundry_specialty_process]
-    source: expanded_from_taxonomy_seed
-    status: pending_code_resolution
-    needs_verification: [stock_code, listed_status, sector_exposure]
-    notes: >
-      功率半导体/晶圆制造，来自主线目录.md。
-      本阶段优先处理 P0/P1；该 P2 候选保留至后续晶圆制造股票池补全。
-
   - name: 斯达半导
     suggested_sectors: [wafer_foundry_specialty_process]
     source: expanded_from_taxonomy_seed
