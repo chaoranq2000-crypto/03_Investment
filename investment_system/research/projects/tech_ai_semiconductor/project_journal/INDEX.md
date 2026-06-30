@@ -42,7 +42,9 @@ Start new work from:
 
 ## Handoffs
 
-- No separate handoff log is active. Handoff notes should be appended to the primary session log unless the user asks for `写交接`.
+- `handoffs/2026-06-30-workflow-stage-contract重构交接.md`
+  - Status: current
+  - Purpose: GitHub / 网页端 GPT 协作交接，说明 `workflow_stages.yaml` schema 收敛和 `workflow-stage-contract` 审计新增情况。
 
 ## Decisions
 

@@ -12,6 +12,7 @@ Use this as the final gate before presenting investment research outputs.
 - Validation: `.codex/skills/quality-auditor/scripts/cli.py validate-outputs`
 - Tushare raw-cache audit: `.codex/skills/quality-auditor/scripts/cli.py tushare-raw-cache`
 - Runtime contract check: `.codex/skills/quality-auditor/scripts/cli.py runtime-contract-check` (used by `scope_check`)
+- Workflow stage contract: `.codex/skills/quality-auditor/scripts/cli.py workflow-stage-contract`
 - Standard sector stage gates: `.codex/skills/quality-auditor/scripts/cli.py evidence-gate|candidate-gate|publish-gate|post-publish-check`
 - Curated evidence validation: `.codex/skills/evidence-miner/scripts/cli.py validate-curated`
 - Project stage policy: `investment_system/research/projects/tech_ai_semiconductor/workflow_stages.yaml`

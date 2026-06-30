@@ -22,27 +22,18 @@ skill_cli_routing:
   preferred_interface: skill_cli
   compatibility_interface: removed_phase11
   note: Skill CLIs are the only supported human-facing stage entry points after Phase 11 wrapper cleanup.
-  stages:
-    scope_check:
-      preferred_cli: ".codex/skills/sector-research-orchestrator/scripts/cli.py scope-check --project {project_id}"
-    evidence_collect:
-      preferred_cli: ".codex/skills/evidence-miner/scripts/cli.py collect --project {project_id} --sector-id {sector_id}"
-    evidence_draft:
-      preferred_cli: ".codex/skills/evidence-miner/scripts/cli.py draft --project {project_id} --sector-id {sector_id}"
-    evidence_register:
-      preferred_cli: ".codex/skills/evidence-miner/scripts/cli.py register --project {project_id} --sector-id {sector_id} --path {evidence_path}"
-    evidence_gate:
-      preferred_cli: ".codex/skills/quality-auditor/scripts/cli.py evidence-gate --project {project_id} --sector-id {sector_id}"
-    generate_candidate:
-      preferred_cli: ".codex/skills/research-writer/scripts/cli.py generate-candidate --write-candidate --project {project_id} --sector-id {sector_id}"
-    candidate_gate:
-      preferred_cli: ".codex/skills/quality-auditor/scripts/cli.py candidate-gate --project {project_id} --sector-id {sector_id}"
-    publish_gate:
-      preferred_cli: ".codex/skills/sector-research-orchestrator/scripts/cli.py publish-gate --project {project_id} --sector-id {sector_id} --publish-scope sector_card_only"
-    publish_sector_card_only:
-      preferred_cli: ".codex/skills/sector-research-orchestrator/scripts/cli.py publish-sector-card-only --project {project_id} --sector-id {sector_id} --confirm-publish"
-    post_publish_check:
-      preferred_cli: ".codex/skills/quality-auditor/scripts/cli.py post-publish-check --project {project_id} --sector-id {sector_id}"
+
+stage_order:
+  - scope_check
+  - evidence_collect
+  - evidence_draft
+  - evidence_register
+  - evidence_gate
+  - generate_candidate
+  - candidate_gate
+  - publish_gate
+  - publish_sector_card_only
+  - post_publish_check
 
 global_forbidden_outputs:
   - 科技主线调研输出/00_总表/**
@@ -70,6 +61,7 @@ warning_only_rules:
 
 stages:
   scope_check:
+    preferred_cli: ".codex/skills/sector-research-orchestrator/scripts/cli.py scope-check --project {project_id}"
     description: Load project, run runtime contract check, and validate structural output contract.
     writes:
       allowed:
@@ -86,24 +78,8 @@ stages:
     warning_only_rules:
       - load_project_warning
 
-  evidence_register:
-    description: Register one evidence YAML in run_manifest and bind it to exactly one canonical sector.
-    writes:
-      allowed:
-        - investment_system/research/projects/{project_id}/run_manifest.yaml
-        - investment_system/research/projects/{project_id}/sector_universe.yaml
-      forbidden:
-        - 科技主线调研输出/**
-        - investment_system/research/evidence/**
-    requires_sector_id: true
-    requires_manual_confirmation: false
-    formal_output_write: false
-    default_mode: dry_run
-    apply_flag: --apply-registration
-    steps:
-      - register_evidence_file
-
   evidence_collect:
+    preferred_cli: ".codex/skills/evidence-miner/scripts/cli.py collect --project {project_id} --sector-id {sector_id}"
     description: Build an official-source manifest from cached annual reports, announcements, IR files, Tushare cache, or parser outputs.
     writes:
       allowed:
@@ -125,6 +101,7 @@ stages:
       - collect_official_evidence
 
   evidence_draft:
+    preferred_cli: ".codex/skills/evidence-miner/scripts/cli.py draft --project {project_id} --sector-id {sector_id}"
     description: Convert source manifests into draft evidence YAML skeletons for manual curation.
     writes:
       allowed:
@@ -142,7 +119,26 @@ stages:
     steps:
       - build_evidence_skeleton
 
+  evidence_register:
+    preferred_cli: ".codex/skills/evidence-miner/scripts/cli.py register --project {project_id} --sector-id {sector_id} --path {evidence_path}"
+    description: Register one evidence YAML in run_manifest and bind it to exactly one canonical sector.
+    writes:
+      allowed:
+        - investment_system/research/projects/{project_id}/run_manifest.yaml
+        - investment_system/research/projects/{project_id}/sector_universe.yaml
+      forbidden:
+        - 科技主线调研输出/**
+        - investment_system/research/evidence/**
+    requires_sector_id: true
+    requires_manual_confirmation: false
+    formal_output_write: false
+    default_mode: dry_run
+    apply_flag: --apply-registration
+    steps:
+      - register_evidence_file
+
   evidence_gate:
+    preferred_cli: ".codex/skills/quality-auditor/scripts/cli.py evidence-gate --project {project_id} --sector-id {sector_id}"
     description: Check evidence binding, schema, and target-sector coverage.
     writes:
       allowed:
@@ -162,6 +158,7 @@ stages:
       - target_coverage_ok
 
   generate_candidate:
+    preferred_cli: ".codex/skills/research-writer/scripts/cli.py generate-candidate --write-candidate --project {project_id} --sector-id {sector_id}"
     description: Generate candidate-only sector card artifacts in the project audit directory.
     writes:
       allowed:
@@ -175,6 +172,7 @@ stages:
       - build_formal_candidate_outputs
 
   candidate_gate:
+    preferred_cli: ".codex/skills/quality-auditor/scripts/cli.py candidate-gate --project {project_id} --sector-id {sector_id}"
     description: Check candidate content quality, source/evidence traceability, missing evidence, and no-advice boundaries.
     writes:
       allowed:
@@ -190,6 +188,7 @@ stages:
       - validate_outputs
 
   publish_gate:
+    preferred_cli: ".codex/skills/sector-research-orchestrator/scripts/cli.py publish-gate --project {project_id} --sector-id {sector_id} --publish-scope sector_card_only"
     description: Dry-run sector-card-only publish manifest and check publish path/no-overwrite boundaries.
     writes:
       allowed:
@@ -206,6 +205,7 @@ stages:
       - audit_formal_publish_readiness
 
   publish_sector_card_only:
+    preferred_cli: ".codex/skills/sector-research-orchestrator/scripts/cli.py publish-sector-card-only --project {project_id} --sector-id {sector_id} --confirm-publish"
     description: Copy exactly one candidate sector card to the project-aware formal output path.
     writes:
       allowed:
@@ -226,6 +226,7 @@ stages:
       - prepare_formal_publish_confirmed
 
   post_publish_check:
+    preferred_cli: ".codex/skills/quality-auditor/scripts/cli.py post-publish-check --project {project_id} --sector-id {sector_id}"
     description: Verify hash equality, card count, no forbidden formal artifacts, validate_outputs, and readiness.
     writes:
       allowed:

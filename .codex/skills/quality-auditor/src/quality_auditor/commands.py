@@ -9,6 +9,10 @@ COMMANDS = {
         "quality_auditor.runtime_contract_check",
         "Check active project runtime contracts for scope checks.",
     ),
+    "workflow-stage-contract": SkillCommand(
+        "quality_auditor.workflow_stage_contract",
+        "Audit workflow_stages.yaml stage schema, CLI routes, publish safeguards, and runner alignment.",
+    ),
     "stock-universe": SkillCommand(
         "quality_auditor.stock_universe",
         "Audit stock universe coverage and canonical sector references.",

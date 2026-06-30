@@ -8,12 +8,11 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
-import yaml
-
 from investment_system.core.constants import WORKSPACE_ROOT
 from investment_system.core.output_contracts import get_output_contract, list_output_types
 from investment_system.core.project_loader import load_project
 from investment_system.core.sector_runtime import resolve_sector_context
+from quality_auditor.workflow_stage_contract import run_audit as run_workflow_stage_contract
 
 
 @dataclass
@@ -63,78 +62,17 @@ def _add(
     )
 
 
-def _command_strings(raw: Any) -> list[str]:
-    if raw is None:
-        return []
-    if isinstance(raw, str):
-        return [raw]
-    if isinstance(raw, list):
-        if not raw:
-            return []
-        if all(not isinstance(item, (list, dict)) for item in raw):
-            return [" ".join(str(part) for part in raw)]
-        return [" ".join(str(part) for part in item) if isinstance(item, list) else str(item) for item in raw]
-    return [str(raw)]
-
-
 def _check_workflow_stage_commands(project_id: str, findings: list[AuditFinding]) -> None:
-    path = WORKSPACE_ROOT / "investment_system" / "research" / "projects" / project_id / "workflow_stages.yaml"
-    if not path.exists():
+    contract_findings, _summary = run_workflow_stage_contract(project_id)
+    for finding in contract_findings:
         _add(
             findings,
-            "HIGH",
-            "WORKFLOW_STAGES_MISSING",
-            "workflow_stages.yaml is missing.",
-            _rel(path),
+            finding.severity,
+            finding.code,
+            finding.message,
+            finding.file,
             category="workflow",
-        )
-        return
-
-    data = yaml.safe_load(path.read_text(encoding="utf-8")) or {}
-    routing = data.get("skill_cli_routing", {}) or {}
-    stage_map = routing.get("stages", {}) or {}
-    stage_defs = data.get("stages", {}) or {}
-
-    problems: list[str] = []
-    if routing.get("preferred_interface") != "skill_cli":
-        problems.append("skill_cli_routing.preferred_interface must be skill_cli")
-    if not stage_map:
-        problems.append("skill_cli_routing.stages is empty")
-
-    for stage_name, stage in stage_map.items():
-        commands = _command_strings(stage.get("preferred_cli") if isinstance(stage, dict) else stage)
-        if not commands:
-            problems.append(f"{stage_name} has no preferred_cli")
-            continue
-        for command in commands:
-            normalized = command.replace("\\", "/")
-            if ".codex/skills/" not in normalized or "/scripts/cli.py" not in normalized:
-                problems.append(f"{stage_name} does not route through a skill CLI: {command}")
-
-    scope_check = stage_defs.get("scope_check", {}) if isinstance(stage_defs, dict) else {}
-    if scope_check.get("requires_sector_id") is not False:
-        problems.append("scope_check must not require --sector-id")
-    if "runtime_contract_check" not in (scope_check.get("steps", []) or []):
-        problems.append("scope_check must include runtime_contract_check")
-
-    if problems:
-        _add(
-            findings,
-            "HIGH",
-            "WORKFLOW_STAGE_CONTRACT_FAILED",
-            f"workflow stage contract issue(s): {problems}",
-            _rel(path),
-            category="workflow",
-            recommendation="Keep workflow_stages.yaml aligned with project-aware skill CLI entry points.",
-        )
-    else:
-        _add(
-            findings,
-            "INFO",
-            "WORKFLOW_STAGE_COMMANDS_OK",
-            "workflow stage commands use project-aware skill CLI routes.",
-            _rel(path),
-            category="workflow",
+            recommendation=finding.recommendation,
         )
 
 
