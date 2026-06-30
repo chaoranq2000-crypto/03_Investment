@@ -19,24 +19,21 @@ Use this as the final gate before presenting investment research outputs.
 - Contract: read `references/contract.md` before adding audit checks.
 - Research-grade review standard: read `references/research_grade_standard.md` when auditing investment-reading-ready reports.
 
-## Standard Command
+## Gate Invocation
 
 ```powershell
-# Project-aware mode (recommended):
-& "C:\Projects\03_Investment\.conda\investment-system\python.exe" .codex\skills\quality-auditor\scripts\cli.py evidence-gate --project tech_ai_semiconductor --sector-id <sector_id>
-& "C:\Projects\03_Investment\.conda\investment-system\python.exe" .codex\skills\quality-auditor\scripts\cli.py candidate-gate --project tech_ai_semiconductor --sector-id <sector_id>
-& "C:\Projects\03_Investment\.conda\investment-system\python.exe" .codex\skills\sector-research-orchestrator\scripts\cli.py publish-gate --project tech_ai_semiconductor --sector-id <sector_id> --publish-scope sector_card_only
-& "C:\Projects\03_Investment\.conda\investment-system\python.exe" .codex\skills\quality-auditor\scripts\cli.py post-publish-check --project tech_ai_semiconductor --sector-id <sector_id>
+# Preferred project-aware path. Pick the stage from workflow_stages.yaml:
+& "C:\Projects\03_Investment\.conda\investment-system\python.exe" .codex\skills\sector-research-orchestrator\scripts\cli.py run-stage --project tech_ai_semiconductor --sector-id <sector_id> --stage <gate_stage>
 ```
 
-Use direct `validate-outputs` only when debugging the underlying contract or when a stage gate reports that output validation failed.
+Use direct gate commands only when debugging the underlying audit module or when a configured stage reports that the gate failed. Use direct `validate-outputs` only when debugging the output contract or when a stage gate reports that output validation failed.
 
 ## Gate Responsibilities
 
 - Evidence Gate checks evidence binding, evidence schema, and target-sector coverage. It may treat unrelated P0/P1 MISSING sectors as warning-only when the target sector is OK and `workflow_stages.yaml` allows that rule.
 - Curated Evidence Validation checks that source manifests have been converted into manually reviewed active evidence, with real excerpts, claims, metrics, limitations, and missing_fields.
 - Candidate Gate checks candidate structure, source/evidence closure, missing evidence retention, conflict/counter-evidence sections, no draft placeholders, no investment advice, and no formal rating.
-- Publish Gate is a dry-run publication boundary check. It verifies `sector_card_only`, project-aware target paths, no-overwrite risk, source hashes, excluded outputs, and no formal directory writes.
+- Publish Gate is a dry-run publication boundary check. It verifies the configured publish scope, project-aware target paths, no-overwrite risk, source hashes, excluded outputs, and no formal directory writes.
 - Post-publish Check verifies hash equality, formal card count, no forbidden formal artifacts, validate_outputs, readiness, and publish log traceability.
 
 ## Rules

@@ -16,7 +16,7 @@ Use this as the output-generation layer. It writes deliverables from collected d
 ## Standard Command
 
 ```powershell
-# Candidate-only mode for the current simplified workflow:
+# Candidate-only mode. Confirm the configured write boundary in workflow_stages.yaml first:
 & "C:\Projects\03_Investment\.conda\investment-system\python.exe" .codex\skills\research-writer\scripts\cli.py generate-candidate --write-candidate --project tech_ai_semiconductor --sector-id <sector_id>
 ```
 

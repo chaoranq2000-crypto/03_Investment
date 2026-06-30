@@ -16,6 +16,25 @@ The system is still an engineering and validation workflow unless the user expli
 
 ---
 
+## Workflow fact-source policy
+
+For `tech_ai_semiconductor`, the canonical workflow fact source is:
+
+- `investment_system/research/projects/tech_ai_semiconductor/workflow_stages.yaml`
+
+That YAML owns the stage order, skill CLI routing, default mode, write boundaries, manual-confirmation requirements, publish scope, and warning-only exit handling.
+
+Other files have narrower roles:
+
+- `AGENTS.md` keeps repo-wide guardrails and completion expectations.
+- `investment_system/README.md` is navigation and onboarding only.
+- `.codex/skills/sector-research-orchestrator/SKILL.md` explains when to invoke the coordinator and how to call the stage runner.
+- `.codex/skills/*/SKILL.md` files define only each skill's local responsibility, entry points, and contract references.
+
+When workflow semantics change, update `workflow_stages.yaml` first. Then update other files only to adjust links, ownership notes, or local skill responsibilities; do not restate the full project workflow in multiple places.
+
+---
+
 ## Directory roles
 
 - `investment_system/` is the reusable research engine.
@@ -162,14 +181,10 @@ C:\Projects\03_Investment\.conda\investment-system\python.exe .codex\skills\qual
 
 ```
 
-Run the simplified non-formal sector chain:
+Run one configured workflow stage through the stage runner. The supported stage names and per-stage write policy are defined in `workflow_stages.yaml`:
 
 ```powershell
-C:\Projects\03_Investment\.conda\investment-system\python.exe .codex\skills\sector-research-orchestrator\scripts\cli.py scope-check --project tech_ai_semiconductor
-C:\Projects\03_Investment\.conda\investment-system\python.exe .codex\skills\quality-auditor\scripts\cli.py evidence-gate --project tech_ai_semiconductor --sector-id <canonical_sector_id>
-C:\Projects\03_Investment\.conda\investment-system\python.exe .codex\skills\research-writer\scripts\cli.py generate-candidate --write-candidate --project tech_ai_semiconductor --sector-id <canonical_sector_id>
-C:\Projects\03_Investment\.conda\investment-system\python.exe .codex\skills\quality-auditor\scripts\cli.py candidate-gate --project tech_ai_semiconductor --sector-id <canonical_sector_id>
-C:\Projects\03_Investment\.conda\investment-system\python.exe .codex\skills\sector-research-orchestrator\scripts\cli.py publish-gate --project tech_ai_semiconductor --sector-id <canonical_sector_id> --publish-scope sector_card_only
+C:\Projects\03_Investment\.conda\investment-system\python.exe .codex\skills\sector-research-orchestrator\scripts\cli.py run-stage --project tech_ai_semiconductor --sector-id <canonical_sector_id> --stage <stage_name>
 
 ```
 

@@ -1,11 +1,13 @@
 # Quality Gates
 
-For the simplified sector-card-only workflow, run gates through skill CLIs:
+This file describes gate responsibilities. The configured gate order, CLI routing, publish scope, write boundaries, and warning-only rules live in:
+
+- `investment_system/research/projects/tech_ai_semiconductor/workflow_stages.yaml`
+
+Run a configured gate stage through the orchestrator:
 
 ```powershell
-& "C:\Projects\03_Investment\.conda\investment-system\python.exe" .codex\skills\quality-auditor\scripts\cli.py evidence-gate --project tech_ai_semiconductor --sector-id <sector_id>
-& "C:\Projects\03_Investment\.conda\investment-system\python.exe" .codex\skills\quality-auditor\scripts\cli.py candidate-gate --project tech_ai_semiconductor --sector-id <sector_id>
-& "C:\Projects\03_Investment\.conda\investment-system\python.exe" .codex\skills\sector-research-orchestrator\scripts\cli.py publish-gate --project tech_ai_semiconductor --sector-id <sector_id> --publish-scope sector_card_only
+& "C:\Projects\03_Investment\.conda\investment-system\python.exe" .codex\skills\sector-research-orchestrator\scripts\cli.py run-stage --project tech_ai_semiconductor --sector-id <sector_id> --stage <gate_stage>
 ```
 
 Use `quality-auditor validate-outputs --grade pipeline/research` only when debugging the underlying output contract.
@@ -30,7 +32,7 @@ Candidate Gate checks:
 Publish Gate checks:
 
 - The stage is dry-run only.
-- `publish_scope` is `sector_card_only`.
+- `publish_scope` matches the configured stage policy.
 - The source candidate file path and hash are recorded.
 - The target formal path is project-aware and no-overwrite is enforced.
 - `file_map` contains only `sector_card`.
@@ -41,7 +43,7 @@ Post-publish Check verifies:
 - Source hash equals target hash.
 - The formal directory card count matches expectation.
 - No total table, formal log, source index, missing/conflict log, comparison table, score table, formal scoring, or investment advice was created by the publish stage.
-- Publish log exists and records `sector_card_only`.
+- Publish log records the configured publish scope.
 - `validate_outputs` and readiness pass.
 
 Pipeline-grade checks:
@@ -53,7 +55,7 @@ Pipeline-grade checks:
 - Markdown card has no unexplained `缺失` placeholder.
 - Remaining gaps are listed in `缺失数据清单.md`.
 - Any data conflict is listed in `冲突数据清单.md`.
-- For sector-card-only phases, candidate artifacts must stay under `investment_system/research/projects/<project_id>/audits/`, and formal output writes are forbidden until `publish_sector_card_only` has explicit user confirmation.
+- Candidate artifacts must stay under the configured project audit path, and formal output writes are forbidden until the configured formal publish stage has explicit user confirmation.
 
 Research-grade checks:
 

@@ -2,6 +2,22 @@ project_id: tech_ai_semiconductor
 workflow_name: simplified_sector_research_gate_flow
 workflow_version: 1
 
+fact_source_policy:
+  canonical_for:
+    - stage_order
+    - skill_cli_routing
+    - stage_default_modes
+    - write_boundaries
+    - manual_confirmation_requirements
+    - formal_publish_scope
+    - warning_only_exit_handling
+  non_authoritative_guides:
+    - AGENTS.md
+    - investment_system/README.md
+    - .codex/skills/sector-research-orchestrator/SKILL.md
+    - .codex/skills/*/SKILL.md
+  update_rule: Update this file first when workflow semantics change; keep other files as navigation, guardrails, or local skill contracts.
+
 skill_cli_routing:
   preferred_interface: skill_cli
   compatibility_interface: removed_phase11
