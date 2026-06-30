@@ -52,6 +52,7 @@ class StagePolicy:
     allowed_writes: list[str] | None = None
     forbidden_writes: list[str] | None = None
     warning_only_rules: list[dict[str, object]] | None = None
+    requires_sector_id: bool = True
     requires_manual_confirmation: bool = False
     formal_output_write: bool = False
 
@@ -85,6 +86,7 @@ def _load_stage_policy(project: str, stage: str) -> StagePolicy:
         allowed_writes=list(writes.get("allowed", []) or []),
         forbidden_writes=list(writes.get("forbidden", []) or []),
         warning_only_rules=warning_rules,
+        requires_sector_id=bool(stage_data.get("requires_sector_id", True)),
         requires_manual_confirmation=bool(stage_data.get("requires_manual_confirmation", False)),
         formal_output_write=bool(stage_data.get("formal_output_write", False)),
     )
@@ -126,6 +128,7 @@ def _print_policy(policy: StagePolicy) -> None:
     print("=" * 72)
     print(f"stage_policy_configured: {policy.configured}")
     print(f"stage_description: {policy.description or '(none)'}")
+    print(f"requires_sector_id: {policy.requires_sector_id}")
     print(f"requires_manual_confirmation: {policy.requires_manual_confirmation}")
     print(f"formal_output_write: {policy.formal_output_write}")
     print("allowed_writes:")
@@ -190,7 +193,7 @@ def _apply_stage_policy(results: list[StepResult], policy: StagePolicy, sector_i
 def _run_scope_check(project: str) -> list[StepResult]:
     return [
         _mark_load_warning_only(_run_module("investment_system.core.project_loader", "--project", project, "--json")),
-        _run_module("quality_auditor.pipeline_readiness", "--project", project),
+        _run_module("quality_auditor.runtime_contract_check", "--project", project),
         _run_module("quality_auditor.validate_outputs", "--project", project),
     ]
 
@@ -392,7 +395,7 @@ def _run_post_publish_check(project: str, sector_id: str) -> list[StepResult]:
     return [
         _run_module("quality_auditor.publish_result", "--project", project, "--sector-id", sector_id),
         _run_module("quality_auditor.validate_outputs", "--project", project),
-        _run_module("quality_auditor.pipeline_readiness", "--project", project),
+        _run_module("quality_auditor.runtime_contract_check", "--project", project),
     ]
 
 
@@ -435,13 +438,14 @@ def _write_summary(project: str, sector_id: str, stage: str, results: list[StepR
 
     audit_dir = PROJECTS_ROOT / project / "audits"
     audit_dir.mkdir(parents=True, exist_ok=True)
-    path = audit_dir / f"stage_run_{stage}_{sector_id}.md"
+    sector_label = sector_id or "project"
+    path = audit_dir / f"stage_run_{stage}_{sector_label}.md"
     blocking_count = sum(1 for row in results if row.blocking)
     lines = [
         f"# Stage Run - {stage}",
         "",
         f"- project_id: `{project}`",
-        f"- sector_id: `{sector_id}`",
+        f"- sector_id: `{sector_id or '(not required)'}`",
         f"- stage: `{stage}`",
         f"- stage_policy_configured: {policy.configured}",
         f"- formal_output_write: {policy.formal_output_write}",
@@ -473,7 +477,7 @@ def main(argv: list[str] | None = None) -> int:
 
     parser = argparse.ArgumentParser(description="Run one standardized sector-research workflow stage.")
     parser.add_argument("--project", required=True)
-    parser.add_argument("--sector-id", required=True)
+    parser.add_argument("--sector-id", default="")
     parser.add_argument(
         "--stage",
         required=True,
@@ -516,6 +520,10 @@ def main(argv: list[str] | None = None) -> int:
 
     try:
         policy = _load_stage_policy(args.project, args.stage)
+        requires_sector_id = policy.requires_sector_id if policy.configured else args.stage != "scope_check"
+        if requires_sector_id and not args.sector_id:
+            print(f"ERROR: --sector-id is required for stage {args.stage}.")
+            return 1
         results = _run_stage(args)
         _apply_stage_policy(results, policy, args.sector_id)
     except Exception as exc:

@@ -113,10 +113,10 @@ C:\Projects\03_Investment\.conda\investment-system\python.exe -m investment_syst
 
 ```
 
-Run pipeline readiness audit:
+Run runtime contract check:
 
 ```powershell
-C:\Projects\03_Investment\.conda\investment-system\python.exe .codex\skills\quality-auditor\scripts\cli.py pipeline-readiness --project tech_ai_semiconductor
+C:\Projects\03_Investment\.conda\investment-system\python.exe .codex\skills\quality-auditor\scripts\cli.py runtime-contract-check --project tech_ai_semiconductor
 
 ```
 
@@ -165,7 +165,7 @@ C:\Projects\03_Investment\.conda\investment-system\python.exe .codex\skills\qual
 Run the simplified non-formal sector chain:
 
 ```powershell
-C:\Projects\03_Investment\.conda\investment-system\python.exe .codex\skills\sector-research-orchestrator\scripts\cli.py scope-check --project tech_ai_semiconductor --sector-id <canonical_sector_id>
+C:\Projects\03_Investment\.conda\investment-system\python.exe .codex\skills\sector-research-orchestrator\scripts\cli.py scope-check --project tech_ai_semiconductor
 C:\Projects\03_Investment\.conda\investment-system\python.exe .codex\skills\quality-auditor\scripts\cli.py evidence-gate --project tech_ai_semiconductor --sector-id <canonical_sector_id>
 C:\Projects\03_Investment\.conda\investment-system\python.exe .codex\skills\research-writer\scripts\cli.py generate-candidate --write-candidate --project tech_ai_semiconductor --sector-id <canonical_sector_id>
 C:\Projects\03_Investment\.conda\investment-system\python.exe .codex\skills\quality-auditor\scripts\cli.py candidate-gate --project tech_ai_semiconductor --sector-id <canonical_sector_id>

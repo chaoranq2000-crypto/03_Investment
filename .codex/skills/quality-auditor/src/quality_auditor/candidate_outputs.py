@@ -250,13 +250,13 @@ def _audit_candidate_only(
         findings.append(Finding("INFO", "LOAD_PROJECT_OK", "load_project has no warnings/errors."))
 
     readiness_exit_code, readiness_output = _run_module(
-        "quality_auditor.pipeline_readiness",
+        "quality_auditor.runtime_contract_check",
         "--project",
         project_id,
     )
     readiness_counts = _parse_readiness(readiness_output)
     if readiness_exit_code != 0:
-        findings.append(Finding("ERROR", "READINESS_COMMAND_FAILED", f"audit_pipeline_readiness exit_code={readiness_exit_code}"))
+        findings.append(Finding("ERROR", "RUNTIME_CONTRACT_COMMAND_FAILED", f"runtime_contract_check exit_code={readiness_exit_code}"))
     elif readiness_counts.get("BLOCKER") != 0 or readiness_counts.get("HIGH") != 0:
         findings.append(Finding("ERROR", "READINESS_GATE_NOT_PASSED", f"readiness={readiness_counts}"))
     else:
@@ -414,13 +414,13 @@ def audit_project(project_id: str, sector_id: str, write_report: bool = True) ->
         "--json",
     )
     readiness_exit_code, readiness_output = _run_module(
-        "quality_auditor.pipeline_readiness",
+        "quality_auditor.runtime_contract_check",
         "--project",
         project_id,
     )
     readiness_counts = _parse_readiness(readiness_output)
     if readiness_exit_code != 0:
-        findings.append(Finding("ERROR", "READINESS_COMMAND_FAILED", f"audit_pipeline_readiness exit_code={readiness_exit_code}"))
+        findings.append(Finding("ERROR", "RUNTIME_CONTRACT_COMMAND_FAILED", f"runtime_contract_check exit_code={readiness_exit_code}"))
     elif readiness_counts.get("BLOCKER") != 0 or readiness_counts.get("HIGH") != 0:
         findings.append(Finding("ERROR", "READINESS_GATE_NOT_PASSED", f"readiness={readiness_counts}"))
     else:

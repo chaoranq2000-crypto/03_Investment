@@ -8,7 +8,7 @@ skill_cli_routing:
   note: Skill CLIs are the only supported human-facing stage entry points after Phase 11 wrapper cleanup.
   stages:
     scope_check:
-      preferred_cli: ".codex/skills/sector-research-orchestrator/scripts/cli.py scope-check --project {project_id} --sector-id {sector_id}"
+      preferred_cli: ".codex/skills/sector-research-orchestrator/scripts/cli.py scope-check --project {project_id}"
     evidence_collect:
       preferred_cli: ".codex/skills/evidence-miner/scripts/cli.py collect --project {project_id} --sector-id {sector_id}"
     evidence_draft:
@@ -54,7 +54,7 @@ warning_only_rules:
 
 stages:
   scope_check:
-    description: Load project, run readiness, and validate structural output contract.
+    description: Load project, run runtime contract check, and validate structural output contract.
     writes:
       allowed:
         - investment_system/research/projects/{project_id}/audits/**
@@ -65,7 +65,7 @@ stages:
     formal_output_write: false
     steps:
       - load_project
-      - audit_pipeline_readiness
+      - runtime_contract_check
       - validate_outputs
     warning_only_rules:
       - load_project_warning
@@ -222,4 +222,4 @@ stages:
     steps:
       - audit_formal_publish_result
       - validate_outputs
-      - audit_pipeline_readiness
+      - runtime_contract_check

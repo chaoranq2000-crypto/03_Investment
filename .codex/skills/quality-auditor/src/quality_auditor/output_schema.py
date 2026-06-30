@@ -3,7 +3,6 @@ from __future__ import annotations
 
 import argparse
 import csv
-import re
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
@@ -72,51 +71,6 @@ def _audit_contract_definitions(config: Any, findings: list[Finding]) -> dict[st
     }
 
 
-def _audit_removed_runtime_path_calls(findings: list[Finding]) -> dict[str, int]:
-    targets = [
-        WORKSPACE_ROOT / ".codex" / "skills" / "research-writer",
-        WORKSPACE_ROOT / ".codex" / "skills" / "quality-auditor",
-        WORKSPACE_ROOT / "investment_system" / "core",
-        WORKSPACE_ROOT / "investment_system" / "pipelines",
-    ]
-    removed_refs = {
-        "investment_system.core.legacy_broad_cli",
-        "investment_system.core.legacy_broad_runner",
-        "investment_system.core.legacy_broad_collection",
-        "research_writer.legacy_broad_outputs",
-        "quality_auditor.retired_surfaces",
-    }
-    reference_count = 0
-    for root in targets:
-        if not root.exists():
-            continue
-        paths = [root] if root.is_file() else root.rglob("*")
-        for path in paths:
-            if path.is_dir() or path.suffix not in {".py", ".md", ".yaml", ".yml"}:
-                continue
-            if "__pycache__" in path.parts:
-                continue
-            rel = str(path.relative_to(WORKSPACE_ROOT)).replace("\\", "/")
-            if rel in {
-                ".codex/skills/quality-auditor/src/quality_auditor/output_schema.py",
-                ".codex/skills/quality-auditor/src/quality_auditor/pipeline_readiness.py",
-            }:
-                continue
-            content = path.read_text(encoding="utf-8", errors="replace")
-            for token in sorted(removed_refs):
-                if token in content:
-                    reference_count += content.count(token)
-                    findings.append(
-                        Finding(
-                            "ERROR",
-                            "REMOVED_RUNTIME_REFERENCE",
-                            f"Removed runtime reference remains: {token}",
-                            rel,
-                        )
-                    )
-    return {"removed_runtime_reference_count": reference_count}
-
-
 def _audit_existing_outputs(config: Any, findings: list[Finding]) -> None:
     outputs = [
         ("company_table", Path(resolve_output_path(config, "company_table"))),
@@ -140,7 +94,6 @@ def _audit_existing_outputs(config: Any, findings: list[Finding]) -> None:
 
 def _validate_outputs_contract_status() -> tuple[str, Path]:
     candidate_paths = [
-        WORKSPACE_ROOT / "investment_system" / "pipelines" / "validate_outputs.py",
         WORKSPACE_ROOT / ".codex" / "skills" / "quality-auditor" / "src" / "quality_auditor" / "validate_outputs.py",
     ]
     fallback = candidate_paths[0]
@@ -177,7 +130,6 @@ def audit_project(project_id: str, write_report: bool = True) -> tuple[list[Find
         "optional_field_count": 0,
     }
     field_status = {"output_contract_status": "ok" if output_schema else "error"}
-    path_counts = _audit_removed_runtime_path_calls(findings)
     _audit_existing_outputs(config, findings)
 
     validate_status, validate_path = _validate_outputs_contract_status()
@@ -189,7 +141,6 @@ def audit_project(project_id: str, write_report: bool = True) -> tuple[list[Find
         "output_type_count": len(output_types),
         "required_field_count": contract_counts["required_field_count"],
         "optional_field_count": contract_counts["optional_field_count"],
-        "removed_runtime_reference_count": path_counts["removed_runtime_reference_count"],
         "output_contract_status": field_status["output_contract_status"],
         "validate_outputs_contract_status": validate_status,
     }
@@ -226,7 +177,6 @@ def _write_report(project_id: str, findings: list[Finding], summary: dict[str, A
         f"- output_type_count: {summary['output_type_count']}",
         f"- required_field_count: {summary['required_field_count']}",
         f"- optional_field_count: {summary['optional_field_count']}",
-        f"- removed_runtime_reference_count: {summary['removed_runtime_reference_count']}",
         f"- output_contract_status: {summary['output_contract_status']}",
         f"- validate_outputs_contract_status: {summary['validate_outputs_contract_status']}",
         "",
@@ -257,7 +207,6 @@ def _print_report(findings: list[Finding], summary: dict[str, Any]) -> None:
     print(f"output_type_count                : {summary['output_type_count']}")
     print(f"required_field_count             : {summary['required_field_count']}")
     print(f"optional_field_count             : {summary['optional_field_count']}")
-    print(f"removed_runtime_reference_count  : {summary['removed_runtime_reference_count']}")
     print(f"output_contract_status           : {summary['output_contract_status']}")
     print(f"validate_outputs_contract_status : {summary['validate_outputs_contract_status']}")
     print()

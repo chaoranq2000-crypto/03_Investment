@@ -13,7 +13,7 @@ This file is the current operational workflow reference.
    - Prefer the skill CLI scope check:
 
 ```powershell
-& "C:\Projects\03_Investment\.conda\investment-system\python.exe" .codex\skills\sector-research-orchestrator\scripts\cli.py scope-check --project tech_ai_semiconductor --sector-id <canonical_sector_id>
+& "C:\Projects\03_Investment\.conda\investment-system\python.exe" .codex\skills\sector-research-orchestrator\scripts\cli.py scope-check --project tech_ai_semiconductor
 ```
 
 1. Market data step: call `market-data-router`.

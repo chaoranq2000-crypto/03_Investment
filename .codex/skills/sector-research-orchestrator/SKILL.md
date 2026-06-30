@@ -45,7 +45,7 @@ Use the project Conda runtime:
 
 ```powershell
 # Scope check:
-& "C:\Projects\03_Investment\.conda\investment-system\python.exe" .codex\skills\sector-research-orchestrator\scripts\cli.py scope-check --project tech_ai_semiconductor --sector-id <canonical_sector_id>
+& "C:\Projects\03_Investment\.conda\investment-system\python.exe" .codex\skills\sector-research-orchestrator\scripts\cli.py scope-check --project tech_ai_semiconductor
 
 # Official source manifest collection (preview by default; add --write-manifest to write raw manifest):
 & "C:\Projects\03_Investment\.conda\investment-system\python.exe" .codex\skills\evidence-miner\scripts\cli.py collect --project tech_ai_semiconductor --sector-id <canonical_sector_id> --local-dir investment_system/data/raw/cninfo/<source_set>/<date> --extensions .pdf

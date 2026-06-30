@@ -12,7 +12,6 @@ Scope: engineering output contract audit only. No formal research output is gene
 - output_type_count: 7
 - required_field_count: 85
 - optional_field_count: 64
-- removed_runtime_reference_count: 0
 - output_contract_status: ok
 - validate_outputs_contract_status: ok
 

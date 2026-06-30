@@ -5,9 +5,9 @@ from __future__ import annotations
 from investment_system.core.command_dispatch import SkillCommand, dispatch_skill_commands
 
 COMMANDS = {
-    "pipeline-readiness": SkillCommand(
-        "quality_auditor.pipeline_readiness",
-        "Audit project-aware pipeline readiness.",
+    "runtime-contract-check": SkillCommand(
+        "quality_auditor.runtime_contract_check",
+        "Check active project runtime contracts for scope checks.",
     ),
     "stock-universe": SkillCommand(
         "quality_auditor.stock_universe",
